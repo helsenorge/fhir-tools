@@ -9,7 +9,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 
 namespace FhirTool
@@ -29,16 +31,30 @@ namespace FhirTool
         //private static string FhirBaseUrl = "http://localhost:49911/fhir";
 
         private static string FileNameReservedCharacters = "<>:\"/\\|?*";
+        private static FhirToolArguments _arguments = null;
 
         // Example
-        // fhir-tool.exe --version 1 --questionnaire HELFO_E106_NB.txt --valueset HELFO_E106_NB_Kodeverk.txt --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir
+        // fhir-tool.exe --version 1 --questionnaire HELFO_E106_NB.txt --valueset HELFO_E106_NB_Kodeverk.txt --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
         static void Main(string[] args)
         {
-            FhirToolArguments arguments = FhirToolArguments.Create(args);
             try
             {
-                IList<ValueSet> valueSets = GetValueSetsFromFlatFileFormat(arguments.ValueSetPath, false);
-                Questionnaire questionnaire = GetQuestionnairesFromFlatFileFormatV1(arguments.QuestionnairePath).FirstOrDefault();
+                _arguments = FhirToolArguments.Create(args);
+                if (!ValidateArguments(_arguments))
+                {
+                    Console.WriteLine("One or more arguments did not validate. Please verify your arguments according to the output.");
+                    goto exit;
+                }
+
+                IList<ValueSet> valueSets = null;
+                if (!string.IsNullOrEmpty(_arguments.ValueSetPath))
+                    valueSets = GetValueSetsFromFlatFileFormat(_arguments.ValueSetPath, false);
+                Questionnaire questionnaire = null;
+                if (!string.IsNullOrEmpty(_arguments.QuestionnairePath))
+                {
+                    if (_arguments.Version == "1")
+                        questionnaire = GetQuestionnairesFromFlatFileFormatV1(_arguments.QuestionnairePath).FirstOrDefault();
+                }
                 
                 if (questionnaire == null)
                 {
@@ -54,8 +70,18 @@ namespace FhirTool
                 questionnaire.SerializeResourceToDiskAsJson(GenerateLegalFilename($"Questionnaire-{questionnaire.Name}.json"));
                 questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename($"Questionnaire-{questionnaire.Name}.xml"));
 
-                FhirClient fhirClient = new FhirClient(arguments.FhirBaseUrl);
-                fhirClient.Update(questionnaire);
+                if (!string.IsNullOrEmpty(_arguments.FhirBaseUrl))
+                {
+                    // Remove the Url before posting it to the server.
+                    questionnaire.Url = string.Empty;
+                    // Initialize a FhirClient and POST or PUT Questionnaire to server.
+                    FhirClient fhirClient = new FhirClient(_arguments.FhirBaseUrl);
+                    questionnaire = fhirClient.Update(questionnaire);
+
+                    Console.WriteLine($"\nSuccessfully uploaded Questionnaire to endpoint {fhirClient.Endpoint}.");
+                    Console.WriteLine($"Questionnaire was assigned the Id: {questionnaire.Id}");
+                    Console.WriteLine($"Questionnaire can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}");
+                }
             }
             catch (Exception ex)
             {
@@ -63,8 +89,55 @@ namespace FhirTool
             }
 
             exit:
-            Console.WriteLine("Press any key to exit. . .");
+            Console.WriteLine("\nPress any key to exit. . .");
             Console.ReadKey(true);
+        }
+
+        private static bool ValidateArguments(FhirToolArguments arguments)
+        {
+            bool validated = true;
+            if(!string.IsNullOrEmpty(arguments.QuestionnairePath))
+            {
+                if (!File.Exists(arguments.QuestionnairePath))
+                {
+                    Console.WriteLine($"ERROR - File not found: '{arguments.QuestionnairePath}'");
+                    validated = false;
+                }
+            }
+            if (!string.IsNullOrEmpty(arguments.ValueSetPath))
+            {
+                if (!File.Exists(arguments.ValueSetPath))
+                {
+                    Console.WriteLine($"ERROR - File not found: '{arguments.ValueSetPath}'");
+                    validated = false;
+                }
+            }
+            if(string.IsNullOrEmpty(arguments.Version))
+            {
+                Console.WriteLine($"ERROR - Parameter {FhirToolArguments.VERSION_ARG} | {FhirToolArguments.VERSION_SHORT_ARG} is required.");
+                validated = false;
+            }
+            if (!string.IsNullOrEmpty(arguments.FhirBaseUrl))
+            {
+                if (arguments.ResolveUrl && !ResolveUrl(new Uri(arguments.FhirBaseUrl)).IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"ERROR - Could not resolve url: {arguments.FhirBaseUrl}");
+                    validated = false;
+                }
+            }
+
+            return validated;
+        }
+
+        private static HttpResponseMessage ResolveUrl(Uri uri)
+        {
+            HttpRequestMessage request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Head,
+                RequestUri = new Uri($"{uri.Scheme}://{uri.Host}")
+            };
+            using (HttpClient client = new HttpClient())
+                return client.SendAsync(request).GetAwaiter().GetResult();
         }
 
         static string GenerateLegalFilename(string path)
@@ -77,67 +150,12 @@ namespace FhirTool
 
             return legalFilename;
         }
-
-        static void ImportQuestionnaire(string fhirBaseUrl, string path)
-        {
-            IList<Questionnaire> questionnaires = GetQuestionnairesFromFlatFileFormatV1(path);
-
-            Bundle bundleOfQuestionnaires = new Bundle();
-
-            foreach(Questionnaire questionnaire in questionnaires)
-            {
-                questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename($"Questionnaire-{questionnaire.Name}.xml"));
-
-                bundleOfQuestionnaires.Entry.Add(new Bundle.EntryComponent
-                {
-                    Request = new Bundle.RequestComponent
-                    {
-                        Url = string.IsNullOrEmpty(questionnaire.Id)
-                                    ? string.Empty
-                                    : $"{fhirBaseUrl}Questionnaire/{questionnaire.Id}",
-                        Method = string.IsNullOrEmpty(questionnaire.Id)
-                                    ? Bundle.HTTPVerb.POST
-                                    : Bundle.HTTPVerb.PUT
-                    },
-                    Resource = questionnaire
-                });
-            }
-
-            FhirClient fhirClient = new FhirClient(fhirBaseUrl);
-            fhirClient.Transaction(bundleOfQuestionnaires);
-        }
-
-        static void ImportValueSet(string fhirBaseUrl, string path)
-        {
-            IList<ValueSet> valueSets = GetValueSetsFromFlatFileFormat(path);
-
-            Bundle bundleOfValueSets = new Bundle();
-
-            foreach (ValueSet valueSet in valueSets)
-            {
-                valueSet.SerializeResourceToDiskAsXml(GenerateLegalFilename($"ValueSet-{valueSet.Name}.xml"));
-
-                bundleOfValueSets.Entry.Add(new Bundle.EntryComponent
-                {
-                    Request = new Bundle.RequestComponent
-                    {
-                        Url = string.IsNullOrEmpty(valueSet.Id) 
-                                    ? string.Empty
-                                    : $"{fhirBaseUrl}ValueSet/{valueSet.Id}",
-                        Method = string.IsNullOrEmpty(valueSet.Id)
-                                    ? Bundle.HTTPVerb.POST
-                                    : Bundle.HTTPVerb.PUT
-                    },
-                    Resource = valueSet
-                });
-            }
-
-            FhirClient fhirClient = new FhirClient(fhirBaseUrl);
-            fhirClient.Transaction(bundleOfValueSets);
-        }
-
+        
         private static IList<Questionnaire> GetQuestionnairesFromFlatFileFormatV1(string path)
         {
+            if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
+            if (!File.Exists(path)) throw new FileNotFoundException($"File not found: '{path}'", path);
+
             IList<Questionnaire> questionnaires = new List<Questionnaire>();
 
             var engine = new MasterDetailEngine<QuestionnaireHeader, QuestionnaireItem>(new MasterDetailSelector(RecordSelector))
@@ -382,15 +400,17 @@ namespace FhirTool
             }
         }
 
-        private static IList<ValueSet> GetValueSetsFromFlatFileFormat(string filename, bool genereateNarrative = true)
+        private static IList<ValueSet> GetValueSetsFromFlatFileFormat(string path, bool genereateNarrative = true)
         {
-            IList<ValueSet> valueSets = new List<ValueSet>();
+            if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
+            if (!File.Exists(path)) throw new FileNotFoundException($"File not found: '{path}'.", path);
 
+            IList<ValueSet> valueSets = new List<ValueSet>();
             var engine = new MasterDetailEngine<ValueSetHeader, ValueSetCodeReferences>(new MasterDetailSelector(RecordSelector))
             {
                 Encoding = new UTF8Encoding()
             };
-            MasterDetails<ValueSetHeader, ValueSetCodeReferences>[] masterDetails = engine.ReadFile(filename);
+            MasterDetails<ValueSetHeader, ValueSetCodeReferences>[] masterDetails = engine.ReadFile(path);
             foreach (MasterDetails<ValueSetHeader, ValueSetCodeReferences> masterDetail in masterDetails)
             {
                 Console.WriteLine($"ValueSet: {masterDetail.Master.Id} - {masterDetail.Master.Title}");
@@ -445,6 +465,64 @@ namespace FhirTool
                 default:
                     return RecordAction.Skip;
             }
+        }
+        
+        static void ImportQuestionnaire(string fhirBaseUrl, string path)
+        {
+            IList<Questionnaire> questionnaires = GetQuestionnairesFromFlatFileFormatV1(path);
+
+            Bundle bundleOfQuestionnaires = new Bundle();
+
+            foreach (Questionnaire questionnaire in questionnaires)
+            {
+                questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename($"Questionnaire-{questionnaire.Name}.xml"));
+
+                bundleOfQuestionnaires.Entry.Add(new Bundle.EntryComponent
+                {
+                    Request = new Bundle.RequestComponent
+                    {
+                        Url = string.IsNullOrEmpty(questionnaire.Id)
+                                    ? string.Empty
+                                    : $"{fhirBaseUrl}Questionnaire/{questionnaire.Id}",
+                        Method = string.IsNullOrEmpty(questionnaire.Id)
+                                    ? Bundle.HTTPVerb.POST
+                                    : Bundle.HTTPVerb.PUT
+                    },
+                    Resource = questionnaire
+                });
+            }
+
+            FhirClient fhirClient = new FhirClient(fhirBaseUrl);
+            fhirClient.Transaction(bundleOfQuestionnaires);
+        }
+
+        static void ImportValueSet(string fhirBaseUrl, string path)
+        {
+            IList<ValueSet> valueSets = GetValueSetsFromFlatFileFormat(path);
+
+            Bundle bundleOfValueSets = new Bundle();
+
+            foreach (ValueSet valueSet in valueSets)
+            {
+                valueSet.SerializeResourceToDiskAsXml(GenerateLegalFilename($"ValueSet-{valueSet.Name}.xml"));
+
+                bundleOfValueSets.Entry.Add(new Bundle.EntryComponent
+                {
+                    Request = new Bundle.RequestComponent
+                    {
+                        Url = string.IsNullOrEmpty(valueSet.Id)
+                                    ? string.Empty
+                                    : $"{fhirBaseUrl}ValueSet/{valueSet.Id}",
+                        Method = string.IsNullOrEmpty(valueSet.Id)
+                                    ? Bundle.HTTPVerb.POST
+                                    : Bundle.HTTPVerb.PUT
+                    },
+                    Resource = valueSet
+                });
+            }
+
+            FhirClient fhirClient = new FhirClient(fhirBaseUrl);
+            fhirClient.Transaction(bundleOfValueSets);
         }
     }
 }
