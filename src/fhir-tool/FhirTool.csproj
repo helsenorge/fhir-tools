@@ -80,7 +80,6 @@
     <Compile Include="Model\FlatFile\Questionnaire-v2.cs" />
     <Compile Include="Model\FlatFile\Questionnaire-v1.cs" />
     <Compile Include="Model\FlatFile\ValueSet.cs" />
-    <None Include="Program .cs.bak" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
