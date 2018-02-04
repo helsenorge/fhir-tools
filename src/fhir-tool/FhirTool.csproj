@@ -69,6 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\DuplicateLinkIdException.cs" />
+    <Compile Include="Exceptions\MultipleOperationException.cs" />
+    <Compile Include="Exceptions\NotSupportedMimeTypeException.cs" />
+    <Compile Include="Exceptions\NotSupportedOperationException.cs" />
     <Compile Include="FhirToolArguments.cs" />
     <Compile Include="Model\DataTypeEnum.cs" />
     <Compile Include="Model\EnableWhenCoding.cs" />

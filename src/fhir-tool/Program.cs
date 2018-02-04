@@ -2,8 +2,10 @@
 using FhirTool.Model;
 using FhirTool.Model.FlatFile;
 using FileHelpers.MasterDetail;
+using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
+using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -36,8 +38,16 @@ namespace FhirTool
         private static FhirToolArguments _arguments = null;
         private static TextWriter _out = null;
 
-        // Example
+        // First example
         // fhir-tool.exe --version 1 --questionnaire HELFO_E106_NB.txt --valueset HELFO_E106_NB_Kodeverk.txt --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+
+        // Splitting up operations
+        // fhir-tool.exe generate --version 1 --format json --questionnaire HELFO_E121_NB.txt --valueset HELFO_E121_NB_Kodeverk.txt
+        // fhir-tool.exe upload --format json --questionnaire Questionnaire-Helfo_E121_NB-no.json --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+
+        // Unsure if we should handle kith and messaging in this tool
+        // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
         static void Main(string[] args)
         {
             try
@@ -53,78 +63,167 @@ namespace FhirTool
                 DebugWriteLineToOutput("Validating command line arguments.");
                 if (!ValidateArguments(_arguments))
                 {
-                    ErrorWriteLineToOutput("One or more arguments did not validate. Please verify your arguments according to the output.");
+                    ErrorWriteLineToOutput("One or more arguments did not validate. Please verify your arguments according to output.");
                     goto exit;
                 }
-                WriteLineToOutput();
 
-                IList<ValueSet> valueSets = null;
-                if (!string.IsNullOrEmpty(_arguments.ValueSetPath))
+                switch(_arguments.Operation)
                 {
-                    WriteLineToOutput($"Loading ValueSet(s) from file: '{_arguments.ValueSetPath}'.");
-                    valueSets = GetValueSetsFromFlatFileFormat(_arguments.ValueSetPath, false);
-                    WriteLineToOutput();
-                }
-                Questionnaire questionnaire = null;
-                if (!string.IsNullOrEmpty(_arguments.QuestionnairePath))
-                {
-                    WriteLineToOutput($"Loading Questionnaire from file: {_arguments.QuestionnairePath}");
-                    WriteLineToOutput($"Expecting flat file format to conform to version: {_arguments.Version}");
-                    if (_arguments.Version == "1")
-                        questionnaire = GetQuestionnairesFromFlatFileFormatV1(_arguments.QuestionnairePath).FirstOrDefault();
-
-                    if (questionnaire == null)
-                    {
-                        ErrorWriteLineToOutput("Failed to extract Questionnaire from flat file format.");
-                        goto exit;
-                    }
-
-                    WriteLineToOutput();
-                }
-
-                if (valueSets.Count > 0)
-                {
-                    WriteLineToOutput("Adding ValueSet(s) to contained section of Questionnaire.");
-                    foreach (ValueSet valueSet in valueSets)
-                    {
-                        questionnaire.Contained.Add(valueSet);
-                    }
-                    WriteLineToOutput();
-                }
-                
-
-                string path = $"Questionnaire-{questionnaire.Name}.json";
-                WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
-                questionnaire.SerializeResourceToDiskAsJson(GenerateLegalFilename(path));
-
-                path = $"Questionnaire-{questionnaire.Name}.xml";
-                WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {path}");
-                questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename(path));
-                WriteLineToOutput();
-
-                if (!string.IsNullOrEmpty(_arguments.FhirBaseUrl))
-                {
-                    WriteLineToOutput($"Uploading Questionnaire to endpoint: {_arguments.FhirBaseUrl}");
-                    // Remove the Url before posting it to the server.
-                    questionnaire.Url = string.Empty;
-                    // Initialize a FhirClient and POST or PUT Questionnaire to server.
-                    FhirClient fhirClient = new FhirClient(_arguments.FhirBaseUrl);
-                    questionnaire = fhirClient.Update(questionnaire);
-                    
-                    WriteLineToOutput($"Successfully uploaded Questionnaire to endpoint.");
-                    WriteLineToOutput($"Questionnaire was assigned the Id: {questionnaire.Id}");
-                    WriteLineToOutput($"Questionnaire can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}");
+                    case OperationEnum.Generate:
+                        GenerateFromFlatFileOperation(_arguments);
+                        break;
+                    case OperationEnum.Upload:
+                        UploadToFhirServerOperation(_arguments);
+                        break;
+                    default:
+                        throw new NotSupportedOperationException(_arguments.Operation);
                 }
             }
             catch (Exception ex)
             {
-                WriteLineToOutput();
-                ErrorWriteLineToOutput($"{ex.Message}\n");
+                ErrorWriteLineToOutput($"{ex.Message}");
             }
 
             exit:
             WriteLineToOutput("\nPress any key to exit. . .");
             Console.ReadKey(true);
+        }
+
+        private static void GenerateFromFlatFileOperation(FhirToolArguments arguments)
+        {
+            if (string.IsNullOrEmpty(arguments.QuestionnairePath))
+            {
+                ErrorWriteLineToOutput($"Operation '{FhirToolArguments.GENERATE_OP}' requires argument '{FhirToolArguments.QUESTIONNAIRE_ARG}'.");
+                return;
+            }
+
+            WriteLineToOutput($"Expecting flat file format to conform to version: {arguments.Version}");
+            IList<ValueSet> valueSets = null;
+            if (!string.IsNullOrEmpty(arguments.ValueSetPath))
+            {
+                WriteLineToOutput($"Loading ValueSet(s) from file: '{arguments.ValueSetPath}'.");
+                valueSets = GetValueSetsFromFlatFileFormat(arguments.ValueSetPath, false);
+            }
+            
+            Questionnaire questionnaire = null;
+            WriteLineToOutput($"Loading Questionnaire from file: {arguments.QuestionnairePath}");
+            if (arguments.Version == "1")
+            {
+                questionnaire = GetQuestionnairesFromFlatFileFormatV1(arguments.QuestionnairePath).FirstOrDefault();
+            }
+            else
+            {
+                string version = string.IsNullOrEmpty(arguments.Version) ? "missing" : arguments.Version;
+                ErrorWriteLineToOutput($"Operation {FhirToolArguments.GENERATE_OP} requires argument '{FhirToolArguments.VERSION_ARG}'. Argument is either missing or an unknown value was set.\nValue: '{version}'");
+                return;
+            }
+
+            if (questionnaire == null)
+            {
+                ErrorWriteLineToOutput($"Failed to extract Questionnaire from flat file format\nLocation: '{arguments.QuestionnairePath}'.");
+                return;
+            }
+            
+            if (valueSets.Count > 0)
+            {
+                WriteLineToOutput("Adding ValueSet(s) to contained section of Questionnaire.");
+                foreach (ValueSet valueSet in valueSets)
+                {
+                    questionnaire.Contained.Add(valueSet);
+                }
+            }
+
+            if (arguments.MimeType == "xml")
+            {
+                string path = $"Questionnaire-{questionnaire.Name}.json";
+                WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
+                questionnaire.SerializeResourceToDiskAsJson(GenerateLegalFilename(path));
+            }
+            if (arguments.MimeType == "json")
+            {
+                string path = $"Questionnaire-{questionnaire.Name}.xml";
+                WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {path}");
+                questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename(path));
+            }
+        }
+
+        private static void UploadToFhirServerOperation(FhirToolArguments arguments)
+        {
+            if (string.IsNullOrEmpty(arguments.FhirBaseUrl))
+            {
+                ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}'.");
+                return;
+            }
+            if (string.IsNullOrEmpty(arguments.QuestionnairePath))
+            {
+                ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_OP}' requires argument '{FhirToolArguments.QUESTIONNAIRE_ARG}'.");
+                return;
+            }
+
+            WriteLineToOutput($"Deserializing Fhir resource at '{arguments.QuestionnairePath}'.");
+            WriteLineToOutput($"Expecting format: '{arguments.MimeType}'.");
+            Questionnaire questionnaire = null;
+            switch(arguments.MimeType)
+            {
+                case "xml":
+                    questionnaire = DeserializeXmlResource<Questionnaire>(arguments.QuestionnairePath);
+                    break;
+                case "json":
+                    questionnaire = DeserializeJsonResource<Questionnaire>(arguments.QuestionnairePath);
+                    break;
+                default:
+                    break;
+            }
+            if (questionnaire == null)
+            {
+                ErrorWriteLineToOutput($"Failed to extract Questionnaire from flat file format\nLocation: '{arguments.QuestionnairePath}'.");
+                return;
+            }
+
+            WriteLineToOutput($"Uploading Questionnaire to endpoint: {arguments.FhirBaseUrl}");
+            // Set a relative url before posting to the server
+            if(!string.IsNullOrEmpty(questionnaire.Id))
+            {
+                questionnaire.Url = $"{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}";
+            }
+            else
+            {
+                questionnaire.Url = string.Empty;
+            }
+            
+            // Initialize a FhirClient and POST or PUT Questionnaire to server.
+            FhirClient fhirClient = new FhirClient(arguments.FhirBaseUrl);
+            questionnaire = fhirClient.Update(questionnaire);
+            WriteLineToOutput($"Successfully uploaded Questionnaire to endpoint.");
+            WriteLineToOutput($"Questionnaire was assigned the Id: {questionnaire.Id}");
+            WriteLineToOutput($"Questionnaire can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}");
+        }
+
+        public static T DeserializeJsonResource<T>(string path)
+            where T : Resource
+        {
+            T resource = null;
+
+            using (StreamReader reader = new StreamReader(path))
+            {
+                IElementNavigator navigator = JsonDomFhirNavigator.Create(reader.ReadToEnd());
+                BaseFhirParser parser = new FhirJsonParser();
+                resource = parser.Parse<T>(navigator);
+            }
+            return resource;
+        }
+
+        public static T DeserializeXmlResource<T>(string path)
+            where T : Resource
+        {
+            T resource = null;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                IElementNavigator navigator = XmlDomFhirNavigator.Create(reader.ReadToEnd());
+                BaseFhirParser parser = new FhirXmlParser();
+                resource = parser.Parse<T>(navigator);
+            }
+            return resource;
         }
 
         private static void DebugWriteLineToOutput(string value)
@@ -159,6 +258,12 @@ namespace FhirTool
                     validated = false;
                 }
             }
+            else
+            {
+                ErrorWriteLineToOutput($"Argument {FhirToolArguments.QUESTIONNAIRE_ARG} | {FhirToolArguments.QUESTIONNAIRE_SHORT_ARG} is required.");
+                validated = false;
+            }
+
             if (!string.IsNullOrEmpty(arguments.ValueSetPath))
             {
                 if (!File.Exists(arguments.ValueSetPath))
@@ -167,9 +272,9 @@ namespace FhirTool
                     validated = false;
                 }
             }
-            if(string.IsNullOrEmpty(arguments.Version))
+            if(arguments.Operation == OperationEnum.Generate && string.IsNullOrEmpty(arguments.Version))
             {
-                ErrorWriteLineToOutput($"Parameter {FhirToolArguments.VERSION_ARG} | {FhirToolArguments.VERSION_SHORT_ARG} is required.");
+                ErrorWriteLineToOutput($"Argument {FhirToolArguments.VERSION_ARG} | {FhirToolArguments.VERSION_SHORT_ARG} is required.");
                 validated = false;
             }
             if (!string.IsNullOrEmpty(arguments.FhirBaseUrl))
