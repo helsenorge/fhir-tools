@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -44,8 +45,9 @@ namespace FhirTool
                 _out = Console.Out;
                 _arguments = FhirToolArguments.Create(args);
 
-                WriteLineToOutput($"Fhir Tool [Version {Assembly.GetEntryAssembly().GetName().Version}]");
-                WriteLineToOutput($"(c) 2018 Norwegian Directorate of eHealth. All rights reserved.");
+                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
+                WriteLineToOutput($"{versionInfo.ProductName} [Version {Assembly.GetEntryAssembly().GetName().Version}]");
+                WriteLineToOutput($"(c) 2018 {versionInfo.CompanyName}. All rights reserved.");
                 WriteLineToOutput();
 
                 DebugWriteLineToOutput("Validating command line arguments.");
