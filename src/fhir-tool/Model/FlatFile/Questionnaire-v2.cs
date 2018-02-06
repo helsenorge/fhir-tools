@@ -9,6 +9,10 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string RecordType;
         [FieldOptional]
+        public string Id;
+        [FieldOptional]
+        public string Language;
+        [FieldOptional]
         public string Url;
         [FieldOptional]
         public string Version;
@@ -28,17 +32,17 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string Purpose;
         [FieldOptional]
-        public string UseContext;
+        public string ApprovalDate;
         [FieldOptional]
-        public string Contact;
+        public string LastReviewDate;
+        [FieldOptional]
+        public string EffectivePeriod;
+        [FieldOptional]
+        public string ContactName;
+        [FieldOptional]
+        public string Copyright;
         [FieldOptional]
         public string SubjectType;
-        [FieldOptional]
-        public string Language;
-        [FieldOptional]
-        public int? ToolVersion;
-        [FieldOptional]
-        public string Id;
         [FieldOptional]
         public string Reservered0;
         [FieldOptional]
@@ -53,11 +57,6 @@ namespace FhirTool.Model.FlatFile
         public string Reservered5;
         [FieldOptional]
         public string Reservered6;
-        [FieldOptional]
-        public string Reservered7;
-        [FieldOptional]
-        public string Reservered8;
-
     }
 
     [DelimitedRecord("\t")]

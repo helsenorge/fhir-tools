@@ -30,6 +30,11 @@ namespace FhirTool
         public const string MinValueUri = "http://hl7.org/fhir/StructureDefinition/minValue";
         public const string ValidationTextUri = "http://ehelse.no/fhir/StructureDefinition/validationtext";
         public const string RepeatsTextUri = "http://ehelse.no/fhir/StructureDefinition/repeatstext";
+        public const string ItemControlUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl";
+        public const string MaxOccursUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs";
+        public const string MinOccursUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs";
+        
+        public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
 
         //private static string FhirBaseUrl = "http://nde-fhir-ehelse.azurewebsites.net/fhir";
         //private static string FhirBaseUrl = "http://localhost:49911/fhir";
@@ -111,6 +116,10 @@ namespace FhirTool
             {
                 questionnaire = GetQuestionnairesFromFlatFileFormatV1(arguments.QuestionnairePath).FirstOrDefault();
             }
+            else if (arguments.Version == "2")
+            {
+                questionnaire = GetQuestionnairesFromFlatFileFormatV2(arguments.QuestionnairePath).FirstOrDefault();
+            }
             else
             {
                 string version = string.IsNullOrEmpty(arguments.Version) ? "missing" : arguments.Version;
@@ -135,15 +144,15 @@ namespace FhirTool
 
             if (arguments.MimeType == "xml")
             {
-                string path = $"Questionnaire-{questionnaire.Name}.json";
-                WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
-                questionnaire.SerializeResourceToDiskAsJson(GenerateLegalFilename(path));
-            }
-            if (arguments.MimeType == "json")
-            {
                 string path = $"Questionnaire-{questionnaire.Name}.xml";
                 WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {path}");
                 questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename(path));
+            }
+            if (arguments.MimeType == "json")
+            {
+                string path = $"Questionnaire-{questionnaire.Name}.json";
+                WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
+                questionnaire.SerializeResourceToDiskAsJson(GenerateLegalFilename(path));
             }
         }
 
@@ -193,7 +202,11 @@ namespace FhirTool
             
             // Initialize a FhirClient and POST or PUT Questionnaire to server.
             FhirClient fhirClient = new FhirClient(arguments.FhirBaseUrl);
-            questionnaire = fhirClient.Update(questionnaire);
+            if (string.IsNullOrEmpty(questionnaire.Id))
+                questionnaire = fhirClient.Create(questionnaire);
+            else
+                questionnaire = fhirClient.Update(questionnaire);
+
             WriteLineToOutput($"Successfully uploaded Questionnaire to endpoint.");
             WriteLineToOutput($"Questionnaire was assigned the Id: {questionnaire.Id}");
             WriteLineToOutput($"Questionnaire can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}");
@@ -310,7 +323,221 @@ namespace FhirTool
 
             return legalFilename;
         }
-        
+
+        private static IList<Questionnaire> GetQuestionnairesFromFlatFileFormatV2(string path)
+        {
+            if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
+            if (!File.Exists(path)) throw new FileNotFoundException($"File not found: '{path}'", path);
+
+            IList<Questionnaire> questionnaires = new List<Questionnaire>();
+
+            var engine = new MasterDetailEngine<QuestionnaireHeader2, QuestionnaireItem2>(new MasterDetailSelector(RecordSelector))
+            {
+                Encoding = new UTF8Encoding()
+            };
+            MasterDetails<QuestionnaireHeader2, QuestionnaireItem2>[] masterDetails = engine.ReadFile(path);
+            foreach (MasterDetails<QuestionnaireHeader2, QuestionnaireItem2> masterDetail in masterDetails)
+            {
+                DebugWriteLineToOutput($"Questionnaire: {masterDetail.Master.Name} - {masterDetail.Master.Title}");
+
+                Questionnaire questionnaire = new Questionnaire
+                {
+                    Id = masterDetail.Master.Id,
+                    Url = masterDetail.Master.Url,
+                    Version = masterDetail.Master.Version,
+
+                    //
+                    // Helse Vest
+                    //
+                    // MRSA
+                    //Id = "120",
+                    //Url = "urn:uuid:659c3c2a-8715-4cf1-8abd-afc1d8972b72",
+                    //Language = "nb-NO",
+
+                    // TODO: Name er søkbart, vi må definere dette som en unik del enten kun ved seg selv eller i kombinasjon med eksempelvis en Tag
+                    Name = masterDetail.Master.Name,
+                    Title = masterDetail.Master.Title,
+                    Status = EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status),
+                    Date = masterDetail.Master.Date,
+                    Publisher = masterDetail.Master.Publisher,
+                    Description = new Markdown(masterDetail.Master.Description),
+                    Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose),
+                    ApprovalDate = masterDetail.Master.ApprovalDate,
+                    LastReviewDate = masterDetail.Master.LastReviewDate,
+                    //EffectivePeriod = masterDetail.Master.EffectivePeriod
+                    Contact = new List<ContactDetail> { new ContactDetail { Name = masterDetail.Master.ContactName } },
+                    Copyright = new Markdown(masterDetail.Master.Copyright)
+                };
+
+                if (!string.IsNullOrEmpty(masterDetail.Master.SubjectType))
+                {
+                    IList<ResourceType?> resourceTypes = new List<ResourceType?>();
+                    string[] subjectTypes = masterDetail.Master.SubjectType.Split('|');
+                    foreach (string subjectType in subjectTypes)
+                    {
+                        ResourceType? resourceType = EnumUtility.ParseLiteral<ResourceType>(subjectType);
+                        if (resourceType.HasValue)
+                            resourceTypes.Add(resourceType);
+                    }
+                    questionnaire.SubjectType = resourceTypes;
+                }
+                
+                questionnaire.Meta = new Meta
+                {
+                    Profile = new string[] { "http://ehelse.no/fhir/StructureDefinition/sdf-questionnaire" },
+                    Tag = new List<Coding>
+                    {
+                        // TODO: Vi trenger definere en Tag som anigr det tekniske navnet til
+                        //new Coding("http://fhi.no/fylkeshelseundersokelse", "1.0"),
+                        //new Coding("http://helfo.no/questionnaire", "E121"),
+                        
+                        // TODO: Vi trenger definere tilgangsstyring i Excel-arket
+                        new Coding("urn:2.16.578.1.12.4.1.1.7607", "3")
+                    }
+                };
+                
+                if (!string.IsNullOrEmpty(masterDetail.Master.Language))
+                {
+                    questionnaire.Language = masterDetail.Master.Language;
+                    // TODO: Vi trenger definere Visningsnavn for språket, eksempelvis: Norsk (bokmål), osv.
+                    questionnaire.Meta.Tag.Add(new Coding("urn:ietf:bcp:47", questionnaire.Language));
+                }
+
+                questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-endpoint", new ResourceReference("http://nde-fhir-ehelse.azurewebsites.net/fhir/Endpoint/1"));
+
+                IList<string> linkIds = new List<string>();
+                Questionnaire.ItemComponent item = null;
+                for (int i = 0; i < masterDetail.Details.Length; i++)
+                {
+                    QuestionnaireItem2 questionnaireItem = masterDetail.Details[i];
+
+                    if (linkIds.IndexOf(questionnaireItem.LinkId) > 0) throw new DuplicateLinkIdException(questionnaireItem.LinkId);
+
+                    DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
+
+                    int level = questionnaireItem.LinkId.Split('.').Length - 1;
+                    if (level > 0)
+                    {
+                        i = DiveV2(i, level, item.Item, masterDetail.Details);
+                    }
+                    else
+                    {
+                        item = CreateItemComponentV2(questionnaireItem);
+                        questionnaire.Item.Add(item);
+                    }
+                }
+
+                questionnaires.Add(questionnaire);
+            }
+
+            return questionnaires;
+        }
+
+        private static int DiveV2(int index, int level, List<Questionnaire.ItemComponent> itemComponents, QuestionnaireItem2[] questionnaireItems)
+        {
+            int currentIndex = index;
+
+            Questionnaire.ItemComponent item = null;
+            for (; currentIndex < questionnaireItems.Length; currentIndex++)
+            {
+                QuestionnaireItem2 questionnaireItem = questionnaireItems[currentIndex];
+                DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
+
+                int currentLevel = questionnaireItem.LinkId.Split('.').Length - 1;
+                if (currentLevel == level)
+                {
+                    item = CreateItemComponentV2(questionnaireItem);
+                    itemComponents.Add(item);
+                }
+                else if (currentLevel > level)
+                {
+                    if (item == null) throw new Exception("LinkId cannot bypass a level, i.e. jumping from 1.1 to 1.1.1.1");
+                    currentIndex = DiveV2(currentIndex, currentLevel, item.Item, questionnaireItems);
+
+                }
+                else if (currentLevel < level)
+                {
+                    // If current level is less than the entry level then break out of loop and return from recursion level.
+                    break;
+                }
+            }
+            return currentIndex - 1;
+        }
+
+        private static Questionnaire.ItemComponent CreateItemComponentV2(QuestionnaireItem2 item)
+        {
+            Questionnaire.QuestionnaireItemType? itemType = EnumUtility.ParseLiteral<Questionnaire.QuestionnaireItemType>(item.Type);
+            if (!itemType.HasValue) throw new Exception(string.Format("QuestionnaireItemType at question with linkId: {} is not conforming to any valid literals. QuestionnaireItemType: {1}", item.LinkId, item.Type));
+
+            Questionnaire.ItemComponent itemComponent = new Questionnaire.ItemComponent
+            {
+                Type = itemType,
+                LinkId = item.LinkId,
+                Prefix = string.IsNullOrEmpty(item.Prefix) ? null : item.Prefix,
+                Text = string.IsNullOrEmpty(item.Text) ? null : item.Text,
+                Required = item.Required.HasValue ? item.Required : null,
+                Repeats = item.Repeats,
+                ReadOnly = item.ReadOnly,
+                Initial = GetElement(itemType.Value, item.Initial),
+                MaxLength = item.MaxLength,
+            };
+            if (!string.IsNullOrEmpty(item.ValidationText))
+                itemComponent.SetStringExtension(ValidationTextUri, item.ValidationText);
+
+            if (!string.IsNullOrEmpty(item.Options) && item.Options.IndexOf('#') == 0)
+                itemComponent.Options = new ResourceReference($"#{item.Options.Substring(1)}");
+
+            if (!string.IsNullOrEmpty(item.EnableWhen))
+                itemComponent.EnableWhen = ParseEnableWhen(item.EnableWhen).ToList();
+
+            if (!string.IsNullOrEmpty(item.EntryFormat))
+                itemComponent.SetStringExtension(EntryFormatUri, item.EntryFormat);
+
+            if (item.MaxValueInteger.HasValue)
+                itemComponent.SetIntegerExtension(MaxValueUri, item.MaxValueInteger.Value);
+            if (item.MinValueInteger.HasValue)
+                itemComponent.SetIntegerExtension(MinValueUri, item.MinValueInteger.Value);
+
+            if (item.MaxValueDate.HasValue)
+                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value));
+            if (item.MinValueDate.HasValue)
+                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value));
+
+            if (item.MaxValueDate.HasValue)
+                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value));
+            if (item.MinValueDate.HasValue)
+                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value));
+
+            if (item.MinLength.HasValue)
+                itemComponent.SetIntegerExtension(MinLenghtUri, item.MinLength.Value);
+
+            if (item.MaxDecimalPlaces.HasValue)
+                itemComponent.SetIntegerExtension(MaxDecimalPlacesUri, item.MaxDecimalPlaces.Value);
+
+            if (!string.IsNullOrEmpty(item.RepeatsText))
+                itemComponent.SetStringExtension(RepeatsTextUri, item.RepeatsText);
+
+            if (!string.IsNullOrEmpty(item.ItemControl))
+            {
+                Coding coding = new Coding
+                {
+                    System = ItemControlSystem,
+                    Code = item.ItemControl
+                };
+                itemComponent.SetExtension(ItemControlUri, coding);
+            }
+
+            if (item.MaxOccurs.HasValue)
+                itemComponent.SetIntegerExtension(MaxOccursUri, item.MaxOccurs.Value);
+            if (item.MinOccurs.HasValue)
+                itemComponent.SetIntegerExtension(MinOccursUri, item.MinOccurs.Value);
+
+            if (!string.IsNullOrEmpty(item.Regex))
+                itemComponent.SetStringExtension(RegexUri, item.Regex);
+            
+            return itemComponent;
+        }
+
         private static IList<Questionnaire> GetQuestionnairesFromFlatFileFormatV1(string path)
         {
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
@@ -390,7 +617,7 @@ namespace FhirTool
                     int level = questionnaireItem.LinkId.Split('.').Length - 1;
                     if(level > 0)
                     {
-                        i = Dive(i, level, item.Item, masterDetail.Details);
+                        i = DiveV1(i, level, item.Item, masterDetail.Details);
                     }
                     else
                     {
@@ -405,7 +632,7 @@ namespace FhirTool
             return questionnaires;
         }
 
-        private static int Dive(int index, int level, List<Questionnaire.ItemComponent> itemComponents, QuestionnaireItem[] questionnaireItems)
+        private static int DiveV1(int index, int level, List<Questionnaire.ItemComponent> itemComponents, QuestionnaireItem[] questionnaireItems)
         {
             int currentIndex = index;
 
@@ -424,7 +651,7 @@ namespace FhirTool
                 else if(currentLevel > level)
                 {
                     if (item == null) throw new Exception("LinkId cannot bypass a level, i.e. jumping from 1.1 to 1.1.1.1");
-                    currentIndex = Dive(currentIndex, currentLevel, item.Item, questionnaireItems);       
+                    currentIndex = DiveV1(currentIndex, currentLevel, item.Item, questionnaireItems);       
 
                 }
                 else if (currentLevel < level)
