@@ -50,6 +50,9 @@ namespace FhirTool
         // fhir-tool.exe generate --version 1 --format json --questionnaire HELFO_E121_NB.txt --valueset HELFO_E121_NB_Kodeverk.txt
         // fhir-tool.exe upload --format json --questionnaire Questionnaire-Helfo_E121_NB-no.json --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
 
+        // fhir-tool.exe generate --version 2 --format xml --questionnaire AlleKonstruksjoner_NB.txt --valueset AlleKonstruksjoner_Kodeverk_NB.txt
+        // fhir-tool.exe upload --format json --questionnaire Questionnaire-Ehelse_AlleKonstruksjoner_NB.json --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+
         // Unsure if we should handle kith and messaging in this tool
         // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
         // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
@@ -519,12 +522,17 @@ namespace FhirTool
 
             if (!string.IsNullOrEmpty(item.ItemControl))
             {
-                Coding coding = new Coding
+                CodeableConcept codeableConcept = new CodeableConcept
                 {
-                    System = ItemControlSystem,
-                    Code = item.ItemControl
+                    Coding = new List<Coding> { new Coding
+                        {
+                            System = ItemControlSystem,
+                            Code = item.ItemControl
+                        }
+                    }
                 };
-                itemComponent.SetExtension(ItemControlUri, coding);
+                
+                itemComponent.SetExtension(ItemControlUri, codeableConcept);
             }
 
             if (item.MaxOccurs.HasValue)
