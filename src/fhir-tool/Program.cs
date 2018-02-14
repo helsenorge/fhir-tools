@@ -708,8 +708,13 @@ namespace FhirTool
                 case Questionnaire.QuestionnaireItemType.Decimal:
                     return new FhirDecimal(decimal.Parse(value));
                 case Questionnaire.QuestionnaireItemType.DateTime:
-                    return new FhirDateTime(DateTime.Parse(value));
+                    return new FhirDateTime(value);
+                case Questionnaire.QuestionnaireItemType.Date:
+                    return new Date(value);
+                case Questionnaire.QuestionnaireItemType.Time:
+                    return new Time(value);
                 case Questionnaire.QuestionnaireItemType.String:
+                case Questionnaire.QuestionnaireItemType.Text:
                     return new FhirString(value);
                 default:
                     return null;
