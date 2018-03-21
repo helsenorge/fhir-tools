@@ -477,13 +477,18 @@ namespace FhirTool
                 Type = itemType,
                 LinkId = item.LinkId,
                 Prefix = string.IsNullOrEmpty(item.Prefix) ? null : item.Prefix,
-                Text = string.IsNullOrEmpty(item.Text) ? null : item.Text,
-                Required = item.Required.HasValue ? item.Required : null,
-                Repeats = item.Repeats,
-                ReadOnly = item.ReadOnly,
-                Initial = GetElement(itemType.Value, item.Initial),
-                MaxLength = item.MaxLength,
+                Text = string.IsNullOrEmpty(item.Text) ? null : item.Text
             };
+
+            if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
+            {
+                itemComponent.Required = item.Required;
+                itemComponent.Repeats = item.Repeats;
+                itemComponent.ReadOnly = item.ReadOnly;
+                itemComponent.Initial = GetElement(itemType.Value, item.Initial);
+                itemComponent.MaxLength = item.MaxLength;
+            }
+
             if (!string.IsNullOrEmpty(item.ValidationText))
                 itemComponent.SetStringExtension(ValidationTextUri, item.ValidationText);
 
