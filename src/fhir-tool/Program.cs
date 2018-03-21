@@ -507,14 +507,14 @@ namespace FhirTool
                 itemComponent.SetIntegerExtension(MinValueUri, item.MinValueInteger.Value);
 
             if (item.MaxValueDate.HasValue)
-                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value));
+                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
             if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value));
+                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
 
             if (item.MaxValueDate.HasValue)
-                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value));
+                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
             if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value));
+                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
 
             if (item.MinLength.HasValue)
                 itemComponent.SetIntegerExtension(MinLenghtUri, item.MinLength.Value);
@@ -713,7 +713,7 @@ namespace FhirTool
                 case Questionnaire.QuestionnaireItemType.Decimal:
                     return new FhirDecimal(decimal.Parse(value));
                 case Questionnaire.QuestionnaireItemType.DateTime:
-                    return new FhirDateTime(value);
+                    return new FhirDateTime(DateTime.Parse(value).ToUniversalTime());
                 case Questionnaire.QuestionnaireItemType.Date:
                     return new Date(value);
                 case Questionnaire.QuestionnaireItemType.Time:
