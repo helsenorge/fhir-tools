@@ -603,10 +603,7 @@ namespace FhirTool
                     Publisher = masterDetail.Master.Publisher,
                     Description = new Markdown(masterDetail.Master.Description),
                     Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose),
-                    
-                    //UseContext = masterDetail.Master.UseContext,
-                    Contact = new List<ContactDetail> { new ContactDetail { Telecom = new List<ContactPoint> { new ContactPoint { System = ContactPoint.ContactPointSystem.Url, Value = masterDetail.Master.Contact } } } },
-                    //SubjectType = masterDetail.Master.SubjectType
+                    Contact = new List<ContactDetail> { new ContactDetail { Telecom = new List<ContactPoint> { new ContactPoint { System = ContactPoint.ContactPointSystem.Url, Value = masterDetail.Master.Contact } } } }
                 };
 
                 questionnaire.Meta = new Meta
