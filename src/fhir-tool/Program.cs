@@ -483,10 +483,14 @@ namespace FhirTool
             if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
             {
                 itemComponent.Required = item.Required;
-                itemComponent.Repeats = item.Repeats;
                 itemComponent.ReadOnly = item.ReadOnly;
                 itemComponent.Initial = GetElement(itemType.Value, item.Initial);
                 itemComponent.MaxLength = item.MaxLength;
+            }
+
+            if(itemType != Questionnaire.QuestionnaireItemType.Display)
+            {
+                itemComponent.Repeats = item.Repeats;
             }
 
             if (!string.IsNullOrEmpty(item.ValidationText))
