@@ -33,6 +33,8 @@ namespace FhirTool
         public const string ItemControlUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl";
         public const string MaxOccursUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs";
         public const string MinOccursUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs";
+        public const string QuestionnaireUnitUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-unit";
+        public const string RenderingMarkdownUri = "http://hl7.org/fhir/StructureDefinition/rendering-markdown";
         
         public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
 
@@ -216,7 +218,7 @@ namespace FhirTool
         }
 
         public static T DeserializeJsonResource<T>(string path)
-            where T : Resource
+            where T : Base
         {
             T resource = null;
 
@@ -230,7 +232,7 @@ namespace FhirTool
         }
 
         public static T DeserializeXmlResource<T>(string path)
-            where T : Resource
+            where T : Base
         {
             T resource = null;
             using (StreamReader reader = new StreamReader(path))
@@ -551,6 +553,15 @@ namespace FhirTool
 
             if (!string.IsNullOrEmpty(item.Regex))
                 itemComponent.SetStringExtension(RegexUri, item.Regex);
+
+            if (!string.IsNullOrEmpty(item.Markdown))
+                itemComponent.TextElement.SetExtension(RenderingMarkdownUri, new Markdown(item.Markdown));
+
+            if (!string.IsNullOrEmpty(item.Unit))
+            {
+                Coding unitCoding = ParseCoding(item.Unit);
+                itemComponent.SetExtension(QuestionnaireUnitUri, unitCoding);
+            }
             
             return itemComponent;
         }
@@ -807,6 +818,26 @@ namespace FhirTool
 
                 yield return enableWhenComponent;
             }
+        }
+
+        private static Coding ParseCoding(string value)
+        {
+            JObject codingJObject = JObject.Parse(value);
+            ValueCoding valueCoding = codingJObject.ToObject<ValueCoding>();
+            if (string.IsNullOrEmpty(valueCoding.System))
+                throw new RequiredAttributeException("When parsing a Coding type required property System does not have a value.", "System");
+            if (string.IsNullOrEmpty(valueCoding.Code))
+                throw new RequiredAttributeException("When parsing a Coding type required property Code does not have a value.", "Code");
+
+            Coding coding = new Coding
+            {
+                System = valueCoding.System,
+                Code = valueCoding.Code
+            };
+            if (!string.IsNullOrEmpty(valueCoding.Display))
+                coding.Display = valueCoding.Display;
+
+            return coding;
         }
 
         private static IList<ValueSet> GetValueSetsFromFlatFileFormat(string path, bool genereateNarrative = true)

@@ -72,6 +72,7 @@
     <Compile Include="Exceptions\MultipleOperationException.cs" />
     <Compile Include="Exceptions\NotSupportedMimeTypeException.cs" />
     <Compile Include="Exceptions\NotSupportedOperationException.cs" />
+    <Compile Include="Exceptions\RequiredAttributeException.cs" />
     <Compile Include="FhirToolArguments.cs" />
     <Compile Include="Model\DataTypeEnum.cs" />
     <Compile Include="Model\EnableWhenCoding.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Model\FlatFile\Questionnaire-v2.cs" />
     <Compile Include="Model\FlatFile\Questionnaire-v1.cs" />
     <Compile Include="Model\FlatFile\ValueSet.cs" />
+    <Compile Include="Model\ValueCoding.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

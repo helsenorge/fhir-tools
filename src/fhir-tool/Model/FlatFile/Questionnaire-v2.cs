@@ -44,6 +44,8 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string SubjectType;
         [FieldOptional]
+        public string UseContext;
+        [FieldOptional]
         public string Reservered0;
         [FieldOptional]
         public string Reservered1;
@@ -57,6 +59,10 @@ namespace FhirTool.Model.FlatFile
         public string Reservered5;
         [FieldOptional]
         public string Reservered6;
+        [FieldOptional]
+        public string Reservered7;
+        [FieldOptional]
+        public string Reservered8;
     }
 
     [DelimitedRecord("\t")]
@@ -120,5 +126,14 @@ namespace FhirTool.Model.FlatFile
         public int? MaxOccurs;
         [FieldOptional]
         public string Regex;
+        [FieldOptional]
+        [FieldQuoted]
+        public string Markdown;
+        [FieldOptional]
+        [FieldQuoted]
+        public string Unit;
+        [FieldOptional]
+        [FieldQuoted]
+        public string Code;
     }
 }
