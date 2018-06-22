@@ -147,15 +147,16 @@ namespace FhirTool
                 }
             }
 
+            string filename = $"{questionnaire.Name}-{ questionnaire.Language}-{questionnaire.Version}";
             if (arguments.MimeType == "xml")
             {
-                string path = $"Questionnaire-{questionnaire.Name}.xml";
+                string path = $"{filename}.xml";
                 WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {path}");
                 questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename(path));
             }
             if (arguments.MimeType == "json")
             {
-                string path = $"Questionnaire-{questionnaire.Name}.json";
+                string path = $"{filename}.json";
                 WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
                 questionnaire.SerializeResourceToDiskAsJson(GenerateLegalFilename(path));
             }
