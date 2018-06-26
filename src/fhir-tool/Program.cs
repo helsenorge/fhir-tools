@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -52,8 +53,8 @@ namespace FhirTool
         // fhir-tool.exe generate --version 1 --format json --questionnaire HELFO_E121_NB.txt --valueset HELFO_E121_NB_Kodeverk.txt
         // fhir-tool.exe upload --format json --questionnaire Questionnaire-Helfo_E121_NB-no.json --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
 
-        // fhir-tool.exe generate --version 2 --format xml --questionnaire AlleKonstruksjoner_NB.txt --valueset AlleKonstruksjoner_Kodeverk_NB.txt
-        // fhir-tool.exe upload --format json --questionnaire Questionnaire-Ehelse_AlleKonstruksjoner_NB.json --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe generate --version 2 --format xml --questionnaire KlamydiatestHelseVest_NN.txt --valueset KlamydiatestHelseVest_Kodeverk_NN.txt
+        // fhir-tool.exe upload upload --format xml --questionnaire HV-KGBS-nb-NN-1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
 
         // Unsure if we should handle kith and messaging in this tool
         // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
@@ -308,6 +309,18 @@ namespace FhirTool
             return validated;
         }
 
+        private static string GetLanguageCode(string languageAndCountryCode)
+        {
+            string languageCode = languageAndCountryCode;
+            int index = languageCode.IndexOf("-");
+            if (index > 0)
+            {
+                languageCode = languageCode.Substring(0, index);
+            }
+
+            return languageCode;
+        }
+
         private static HttpResponseMessage ResolveUrl(Uri uri)
         {
             HttpRequestMessage request = new HttpRequestMessage
@@ -405,8 +418,8 @@ namespace FhirTool
                 if (!string.IsNullOrEmpty(masterDetail.Master.Language))
                 {
                     questionnaire.Language = masterDetail.Master.Language;
-                    // TODO: Vi trenger definere Visningsnavn for språket, eksempelvis: Norsk (bokmål), osv.
-                    questionnaire.Meta.Tag.Add(new Coding("urn:ietf:bcp:47", questionnaire.Language));
+                    string displayName = CultureInfo.GetCultureInfo(GetLanguageCode(questionnaire.Language))?.NativeName.UpperCaseFirstCharacter();
+                    questionnaire.Meta.Tag.Add(new Coding("urn:ietf:bcp:47", questionnaire.Language, displayName == null ? string.Empty : displayName));
                 }
 
                 questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-endpoint", new ResourceReference("http://nde-fhir-ehelse.azurewebsites.net/fhir/Endpoint/1"));
