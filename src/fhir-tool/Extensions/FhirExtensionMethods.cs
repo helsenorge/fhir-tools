@@ -13,7 +13,8 @@ namespace FhirTool.Extensions
         {
             using (XmlWriter writer = new XmlTextWriter(new StreamWriter(path)))
             {
-                FhirSerializer.SerializeResource(resource, writer);
+                var serializer = new FhirXmlSerializer();
+                serializer.Serialize(resource, writer);
             }
         }
 
@@ -21,7 +22,8 @@ namespace FhirTool.Extensions
         {
             using (JsonWriter writer = new JsonTextWriter(new StreamWriter(path)))
             {
-                FhirSerializer.SerializeResource(resource, writer);
+                var serializer = new FhirJsonSerializer();
+                serializer.Serialize(resource, writer);
             }
         }
 
