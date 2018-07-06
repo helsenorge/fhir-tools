@@ -54,7 +54,7 @@ namespace FhirTool
         // fhir-tool.exe upload --format json --questionnaire Questionnaire-Helfo_E121_NB-no.json --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
 
         // fhir-tool.exe generate --version 2 --format xml --questionnaire KlamydiatestHelseVest_NN.txt --valueset KlamydiatestHelseVest_Kodeverk_NN.txt
-        // fhir-tool.exe upload upload --format xml --questionnaire HV-KGBS-nb-NN-1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe upload --format xml --questionnaire HV-KGBS-nb-NN-1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
 
         // Unsure if we should handle kith and messaging in this tool
         // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
@@ -422,7 +422,15 @@ namespace FhirTool
                     questionnaire.Meta.Tag.Add(new Coding("urn:ietf:bcp:47", questionnaire.Language, displayName == null ? string.Empty : displayName));
                 }
 
-                questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-endpoint", new ResourceReference("http://nde-fhir-ehelse.azurewebsites.net/fhir/Endpoint/1"));
+                if (!string.IsNullOrEmpty(masterDetail.Master.Endpoint))
+                {
+                    questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-endpoint", new ResourceReference(masterDetail.Master.Endpoint));
+                }
+
+                if(!string.IsNullOrEmpty(masterDetail.Master.AuthenticationRequirement))
+                {
+                    questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-authenticationrequirement", new Coding("http://ehelse.no/fhir/ValueSet/AuthenticationRequirement", masterDetail.Master.AuthenticationRequirement));
+                }
 
                 IList<string> linkIds = new List<string>();
                 Questionnaire.ItemComponent item = null;
