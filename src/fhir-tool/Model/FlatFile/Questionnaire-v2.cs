@@ -63,6 +63,10 @@ namespace FhirTool.Model.FlatFile
         public string Reservered5;
         [FieldOptional]
         public string Reservered6;
+        [FieldOptional]
+        public string Reservered7;
+        [FieldOptional]
+        public string Reservered8;
     }
 
     [DelimitedRecord("\t")]
@@ -135,5 +139,10 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         [FieldQuoted]
         public string Code;
+        [FieldOptional]
+        [FieldQuoted]
+        public string Option;
+        [FieldOptional]
+        public string FhirPath;
     }
 }

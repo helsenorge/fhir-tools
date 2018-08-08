@@ -36,7 +36,12 @@ namespace FhirTool
         public const string MinOccursUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs";
         public const string QuestionnaireUnitUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-unit";
         public const string RenderingMarkdownUri = "http://hl7.org/fhir/StructureDefinition/rendering-markdown";
-        
+        public const string EndPointUri = "http://ehelse.no/fhir/StructureDefinition/sdf-endpoint";
+        public const string AuthenticationRequirementUri = "http://ehelse.no/fhir/StructureDefinition/sdf-authenticationrequirement";
+        public const string FhirPathUri = "http://hl7.org/fhir/StructureDefinition/sdf-fhirpath";
+
+        public const string AuthenticationRequirementSystem = "http://ehelse.no/fhir/ValueSet/AuthenticationRequirement";
+
         public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
 
         //private static string FhirBaseUrl = "http://nde-fhir-ehelse.azurewebsites.net/fhir";
@@ -424,12 +429,12 @@ namespace FhirTool
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.Endpoint))
                 {
-                    questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-endpoint", new ResourceReference(masterDetail.Master.Endpoint));
+                    questionnaire.SetExtension(EndPointUri, new ResourceReference(masterDetail.Master.Endpoint));
                 }
 
                 if(!string.IsNullOrEmpty(masterDetail.Master.AuthenticationRequirement))
                 {
-                    questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-authenticationrequirement", new Coding("http://ehelse.no/fhir/ValueSet/AuthenticationRequirement", masterDetail.Master.AuthenticationRequirement));
+                    questionnaire.SetExtension(AuthenticationRequirementUri, new Coding(AuthenticationRequirementSystem, masterDetail.Master.AuthenticationRequirement));
                 }
 
                 IList<string> linkIds = new List<string>();
@@ -583,6 +588,25 @@ namespace FhirTool
             {
                 Coding unitCoding = ParseCoding(item.Unit);
                 itemComponent.SetExtension(QuestionnaireUnitUri, unitCoding);
+            }
+
+            if(!string.IsNullOrEmpty(item.Code))
+            {
+                itemComponent.Code = ParseArrayOfCoding(item.Code);
+            }
+
+            if(!string.IsNullOrEmpty(item.Option))
+            {
+                List<Element> options = ParseArrayOfElement(item.Option);
+                foreach (Element element in options)
+                {
+                    itemComponent.Option.Add(new Questionnaire.OptionComponent { Value = element });
+                }
+            }
+
+            if(!string.IsNullOrEmpty(item.FhirPath))
+            {
+                itemComponent.SetStringExtension(FhirPathUri, item.FhirPath);
             }
             
             return itemComponent;
@@ -837,6 +861,95 @@ namespace FhirTool
 
                 yield return enableWhenComponent;
             }
+        }
+
+        private static List<Element> ParseArrayOfElement(string value)
+        {
+            List<Element> elements = new List<Element>();
+
+            JArray arrayOfCoding = JArray.Parse(value);
+            foreach (JToken token in arrayOfCoding)
+            {
+                elements.Add(ParseElement(token.ToString()));
+            }
+
+            return elements;
+        }
+
+        private static Element ParseElement(string value)
+        {
+            JObject elementJObject = JObject.Parse(value);
+            Element element = null;
+
+            if(elementJObject.ContainsKey("valueBoolean") && FhirBoolean.IsValidValue(elementJObject["valueBoolean"].ToString()))
+            {
+                FhirJsonParser parser = new FhirJsonParser();
+                element = parser.Parse<FhirBoolean>(elementJObject["valueBoolean"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueDecimal") && FhirDecimal.IsValidValue(elementJObject["valueDecimal"].ToString()))
+            {
+                FhirJsonParser parser = new FhirJsonParser();
+                return parser.Parse<FhirDecimal>(elementJObject["valueDecimal"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueInteger"))
+            {
+                FhirJsonParser parser = new FhirJsonParser();
+                return parser.Parse<Integer>(elementJObject["valueInteger"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueDate"))
+            {
+                return new Date(elementJObject["valueDateTime"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueDateTime"))
+            {
+                return new FhirDateTime(elementJObject["valueDateTime"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueTime"))
+            {
+                return new Time(elementJObject["valueDateTime"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueString"))
+            {
+                return new FhirString(elementJObject["valueString"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueUri"))
+            {
+                return new FhirUri(elementJObject["valueUri"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueAttachment"))
+            {
+                FhirJsonParser parser = new FhirJsonParser();
+                return parser.Parse<Attachment>(elementJObject["valueAttachment"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueCoding"))
+            {
+                FhirJsonParser parser = new FhirJsonParser();
+                return parser.Parse<Coding>(elementJObject["valueCoding"].ToString());
+            }
+            else if (elementJObject.ContainsKey("valueQuantity"))
+            {
+                FhirJsonParser parser = new FhirJsonParser();
+                return parser.Parse<Quantity>(elementJObject["valueQuantity"].ToString());
+            }
+            else if(elementJObject.ContainsKey("valueReference"))
+            {
+                FhirJsonParser parser = new FhirJsonParser();
+                return parser.Parse<ResourceReference>(elementJObject["valueReference"].ToString());
+            }
+
+            return null;
+        }
+
+        private static List<Coding> ParseArrayOfCoding(string value)
+        {
+            List<Coding> codings = new List<Coding>();
+            JArray arrayOfCoding = JArray.Parse(value);
+            foreach(JToken token in arrayOfCoding)
+            {
+                codings.Add((Coding) ParseElement(token.ToString()));
+            }
+
+            return codings;
         }
 
         private static Coding ParseCoding(string value)
