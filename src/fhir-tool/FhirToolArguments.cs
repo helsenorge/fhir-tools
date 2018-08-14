@@ -6,14 +6,17 @@ namespace FhirTool
     {
         None = 0,
         Generate = 1,
-        Upload = 2
+        Upload = 2,
+        UploadDefinitions = 3
     }
+
     public sealed class FhirToolArguments
     {
         public static readonly string[] SUPPORTED_MIMETYPES = { "xml", "json" };
 
         public const string GENERATE_OP = "generate";
         public const string UPLOAD_OP = "upload";
+        public const string UPLOAD_DEFINITIONS_OP = "upload-definitions";
 
         public const string QUESTIONNAIRE_ARG = "--questionnaire";
         public const string QUESTIONNAIRE_SHORT_ARG = "-q";
@@ -30,6 +33,9 @@ namespace FhirTool
         public const string MIMETYPE_ARG = "--format";
         public const string MIMETYPE_SHORT_ARG = "-f";
 
+        public const string SOURCE_ARG = "--source";
+        public const string SOURCE_SHORT_ARG = "-S";
+
         public OperationEnum Operation { get; private set; }
         public string QuestionnairePath { get; private set; }
         public string ValueSetPath { get; private set; }
@@ -38,6 +44,7 @@ namespace FhirTool
         public string Version { get; private set; }
         public bool Verbose { get; private set; }
         public string MimeType { get; private set; }
+        public string SourcePath { get; private set; }
 
         public static FhirToolArguments Create(string[] args)
         {
@@ -55,6 +62,10 @@ namespace FhirTool
                     case UPLOAD_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.Upload;
+                        break;
+                    case UPLOAD_DEFINITIONS_OP:
+                        if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
+                        arguments.Operation = OperationEnum.UploadDefinitions;
                         break;
                     case QUESTIONNAIRE_ARG:
                     case QUESTIONNAIRE_SHORT_ARG:
@@ -85,6 +96,10 @@ namespace FhirTool
                         string mimeType = args[i + 1].ToLowerInvariant();
                         if (!SUPPORTED_MIMETYPES.Contains(mimeType)) throw new NotSupportedMimeTypeException(mimeType);
                         arguments.MimeType = mimeType;
+                        break;
+                    case SOURCE_ARG:
+                    case SOURCE_SHORT_ARG:
+                        arguments.SourcePath = args[i + 1];
                         break;
                     default:
                         break;

@@ -73,7 +73,10 @@
     <Compile Include="Exceptions\NotSupportedMimeTypeException.cs" />
     <Compile Include="Exceptions\NotSupportedOperationException.cs" />
     <Compile Include="Exceptions\RequiredAttributeException.cs" />
+    <Compile Include="Extensions\FhirToolArgumentsExtensionMethods.cs" />
+    <Compile Include="FhirLoader.cs" />
     <Compile Include="FhirToolArguments.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Model\DataTypeEnum.cs" />
     <Compile Include="Model\EnableWhenCoding.cs" />
     <Compile Include="Model\EnableWhen.cs" />

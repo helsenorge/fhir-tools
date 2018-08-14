@@ -59,27 +59,41 @@ namespace FhirTool
         // fhir-tool.exe upload --format json --questionnaire Questionnaire-Helfo_E121_NB-no.json --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
 
         // fhir-tool.exe generate --version 2 --format xml --questionnaire KlamydiatestHelseVest_NN.txt --valueset KlamydiatestHelseVest_Kodeverk_NN.txt
+        // fhir-tool.exe generate --version 2 --format xml --questionnaire HelseVestFøde_NB.txt --valueset HelseVestFøde_Kodeverk_NB.txt
+        // fhir-tool.exe generate --version 2 --format xml --questionnaire AlleKonstruksjoner_NB.txt --valueset AlleKonstruksjoner_Kodeverk_NB.txt
         // fhir-tool.exe upload --format xml --questionnaire HV-KGBS-nb-NN-1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe upload --format xml --questionnaire HVIIFJ-nb-NO-0.1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+
+        // fhir-tool.exe upload-definitions -- format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+
+        // fhir-tool.exe bundle -- format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition
+
+        // fhir-tool.exe upload-resources -- format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition
 
         // Unsure if we should handle kith and messaging in this tool
         // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
         // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
         static void Main(string[] args)
         {
+            //string optionArray = "[ { \"valueReference\": { \"reference\": \"https://nde-fhir-ehelse.azurewebsites.net/fhir/Endpoint/3\", \"display\": \"Org01\" } }, { \"valueReference\": { \"reference\": \"https://nde-fhir-ehelse.azurewebsites.net/fhir/Endpoint/1\", \"display\": \"Org02\" } } ]";
+            //List<Element> elements = ParseArrayOfElements(optionArray);
+
             try
             {
                 _out = Console.Out;
                 _arguments = FhirToolArguments.Create(args);
+                Logger.Initialize(_out, _arguments.Verbose);
 
                 FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
-                WriteLineToOutput($"{versionInfo.ProductName} [Version {Assembly.GetEntryAssembly().GetName().Version}]");
-                WriteLineToOutput($"(c) 2018 {versionInfo.CompanyName}. All rights reserved.");
-                WriteLineToOutput();
+                Logger.WriteLineToOutput($"{versionInfo.ProductName} [Version {Assembly.GetEntryAssembly().GetName().Version}]");
+                Logger.WriteLineToOutput($"(c) 2018 {versionInfo.CompanyName}. All rights reserved.");
+                Logger.WriteLineToOutput();
 
-                DebugWriteLineToOutput("Validating command line arguments.");
-                if (!ValidateArguments(_arguments))
+                Logger.DebugWriteLineToOutput("Validating command line arguments.");
+                if (!_arguments.Validate())
                 {
-                    ErrorWriteLineToOutput("One or more arguments did not validate. Please verify your arguments according to output.");
+                    Logger.ErrorWriteLineToOutput("One or more arguments did not validate. Please verify your arguments according to output.");
                     goto exit;
                 }
 
@@ -91,38 +105,50 @@ namespace FhirTool
                     case OperationEnum.Upload:
                         UploadToFhirServerOperation(_arguments);
                         break;
+                    case OperationEnum.UploadDefinitions:
+                        UploadDefintitionsOperation(_arguments);
+                        break;
                     default:
                         throw new NotSupportedOperationException(_arguments.Operation);
                 }
             }
             catch (Exception ex)
             {
-                ErrorWriteLineToOutput($"{ex.Message}");
+                Logger.ErrorWriteLineToOutput($"{ex.Message}");
             }
 
             exit:
-            WriteLineToOutput("\nPress any key to exit. . .");
+            Logger.WriteLineToOutput("\nPress any key to exit. . .");
             Console.ReadKey(true);
         }
 
         private static void GenerateFromFlatFileOperation(FhirToolArguments arguments)
         {
-            if (string.IsNullOrEmpty(arguments.QuestionnairePath))
+            // Validate path to Questionnaire Flat File.
+            if (!string.IsNullOrEmpty(_arguments.QuestionnairePath))
             {
-                ErrorWriteLineToOutput($"Operation '{FhirToolArguments.GENERATE_OP}' requires argument '{FhirToolArguments.QUESTIONNAIRE_ARG}'.");
+                if (!File.Exists(_arguments.QuestionnairePath))
+                {
+                    Logger.ErrorWriteLineToOutput($"File specified by argument {FhirToolArguments.QUESTIONNAIRE_ARG} | {FhirToolArguments.QUESTIONNAIRE_SHORT_ARG} was not found: '{_arguments.QuestionnairePath}'");
+                    return;
+                }
+            }
+            else
+            {
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.GENERATE_OP}' requires argument {FhirToolArguments.QUESTIONNAIRE_ARG} | {FhirToolArguments.QUESTIONNAIRE_SHORT_ARG} is required.");
                 return;
             }
 
-            WriteLineToOutput($"Expecting flat file format to conform to version: {arguments.Version}");
+            Logger.WriteLineToOutput($"Expecting flat file format to conform to version: {arguments.Version}");
             IList<ValueSet> valueSets = null;
             if (!string.IsNullOrEmpty(arguments.ValueSetPath))
             {
-                WriteLineToOutput($"Loading ValueSet(s) from file: '{arguments.ValueSetPath}'.");
+                Logger.WriteLineToOutput($"Loading ValueSet(s) from file: '{arguments.ValueSetPath}'.");
                 valueSets = GetValueSetsFromFlatFileFormat(arguments.ValueSetPath, false);
             }
             
             Questionnaire questionnaire = null;
-            WriteLineToOutput($"Loading Questionnaire from file: {arguments.QuestionnairePath}");
+            Logger.WriteLineToOutput($"Loading Questionnaire from file: {arguments.QuestionnairePath}");
             if (arguments.Version == "1")
             {
                 questionnaire = GetQuestionnairesFromFlatFileFormatV1(arguments.QuestionnairePath).FirstOrDefault();
@@ -134,19 +160,19 @@ namespace FhirTool
             else
             {
                 string version = string.IsNullOrEmpty(arguments.Version) ? "missing" : arguments.Version;
-                ErrorWriteLineToOutput($"Operation {FhirToolArguments.GENERATE_OP} requires argument '{FhirToolArguments.VERSION_ARG}'. Argument is either missing or an unknown value was set.\nValue: '{version}'");
+                Logger.ErrorWriteLineToOutput($"Operation {FhirToolArguments.GENERATE_OP} requires argument '{FhirToolArguments.VERSION_ARG}'. Argument is either missing or an unknown value was set.\nValue: '{version}'");
                 return;
             }
 
             if (questionnaire == null)
             {
-                ErrorWriteLineToOutput($"Failed to extract Questionnaire from flat file format\nLocation: '{arguments.QuestionnairePath}'.");
+                Logger.ErrorWriteLineToOutput($"Failed to extract Questionnaire from flat file format\nLocation: '{arguments.QuestionnairePath}'.");
                 return;
             }
             
             if (valueSets.Count > 0)
             {
-                WriteLineToOutput("Adding ValueSet(s) to contained section of Questionnaire.");
+                Logger.WriteLineToOutput("Adding ValueSet(s) to contained section of Questionnaire.");
                 foreach (ValueSet valueSet in valueSets)
                 {
                     questionnaire.Contained.Add(valueSet);
@@ -157,13 +183,13 @@ namespace FhirTool
             if (arguments.MimeType == "xml")
             {
                 string path = $"{filename}.xml";
-                WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {path}");
+                Logger.WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {path}");
                 questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename(path));
             }
             if (arguments.MimeType == "json")
             {
                 string path = $"{filename}.json";
-                WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
+                Logger.WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
                 questionnaire.SerializeResourceToDiskAsJson(GenerateLegalFilename(path));
             }
         }
@@ -172,17 +198,17 @@ namespace FhirTool
         {
             if (string.IsNullOrEmpty(arguments.FhirBaseUrl))
             {
-                ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}'.");
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}'.");
                 return;
             }
             if (string.IsNullOrEmpty(arguments.QuestionnairePath))
             {
-                ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_OP}' requires argument '{FhirToolArguments.QUESTIONNAIRE_ARG}'.");
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_OP}' requires argument '{FhirToolArguments.QUESTIONNAIRE_ARG}'.");
                 return;
             }
 
-            WriteLineToOutput($"Deserializing Fhir resource at '{arguments.QuestionnairePath}'.");
-            WriteLineToOutput($"Expecting format: '{arguments.MimeType}'.");
+            Logger.WriteLineToOutput($"Deserializing Fhir resource at '{arguments.QuestionnairePath}'.");
+            Logger.WriteLineToOutput($"Expecting format: '{arguments.MimeType}'.");
             Questionnaire questionnaire = null;
             switch(arguments.MimeType)
             {
@@ -197,11 +223,11 @@ namespace FhirTool
             }
             if (questionnaire == null)
             {
-                ErrorWriteLineToOutput($"Failed to extract Questionnaire from flat file format\nLocation: '{arguments.QuestionnairePath}'.");
+                Logger.ErrorWriteLineToOutput($"Failed to extract Questionnaire from flat file format\nLocation: '{arguments.QuestionnairePath}'.");
                 return;
             }
 
-            WriteLineToOutput($"Uploading Questionnaire to endpoint: {arguments.FhirBaseUrl}");
+            Logger.WriteLineToOutput($"Uploading Questionnaire to endpoint: {arguments.FhirBaseUrl}");
             // Set a relative url before posting to the server
             if(!string.IsNullOrEmpty(questionnaire.Id))
             {
@@ -219,9 +245,47 @@ namespace FhirTool
             else
                 questionnaire = fhirClient.Update(questionnaire);
 
-            WriteLineToOutput($"Successfully uploaded Questionnaire to endpoint.");
-            WriteLineToOutput($"Questionnaire was assigned the Id: {questionnaire.Id}");
-            WriteLineToOutput($"Questionnaire can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}");
+            Logger.WriteLineToOutput($"Successfully uploaded Questionnaire to endpoint.");
+            Logger.WriteLineToOutput($"Questionnaire was assigned the Id: {questionnaire.Id}");
+            Logger.WriteLineToOutput($"Questionnaire can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}");
+        }
+
+        private static void UploadDefintitionsOperation(FhirToolArguments arguments)
+        {
+            if (string.IsNullOrEmpty(arguments.FhirBaseUrl))
+            {
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}'.");
+                return;
+            }
+            if (string.IsNullOrEmpty(arguments.SourcePath))
+            {
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' requires argument '{FhirToolArguments.SOURCE_ARG}'.");
+                return;
+            }
+            
+            IEnumerable<Resource> resources = FhirLoader.ImportFolder(arguments.SourcePath);
+
+            Logger.WriteLineToOutput($"Uploading resources to endpoint: {arguments.FhirBaseUrl}");
+
+            FhirClient fhirClient = new FhirClient(arguments.FhirBaseUrl);
+            foreach (Resource resource in resources)
+            {
+                //if (resource.resourcetype == resourcetype.structuredefinition)
+                //    logger.writelinetooutput($"uploading structuredefinition with profile: {resource.meta.profile.firstordefault()}");
+                //else
+                //    logger.writelinetooutput($"uploading resource of type: {resource.resourcetype.tostring()}");
+
+                Resource resource2;
+                if (string.IsNullOrEmpty(resource.Id))
+                    resource2 = fhirClient.Create(resource);
+                else
+                    resource2 = fhirClient.Update(resource);
+
+                Logger.WriteLineToOutput($"Resource was assigned the Id: {resource2.Id}");
+                Logger.WriteLineToOutput($"Resource can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{resource2.Id}");
+            }
+
+            Logger.WriteLineToOutput($"Successfully uploaded resources to endpoint: {arguments.FhirBaseUrl}");
         }
 
         public static T DeserializeJsonResource<T>(string path)
@@ -250,70 +314,7 @@ namespace FhirTool
             }
             return resource;
         }
-
-        private static void DebugWriteLineToOutput(string value)
-        {
-            if (_arguments.Verbose)
-                _out.WriteLine($"DEBUG: {value}");
-        }
-
-        private static void InfoWriteLineToOutput(string value)
-        {
-            _out.WriteLine($"INFO: {value}");
-        }
-
-        private static void ErrorWriteLineToOutput(string value)
-        {
-            _out.WriteLine($"ERROR: {value}");
-        }
-
-        private static void WriteLineToOutput(string value = "")
-        {
-            _out.WriteLine(value);
-        }
-
-        private static bool ValidateArguments(FhirToolArguments arguments)
-        {
-            bool validated = true;
-            if(!string.IsNullOrEmpty(arguments.QuestionnairePath))
-            {
-                if (!File.Exists(arguments.QuestionnairePath))
-                {
-                    ErrorWriteLineToOutput($"File not found: '{arguments.QuestionnairePath}'");
-                    validated = false;
-                }
-            }
-            else
-            {
-                ErrorWriteLineToOutput($"Argument {FhirToolArguments.QUESTIONNAIRE_ARG} | {FhirToolArguments.QUESTIONNAIRE_SHORT_ARG} is required.");
-                validated = false;
-            }
-
-            if (!string.IsNullOrEmpty(arguments.ValueSetPath))
-            {
-                if (!File.Exists(arguments.ValueSetPath))
-                {
-                    ErrorWriteLineToOutput($"File not found: '{arguments.ValueSetPath}'");
-                    validated = false;
-                }
-            }
-            if(arguments.Operation == OperationEnum.Generate && string.IsNullOrEmpty(arguments.Version))
-            {
-                ErrorWriteLineToOutput($"Argument {FhirToolArguments.VERSION_ARG} | {FhirToolArguments.VERSION_SHORT_ARG} is required.");
-                validated = false;
-            }
-            if (!string.IsNullOrEmpty(arguments.FhirBaseUrl))
-            {
-                if (arguments.ResolveUrl && !ResolveUrl(new Uri(arguments.FhirBaseUrl)).IsSuccessStatusCode)
-                {
-                    ErrorWriteLineToOutput($"Could not resolve url: {arguments.FhirBaseUrl}");
-                    validated = false;
-                }
-            }
-
-            return validated;
-        }
-
+       
         private static string GetLanguageCode(string languageAndCountryCode)
         {
             string languageCode = languageAndCountryCode;
@@ -325,18 +326,7 @@ namespace FhirTool
 
             return languageCode;
         }
-
-        private static HttpResponseMessage ResolveUrl(Uri uri)
-        {
-            HttpRequestMessage request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Head,
-                RequestUri = new Uri($"{uri.Scheme}://{uri.Host}")
-            };
-            using (HttpClient client = new HttpClient())
-                return client.SendAsync(request).GetAwaiter().GetResult();
-        }
-
+        
         static string GenerateLegalFilename(string path)
         {
             string legalFilename = path;
@@ -362,7 +352,7 @@ namespace FhirTool
             MasterDetails<QuestionnaireHeader2, QuestionnaireItem2>[] masterDetails = engine.ReadFile(path);
             foreach (MasterDetails<QuestionnaireHeader2, QuestionnaireItem2> masterDetail in masterDetails)
             {
-                DebugWriteLineToOutput($"Questionnaire: {masterDetail.Master.Name} - {masterDetail.Master.Title}");
+                Logger.DebugWriteLineToOutput($"Questionnaire: {masterDetail.Master.Name} - {masterDetail.Master.Title}");
 
                 Questionnaire questionnaire = new Questionnaire
                 {
@@ -445,7 +435,7 @@ namespace FhirTool
 
                     if (linkIds.IndexOf(questionnaireItem.LinkId) > 0) throw new DuplicateLinkIdException(questionnaireItem.LinkId);
 
-                    DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
+                    Logger.DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
 
                     int level = questionnaireItem.LinkId.Split('.').Length - 1;
                     if (level > 0)
@@ -473,7 +463,7 @@ namespace FhirTool
             for (; currentIndex < questionnaireItems.Length; currentIndex++)
             {
                 QuestionnaireItem2 questionnaireItem = questionnaireItems[currentIndex];
-                DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
+                Logger.DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
 
                 int currentLevel = questionnaireItem.LinkId.Split('.').Length - 1;
                 if (currentLevel == level)
@@ -626,7 +616,7 @@ namespace FhirTool
             MasterDetails<QuestionnaireHeader, QuestionnaireItem>[] masterDetails = engine.ReadFile(path);
             foreach (MasterDetails<QuestionnaireHeader, QuestionnaireItem> masterDetail in masterDetails)
             {
-                DebugWriteLineToOutput($"Questionnaire: {masterDetail.Master.Name} - {masterDetail.Master.Title}");
+                Logger.DebugWriteLineToOutput($"Questionnaire: {masterDetail.Master.Name} - {masterDetail.Master.Title}");
 
                 Questionnaire questionnaire = new Questionnaire
                 {
@@ -683,7 +673,7 @@ namespace FhirTool
 
                     if (linkIds.IndexOf(questionnaireItem.LinkId) > 0) throw new DuplicateLinkIdException(questionnaireItem.LinkId);
 
-                    DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
+                    Logger.DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
 
                     int level = questionnaireItem.LinkId.Split('.').Length - 1;
                     if(level > 0)
@@ -711,7 +701,7 @@ namespace FhirTool
             for (; currentIndex < questionnaireItems.Length; currentIndex++)
             {
                 QuestionnaireItem questionnaireItem = questionnaireItems[currentIndex];
-                DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
+                Logger.DebugWriteLineToOutput($"Questionnaire Item: {questionnaireItem.LinkId} - {questionnaireItem.Type} - {questionnaireItem.Text}");
 
                 int currentLevel = questionnaireItem.LinkId.Split('.').Length - 1;
                 if(currentLevel == level)
@@ -985,7 +975,7 @@ namespace FhirTool
             MasterDetails<ValueSetHeader, ValueSetCodeReferences>[] masterDetails = engine.ReadFile(path);
             foreach (MasterDetails<ValueSetHeader, ValueSetCodeReferences> masterDetail in masterDetails)
             {
-                DebugWriteLineToOutput($"ValueSet: {masterDetail.Master.Id} - {masterDetail.Master.Title}");
+                Logger.DebugWriteLineToOutput($"ValueSet: {masterDetail.Master.Id} - {masterDetail.Master.Title}");
 
                 ValueSet valueSet = new ValueSet
                 {
@@ -1010,7 +1000,7 @@ namespace FhirTool
                 };
                 foreach (ValueSetCodeReferences valueSetCodeReference in masterDetail.Details)
                 {
-                    DebugWriteLineToOutput($"ValueSetCodeReference: {valueSetCodeReference.Code} - {valueSetCodeReference.Display}");
+                    Logger.DebugWriteLineToOutput($"ValueSetCodeReference: {valueSetCodeReference.Code} - {valueSetCodeReference.Display}");
 
                     conceptSet.Concept.Add(new ValueSet.ConceptReferenceComponent { Code = valueSetCodeReference.Code, Display = valueSetCodeReference.Display });
                 }
