@@ -25,10 +25,18 @@ namespace FhirTool.Extensions
             }
             if (!string.IsNullOrEmpty(arguments.FhirBaseUrl))
             {
-                if (arguments.ResolveUrl && !arguments.ResolveUrl(new Uri(arguments.FhirBaseUrl)).IsSuccessStatusCode)
+                HttpResponseMessage responseMessage = arguments.ResolveUrl(new Uri(arguments.FhirBaseUrl));
+                if (arguments.ResolveUrl && !responseMessage.IsSuccessStatusCode)
                 {
-                    Logger.ErrorWriteLineToOutput($"Could not resolve url: {arguments.FhirBaseUrl}");
-                    validated = false;
+                    if (responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        Logger.ErrorWriteLineToOutput($"Could not resolve url: {arguments.FhirBaseUrl}");
+                        validated = false;
+                    }
+                    else
+                    {
+                        Logger.WarnWriteLineToOutput($"The status Code: '{responseMessage.StatusCode}' was returned when running the --resolve-url operation.");
+                    }
                 }
             }
 
@@ -37,13 +45,20 @@ namespace FhirTool.Extensions
 
         public static HttpResponseMessage ResolveUrl(this FhirToolArguments arguments, Uri uri)
         {
+            HttpResponseMessage response = null;
             HttpRequestMessage request = new HttpRequestMessage
             {
                 Method = HttpMethod.Head,
                 RequestUri = new Uri($"{uri.Scheme}://{uri.Host}")
             };
+
             using (HttpClient client = new HttpClient())
-                return client.SendAsync(request).GetAwaiter().GetResult();
+            {
+                if (!string.IsNullOrEmpty(arguments.Credentials))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", arguments.Credentials.ToBase64());
+                response = client.SendAsync(request).GetAwaiter().GetResult();
+            }
+            return response;
         }
     }
 }
