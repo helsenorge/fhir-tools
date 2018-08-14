@@ -65,7 +65,7 @@ namespace FhirTool
         // fhir-tool.exe upload --format xml --questionnaire HVIIFJ-nb-NO-0.1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
         // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
 
-        // fhir-tool.exe upload-definitions --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe upload-definitions --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url --credentials user:password
 
         // fhir-tool.exe bundle --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --out C:\dev\src\fhir-sdf\
 
@@ -271,13 +271,9 @@ namespace FhirTool
             Logger.WriteLineToOutput($"Uploading resources to endpoint: {arguments.FhirBaseUrl}");
 
             FhirClient fhirClient = new FhirClient(arguments.FhirBaseUrl);
+            fhirClient.OnBeforeRequest += fhirClient_BeforeRequest;
             foreach (Resource resource in resources)
             {
-                //if (resource.resourcetype == resourcetype.structuredefinition)
-                //    logger.writelinetooutput($"uploading structuredefinition with profile: {resource.meta.profile.firstordefault()}");
-                //else
-                //    logger.writelinetooutput($"uploading resource of type: {resource.resourcetype.tostring()}");
-
                 Resource resource2;
                 if (string.IsNullOrEmpty(resource.Id))
                     resource2 = fhirClient.Create(resource);
@@ -289,6 +285,11 @@ namespace FhirTool
             }
 
             Logger.WriteLineToOutput($"Successfully uploaded resources to endpoint: {arguments.FhirBaseUrl}");
+        }
+
+        private static void fhirClient_BeforeRequest(object sender, BeforeRequestEventArgs e)
+        {
+            e.RawRequest.Headers.Add(System.Net.HttpRequestHeader.Authorization, $"Basic {_arguments.Credentials.ToBase64()}");
         }
         
         private static void BundleResourcesOperation(FhirToolArguments arguments)

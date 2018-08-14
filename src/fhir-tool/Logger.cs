@@ -29,6 +29,11 @@ namespace FhirTool
             _out.WriteLine($"ERROR: {value}");
         }
 
+        public static void WarnWriteLineToOutput(string value)
+        {
+            _out.WriteLine($"WARN: {value}");
+        }
+
         public static void WriteLineToOutput(string value = "")
         {
             _out.WriteLine(value);
