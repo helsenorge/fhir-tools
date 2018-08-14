@@ -65,9 +65,9 @@ namespace FhirTool
         // fhir-tool.exe upload --format xml --questionnaire HVIIFJ-nb-NO-0.1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
         // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
 
-        // fhir-tool.exe upload-definitions -- format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe upload-definitions --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
 
-        // fhir-tool.exe bundle -- format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition
+        // fhir-tool.exe bundle --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --out C:\dev\src\fhir-sdf\
 
         // fhir-tool.exe upload-resources -- format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition
 
@@ -107,6 +107,9 @@ namespace FhirTool
                         break;
                     case OperationEnum.UploadDefinitions:
                         UploadDefintitionsOperation(_arguments);
+                        break;
+                    case OperationEnum.Bundle:
+                        BundleResourcesOperation(_arguments);
                         break;
                     default:
                         throw new NotSupportedOperationException(_arguments.Operation);
@@ -186,7 +189,7 @@ namespace FhirTool
                 Logger.WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {path}");
                 questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename(path));
             }
-            if (arguments.MimeType == "json")
+            else if (arguments.MimeType == "json")
             {
                 string path = $"{filename}.json";
                 Logger.WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
@@ -286,6 +289,33 @@ namespace FhirTool
             }
 
             Logger.WriteLineToOutput($"Successfully uploaded resources to endpoint: {arguments.FhirBaseUrl}");
+        }
+        
+        private static void BundleResourcesOperation(FhirToolArguments arguments)
+        {
+            if (string.IsNullOrEmpty(arguments.SourcePath))
+            {
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.BUNDLE_OP}' requires argument '{FhirToolArguments.SOURCE_ARG}'.");
+                return;
+            }
+
+            Bundle bundle = FhirLoader.ImportFolder(arguments.SourcePath).ToBundle();
+            string filePath = $"bundle-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
+            if (!string.IsNullOrEmpty(arguments.OutPath) && Directory.Exists(arguments.OutPath))
+                filePath = Path.Combine(arguments.OutPath, filePath);
+            string mimeType = string.IsNullOrEmpty(arguments.MimeType) ? "xml" : arguments.MimeType;
+            if (mimeType == "xml")
+            {
+                filePath = $"{filePath}.xml";
+                Logger.WriteLineToOutput($"Writing Bundle in xml format to local disk: {filePath}");
+                bundle.SerializeResourceToDiskAsXml(filePath);
+            }
+            else if (mimeType == "json")
+            {
+                filePath = $"{filePath}.json";
+                Logger.WriteLineToOutput($"Writing Bundle in json format to local disk: {filePath}");
+                bundle.SerializeResourceToDiskAsJson(filePath);
+            }
         }
 
         public static T DeserializeJsonResource<T>(string path)

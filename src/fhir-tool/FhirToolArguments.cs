@@ -7,7 +7,8 @@ namespace FhirTool
         None = 0,
         Generate = 1,
         Upload = 2,
-        UploadDefinitions = 3
+        UploadDefinitions = 3,
+        Bundle = 4
     }
 
     public sealed class FhirToolArguments
@@ -17,6 +18,7 @@ namespace FhirTool
         public const string GENERATE_OP = "generate";
         public const string UPLOAD_OP = "upload";
         public const string UPLOAD_DEFINITIONS_OP = "upload-definitions";
+        public const string BUNDLE_OP = "bundle";
 
         public const string QUESTIONNAIRE_ARG = "--questionnaire";
         public const string QUESTIONNAIRE_SHORT_ARG = "-q";
@@ -32,9 +34,10 @@ namespace FhirTool
         public const string VERBOSE_SHORT_ARG = "-V";
         public const string MIMETYPE_ARG = "--format";
         public const string MIMETYPE_SHORT_ARG = "-f";
-
         public const string SOURCE_ARG = "--source";
         public const string SOURCE_SHORT_ARG = "-S";
+        public const string OUT_ARG = "--out";
+        public const string OUT_SHORT_ARG = "-o";
 
         public OperationEnum Operation { get; private set; }
         public string QuestionnairePath { get; private set; }
@@ -45,6 +48,7 @@ namespace FhirTool
         public bool Verbose { get; private set; }
         public string MimeType { get; private set; }
         public string SourcePath { get; private set; }
+        public string OutPath { get; private set; }
 
         public static FhirToolArguments Create(string[] args)
         {
@@ -66,6 +70,10 @@ namespace FhirTool
                     case UPLOAD_DEFINITIONS_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.UploadDefinitions;
+                        break;
+                    case BUNDLE_OP:
+                        if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
+                        arguments.Operation = OperationEnum.Bundle;
                         break;
                     case QUESTIONNAIRE_ARG:
                     case QUESTIONNAIRE_SHORT_ARG:
@@ -100,6 +108,10 @@ namespace FhirTool
                     case SOURCE_ARG:
                     case SOURCE_SHORT_ARG:
                         arguments.SourcePath = args[i + 1];
+                        break;
+                    case OUT_ARG:
+                    case OUT_SHORT_ARG:
+                        arguments.OutPath = args[i + 1];
                         break;
                     default:
                         break;

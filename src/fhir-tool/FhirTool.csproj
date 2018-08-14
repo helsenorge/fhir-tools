@@ -74,8 +74,10 @@
     <Compile Include="Exceptions\NotSupportedOperationException.cs" />
     <Compile Include="Exceptions\RequiredAttributeException.cs" />
     <Compile Include="Extensions\FhirToolArgumentsExtensionMethods.cs" />
+    <Compile Include="Extensions\KeyExtensionMethods.cs" />
     <Compile Include="FhirLoader.cs" />
     <Compile Include="FhirToolArguments.cs" />
+    <Compile Include="Key.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Model\DataTypeEnum.cs" />
     <Compile Include="Model\EnableWhenCoding.cs" />
