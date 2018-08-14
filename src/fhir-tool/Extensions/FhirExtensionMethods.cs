@@ -11,7 +11,7 @@ namespace FhirTool.Extensions
 {
     public static class FhirExtensionMethods
     {
-        public static Bundle ToBundle(this IEnumerable<Resource> resources, Bundle.BundleType type = Bundle.BundleType.Collection)
+        public static Bundle ToBundle(this IEnumerable<Resource> resources, Bundle.BundleType type = Bundle.BundleType.Collection, Uri base_ = null)
         {
             Bundle bundle = new Bundle
             {
@@ -22,6 +22,8 @@ namespace FhirTool.Extensions
                 // TODO: Investigate further when it is appropriate to add request method entries.
                 if (type == Bundle.BundleType.Transaction)
                 {
+                    if (base_ != null)
+                        resource.ResourceBase = base_;
                     // Make sure that resources without id's are posted.
                     if (resource.Id != null)
                     {
