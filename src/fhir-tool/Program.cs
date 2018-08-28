@@ -75,6 +75,10 @@ namespace FhirTool
 
         // fhir-tool.exe upload-resources -- format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition
 
+        // fhir-tool.exe upload-definitions --format xml --source F:\patient-observations.xml --fhir-base-url https://smart-fhir-api.azurewebsites.net/fhir
+
+        // fhir-tool.exe split-bundle --format xml --source F:\patient-observations.xml --format xml
+
         // Unsure if we should handle kith and messaging in this tool
         // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
         // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
@@ -114,6 +118,9 @@ namespace FhirTool
                         break;
                     case OperationEnum.Bundle:
                         BundleResourcesOperation(_arguments);
+                        break;
+                    case OperationEnum.SplitBundle:
+                        SplitBundleOperation(_arguments);
                         break;
                     default:
                         throw new NotSupportedOperationException(_arguments.Operation);
@@ -309,12 +316,7 @@ namespace FhirTool
 
             Logger.WriteLineToOutput($"Successfully uploaded resources to endpoint: {arguments.FhirBaseUrl}");
         }
-
-        private static void fhirClient_BeforeRequest(object sender, BeforeRequestEventArgs e)
-        {
-            e.RawRequest.Headers.Add(System.Net.HttpRequestHeader.Authorization, $"Basic {_arguments.Credentials.ToBase64()}");
-        }
-        
+                
         private static void BundleResourcesOperation(FhirToolArguments arguments)
         {
             if (string.IsNullOrEmpty(arguments.SourcePath))
@@ -339,6 +341,53 @@ namespace FhirTool
                 filePath = $"{filePath}.json";
                 Logger.WriteLineToOutput($"Writing Bundle in json format to local disk: {filePath}");
                 bundle.SerializeResourceToDiskAsJson(filePath);
+            }
+        }
+        
+        private static void SplitBundleOperation(FhirToolArguments arguments)
+        {
+            if (string.IsNullOrEmpty(arguments.SourcePath))
+            {
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.SPLIT_BUNDLE_OP}' requires argument '{FhirToolArguments.SOURCE_ARG}'.");
+                return;
+            }
+            if(!File.Exists(_arguments.SourcePath))
+            {
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.SPLIT_BUNDLE_OP}' argument '{FhirToolArguments.SOURCE_ARG}' must point to an actual file.");
+                return;
+            }
+            string mimeType = string.IsNullOrEmpty(arguments.MimeType) ? "xml" : arguments.MimeType;
+            string outPath = !string.IsNullOrEmpty(arguments.OutPath) && Directory.Exists(arguments.OutPath) ? arguments.OutPath : @".\";
+            IEnumerable<Resource> resources = FhirLoader.ImportFile(_arguments.SourcePath);
+            foreach(Resource resource in resources)
+            {
+                string filePath = Path.Combine(outPath, $"{resource.ResourceType.ToString().ToLower()}-{(string.IsNullOrEmpty(resource.Id) ? Guid.NewGuid().ToString("N").ToLower() : resource.Id)}");
+                if (mimeType == "xml")
+                {
+                    filePath = $"{filePath}.xml";
+                    Logger.WriteLineToOutput($"Writing Resource in xml format to local disk: {filePath}");
+                    resource.SerializeResourceToDiskAsXml(filePath);
+                }
+                else if (mimeType == "json")
+                {
+                    filePath = $"{filePath}.json";
+                    Logger.WriteLineToOutput($"Writing Resource in json format to local disk: {filePath}");
+                    resource.SerializeResourceToDiskAsJson(filePath);
+                }
+            }
+        }
+
+        private static bool IsDirectory(string path)
+        {
+            FileAttributes attr = File.GetAttributes(path);
+            return (attr & FileAttributes.Directory) == FileAttributes.Directory;
+        }
+
+        private static void fhirClient_BeforeRequest(object sender, BeforeRequestEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_arguments.Credentials))
+            {
+                e.RawRequest.Headers.Add(System.Net.HttpRequestHeader.Authorization, $"Basic {_arguments.Credentials.ToBase64()}");
             }
         }
 

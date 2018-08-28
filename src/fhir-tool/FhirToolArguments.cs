@@ -8,7 +8,8 @@ namespace FhirTool
         Generate = 1,
         Upload = 2,
         UploadDefinitions = 3,
-        Bundle = 4
+        Bundle = 4,
+        SplitBundle = 5
     }
 
     public sealed class FhirToolArguments
@@ -19,6 +20,7 @@ namespace FhirTool
         public const string UPLOAD_OP = "upload";
         public const string UPLOAD_DEFINITIONS_OP = "upload-definitions";
         public const string BUNDLE_OP = "bundle";
+        public const string SPLIT_BUNDLE_OP = "split-bundle";
 
         public const string QUESTIONNAIRE_ARG = "--questionnaire";
         public const string QUESTIONNAIRE_SHORT_ARG = "-q";
@@ -77,6 +79,10 @@ namespace FhirTool
                     case BUNDLE_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.Bundle;
+                        break;
+                    case SPLIT_BUNDLE_OP:
+                        if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
+                        arguments.Operation = OperationEnum.SplitBundle;
                         break;
                     case QUESTIONNAIRE_ARG:
                     case QUESTIONNAIRE_SHORT_ARG:
