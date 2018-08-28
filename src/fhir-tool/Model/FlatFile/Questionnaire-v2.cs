@@ -54,6 +54,8 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string CanBePerformedBy;
         [FieldOptional]
+        public string Discretion;
+        [FieldOptional]
         public string Reservered2;
         [FieldOptional]
         public string Reservered3;
@@ -65,8 +67,6 @@ namespace FhirTool.Model.FlatFile
         public string Reservered6;
         [FieldOptional]
         public string Reservered7;
-        [FieldOptional]
-        public string Reservered8;
     }
 
     [DelimitedRecord("\t")]

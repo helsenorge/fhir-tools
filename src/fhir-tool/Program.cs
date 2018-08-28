@@ -41,10 +41,12 @@ namespace FhirTool
         public const string FhirPathUri = "http://hl7.org/fhir/StructureDefinition/sdf-fhirpath";
         public const string AccessibilityToResponseUri = "http://ehelse.no/fhir/StructureDefinition/sdf-accessibilitytoresponse";
         public const string CanBePerformedByUri = "http://ehelse.no/fhir/StructureDefinition/sdf-canbeperformedby";
+        public const string DiscretionUri = "http://ehelse.no/fhir/StructureDefinition/sdf-discretion";
 
         public const string AuthenticationRequirementSystem = "http://ehelse.no/fhir/ValueSet/AuthenticationRequirement";
         public const string AccessibilityToResponseSystem = "http://ehelse.no/fhir/ValueSet/AccessibilityToResponse";
         public const string CanBePerformedBySystem = "http://ehelse.no/fhir/ValueSet/CanBePerformedBy";
+        public const string DiscretionSystem = "http://ehelse.no/fhir/ValueSet/Discretion";
 
         public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
 
@@ -538,6 +540,11 @@ namespace FhirTool
                 if (!string.IsNullOrEmpty(masterDetail.Master.CanBePerformedBy))
                 {
                     questionnaire.SetExtension(CanBePerformedByUri, new Coding(CanBePerformedBySystem, masterDetail.Master.CanBePerformedBy));
+                }
+
+                if (!string.IsNullOrEmpty(masterDetail.Master.Discretion))
+                {
+                    questionnaire.SetExtension(DiscretionUri, new Coding(DiscretionSystem, masterDetail.Master.Discretion));
                 }
 
                 IList<string> linkIds = new List<string>();
