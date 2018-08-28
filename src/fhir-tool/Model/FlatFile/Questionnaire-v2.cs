@@ -50,9 +50,9 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string AuthenticationRequirement;
         [FieldOptional]
-        public string Reservered0;
+        public string AccessibilityToResponse;
         [FieldOptional]
-        public string Reservered1;
+        public string CanBePerformedBy;
         [FieldOptional]
         public string Reservered2;
         [FieldOptional]

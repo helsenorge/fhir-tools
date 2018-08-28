@@ -39,8 +39,12 @@ namespace FhirTool
         public const string EndPointUri = "http://ehelse.no/fhir/StructureDefinition/sdf-endpoint";
         public const string AuthenticationRequirementUri = "http://ehelse.no/fhir/StructureDefinition/sdf-authenticationrequirement";
         public const string FhirPathUri = "http://hl7.org/fhir/StructureDefinition/sdf-fhirpath";
+        public const string AccessibilityToResponseUri = "http://ehelse.no/fhir/StructureDefinition/sdf-accessibilitytoresponse";
+        public const string CanBePerformedByUri = "http://ehelse.no/fhir/StructureDefinition/sdf-canbeperformedby";
 
         public const string AuthenticationRequirementSystem = "http://ehelse.no/fhir/ValueSet/AuthenticationRequirement";
+        public const string AccessibilityToResponseSystem = "http://ehelse.no/fhir/ValueSet/AccessibilityToResponse";
+        public const string CanBePerformedBySystem = "http://ehelse.no/fhir/ValueSet/CanBePerformedBy";
 
         public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
 
@@ -456,6 +460,16 @@ namespace FhirTool
                 if(!string.IsNullOrEmpty(masterDetail.Master.AuthenticationRequirement))
                 {
                     questionnaire.SetExtension(AuthenticationRequirementUri, new Coding(AuthenticationRequirementSystem, masterDetail.Master.AuthenticationRequirement));
+                }
+
+                if (!string.IsNullOrEmpty(masterDetail.Master.AccessibilityToResponse))
+                {
+                    questionnaire.SetExtension(AccessibilityToResponseUri, new Coding(AccessibilityToResponseSystem, masterDetail.Master.AccessibilityToResponse));
+                }
+
+                if (!string.IsNullOrEmpty(masterDetail.Master.CanBePerformedBy))
+                {
+                    questionnaire.SetExtension(CanBePerformedByUri, new Coding(CanBePerformedBySystem, masterDetail.Master.CanBePerformedBy));
                 }
 
                 IList<string> linkIds = new List<string>();
