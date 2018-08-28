@@ -177,7 +177,7 @@ namespace FhirTool
                 return;
             }
             
-            if (valueSets.Count > 0)
+            if (valueSets != null && valueSets.Count > 0)
             {
                 Logger.WriteLineToOutput("Adding ValueSet(s) to contained section of Questionnaire.");
                 foreach (ValueSet valueSet in valueSets)
@@ -269,10 +269,23 @@ namespace FhirTool
                 Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' requires argument '{FhirToolArguments.SOURCE_ARG}'.");
                 return;
             }
-            
-            IEnumerable<Resource> resources = FhirLoader.ImportFolder(arguments.SourcePath);
+            if(!(Directory.Exists(arguments.SourcePath) || File.Exists(arguments.SourcePath)))
+            {
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' argument '{FhirToolArguments.SOURCE_ARG}' must point to a existing file or directory.");
+                return;
+            }
 
-            Logger.WriteLineToOutput($"Uploading resources to endpoint: {arguments.FhirBaseUrl}");
+            IEnumerable<Resource> resources = null;
+            if (IsDirectory(arguments.SourcePath))
+            {
+                resources = FhirLoader.ImportFolder(arguments.SourcePath);
+            }
+            else
+            {
+                resources = FhirLoader.ImportFile(arguments.SourcePath);
+            }
+
+            Logger.WriteLineToOutput($"Uploading resources to endpoint: '{arguments.FhirBaseUrl}'");
 
             FhirClient fhirClient = new FhirClient(arguments.FhirBaseUrl);
             fhirClient.OnBeforeRequest += fhirClient_BeforeRequest;
@@ -280,12 +293,18 @@ namespace FhirTool
             {
                 Resource resource2;
                 if (string.IsNullOrEmpty(resource.Id))
+                {
+                    Logger.WriteLineToOutput($"Creating new resource of type: '{resource.TypeName}'");
                     resource2 = fhirClient.Create(resource);
+                }
                 else
+                {
+                    Logger.WriteLineToOutput($"Updating resource with Id: '{resource.Id}' of type: '{resource.TypeName}'");
                     resource2 = fhirClient.Update(resource);
+                }
 
-                Logger.WriteLineToOutput($"Resource was assigned the Id: {resource2.Id}");
-                Logger.WriteLineToOutput($"Resource can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{resource2.Id}");
+                Logger.WriteLineToOutput($"Resource was assigned the Id: '{resource2.Id}'");
+                Logger.WriteLineToOutput($"Resource can be accessed at: '{fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{resource2.Id}'");
             }
 
             Logger.WriteLineToOutput($"Successfully uploaded resources to endpoint: {arguments.FhirBaseUrl}");
