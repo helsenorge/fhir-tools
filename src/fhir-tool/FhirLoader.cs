@@ -1,16 +1,39 @@
 ﻿using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Utility;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace FhirTool
 {
     internal static class FhirLoader
     {
+        public static bool IsKnownResourceType(string data)
+        {
+            if(SerializationUtil.ProbeIsJson(data))
+            {
+                JObject resource = JObject.Parse(data);
+                return resource != null
+                    && resource.ContainsKey("resourceType")
+                    && !string.IsNullOrEmpty(resource["resourceType"].ToString())
+                    && ModelInfo.IsKnownResource(resource["resourceType"].ToString());
+            }
+            else if(SerializationUtil.ProbeIsXml(data))
+            {
+                XDocument resource = XDocument.Parse(data);
+                return resource != null
+                    && resource.Root != null
+                    && ModelInfo.IsKnownResource(resource.Root.Name.LocalName);
+            }
+
+            return false;
+        }
+
         private static Resource ParseResource(string data)
         {
             if (SerializationUtil.ProbeIsJson(data))
@@ -29,6 +52,8 @@ namespace FhirTool
 
         public static IEnumerable<Resource> ImportData(string data)
         {
+            if (!IsKnownResourceType(data)) return new Resource[] { }; ;
+
             Resource resource = ParseResource(data);
             if (resource is Bundle)
             {
@@ -40,15 +65,15 @@ namespace FhirTool
                 return new Resource[] { resource };
             }
         }
-
+        
         public static IEnumerable<Resource> ImportFolder(string path)
         {
             List<Resource> resources = new List<Resource>();
 
-            IEnumerable<string> filenames = Directory.EnumerateFiles(path);
-            foreach(string filename in filenames)
+            IEnumerable<string> paths = Directory.EnumerateFileSystemEntries(path);
+            foreach (string p in paths)
             {
-                resources.AddRange(ImportFile(filename));
+                resources.AddRange(IOHelpers.IsDirectory(p) ? ImportFolder(p) : ImportFile(p));
             }
 
             return resources;

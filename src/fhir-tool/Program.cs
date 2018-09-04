@@ -74,6 +74,7 @@ namespace FhirTool
         // fhir-tool.exe upload-definitions --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url --credentials user:password
 
         // fhir-tool.exe bundle --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --out C:\dev\src\fhir-sdf\
+        // fhir-tool.exe bundle --format xml --source F:\dev\src\fhir-sdf\resources --out F:\dev\src\fhir-sdf\
 
         // fhir-tool.exe upload-resources -- format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition
 
@@ -282,7 +283,7 @@ namespace FhirTool
             }
 
             IEnumerable<Resource> resources = null;
-            if (IsDirectory(arguments.SourcePath))
+            if (IOHelpers.IsDirectory(arguments.SourcePath))
             {
                 resources = FhirLoader.ImportFolder(arguments.SourcePath);
             }
@@ -374,12 +375,6 @@ namespace FhirTool
                     resource.SerializeResourceToDiskAsJson(filePath);
                 }
             }
-        }
-
-        private static bool IsDirectory(string path)
-        {
-            FileAttributes attr = File.GetAttributes(path);
-            return (attr & FileAttributes.Directory) == FileAttributes.Directory;
         }
 
         private static void fhirClient_BeforeRequest(object sender, BeforeRequestEventArgs e)

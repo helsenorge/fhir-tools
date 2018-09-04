@@ -15,6 +15,7 @@ namespace FhirTool.Extensions
         {
             Bundle bundle = new Bundle
             {
+                Id = $"urn:uuid:{Guid.NewGuid().ToString("N")}",
                 Type = type
             };
             foreach (Resource resource in resources)
