@@ -86,9 +86,6 @@ namespace FhirTool
         // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
         static void Main(string[] args)
         {
-            //string optionArray = "[ { \"valueReference\": { \"reference\": \"https://nde-fhir-ehelse.azurewebsites.net/fhir/Endpoint/3\", \"display\": \"Org01\" } }, { \"valueReference\": { \"reference\": \"https://nde-fhir-ehelse.azurewebsites.net/fhir/Endpoint/1\", \"display\": \"Org02\" } } ]";
-            //List<Element> elements = ParseArrayOfElements(optionArray);
-
             try
             {
                 _out = Console.Out;
