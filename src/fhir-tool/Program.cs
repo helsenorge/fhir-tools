@@ -38,7 +38,7 @@ namespace FhirTool
         public const string RenderingMarkdownUri = "http://hl7.org/fhir/StructureDefinition/rendering-markdown";
         public const string EndPointUri = "http://ehelse.no/fhir/StructureDefinition/sdf-endpoint";
         public const string AuthenticationRequirementUri = "http://ehelse.no/fhir/StructureDefinition/sdf-authenticationrequirement";
-        public const string FhirPathUri = "http://hl7.org/fhir/StructureDefinition/sdf-fhirpath";
+        public const string FhirPathUri = "http://ehelse.no/fhir/StructureDefinition/sdf-fhirpath";
         public const string AccessibilityToResponseUri = "http://ehelse.no/fhir/StructureDefinition/sdf-accessibilitytoresponse";
         public const string CanBePerformedByUri = "http://ehelse.no/fhir/StructureDefinition/sdf-canbeperformedby";
         public const string DiscretionUri = "http://ehelse.no/fhir/StructureDefinition/sdf-discretion";
