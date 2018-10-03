@@ -459,37 +459,20 @@ namespace FhirTool
                     Profile = new string[] { "http://ehelse.no/fhir/StructureDefinition/sdf-Questionnaire" }
                 };
 
-                if (!string.IsNullOrEmpty(masterDetail.Master.Id))
-                    questionnaire.Id = masterDetail.Master.Id;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Url))
-                    questionnaire.Url = masterDetail.Master.Url;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Version))
-                    questionnaire.Version = masterDetail.Master.Version;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Name))
-                {
-                    // TODO: Name er søkbart, vi må definere dette som en unik del enten kun ved seg selv eller i kombinasjon med eksempelvis en Tag
-                    questionnaire.Name = masterDetail.Master.Name;
-                }
-                if (!string.IsNullOrEmpty(masterDetail.Master.Title))
-                    questionnaire.Title = masterDetail.Master.Title;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Status))
-                    questionnaire.Status = EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status);
-                if (!string.IsNullOrEmpty(masterDetail.Master.Date))
-                    questionnaire.Date = masterDetail.Master.Date;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Publisher))
-                    questionnaire.Publisher = masterDetail.Master.Publisher;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Description))
-                    questionnaire.Description = new Markdown(masterDetail.Master.Description);
-                if (!string.IsNullOrEmpty(masterDetail.Master.Purpose))
-                    questionnaire.Purpose = new Markdown(masterDetail.Master.Purpose);
-                if (!string.IsNullOrEmpty(masterDetail.Master.ApprovalDate))
-                    questionnaire.ApprovalDate = masterDetail.Master.ApprovalDate;
-                if (!string.IsNullOrEmpty(masterDetail.Master.LastReviewDate))
-                    questionnaire.LastReviewDate = masterDetail.Master.LastReviewDate;
-                if (!string.IsNullOrEmpty(masterDetail.Master.ContactName))
-                    questionnaire.Contact = new List<ContactDetail> { new ContactDetail { Name = masterDetail.Master.ContactName } };
-                if (!string.IsNullOrEmpty(masterDetail.Master.Copyright))
-                    questionnaire.Copyright = new Markdown(masterDetail.Master.Copyright);
+                questionnaire.Id = string.IsNullOrEmpty(masterDetail.Master.Id) ? null : masterDetail.Master.Id;
+                questionnaire.Url = string.IsNullOrEmpty(masterDetail.Master.Url) ? null : masterDetail.Master.Url;
+                questionnaire.Version = string.IsNullOrEmpty(masterDetail.Master.Version) ? null : masterDetail.Master.Version;
+                questionnaire.Name = string.IsNullOrEmpty(masterDetail.Master.Name) ? null : masterDetail.Master.Name;
+                questionnaire.Title = string.IsNullOrEmpty(masterDetail.Master.Title) ? null : masterDetail.Master.Title;
+                questionnaire.Status = string.IsNullOrEmpty(masterDetail.Master.Status) ? null : EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status);
+                questionnaire.Date = string.IsNullOrEmpty(masterDetail.Master.Date) ? null : masterDetail.Master.Date;
+                questionnaire.Publisher = string.IsNullOrEmpty(masterDetail.Master.Publisher) ? null : masterDetail.Master.Publisher;
+                questionnaire.Description = string.IsNullOrEmpty(masterDetail.Master.Description) ? null : new Markdown(masterDetail.Master.Description);
+                questionnaire.Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose);
+                questionnaire.ApprovalDate = string.IsNullOrEmpty(masterDetail.Master.ApprovalDate) ? null : masterDetail.Master.ApprovalDate;
+                questionnaire.LastReviewDate = string.IsNullOrEmpty(masterDetail.Master.LastReviewDate) ? null : masterDetail.Master.LastReviewDate;
+                questionnaire.Contact = string.IsNullOrEmpty(masterDetail.Master.ContactName) ? null : new List<ContactDetail> { new ContactDetail { Name = masterDetail.Master.ContactName } };
+                questionnaire.Copyright = string.IsNullOrEmpty(masterDetail.Master.Copyright) ? null : new Markdown(masterDetail.Master.Copyright);
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.SubjectType))
                 {
@@ -604,22 +587,18 @@ namespace FhirTool
             {
                 Type = itemType,
             };
-            if (!string.IsNullOrEmpty(item.LinkId))
-                itemComponent.LinkId = item.LinkId;
-            if (!string.IsNullOrEmpty(item.Prefix))
-                itemComponent.Prefix = item.Prefix;
-            if (!string.IsNullOrEmpty(item.Text))
-                itemComponent.Text = item.Text;
+
+            itemComponent.LinkId = string.IsNullOrEmpty(item.LinkId) ? null : item.LinkId;
+            itemComponent.Prefix = string.IsNullOrEmpty(item.Prefix) ? null : item.Prefix;
+            itemComponent.Text = string.IsNullOrEmpty(item.Text) ? null  : item.Text;
+            itemComponent.EnableWhen = string.IsNullOrEmpty(item.EnableWhen) ? null : ParseEnableWhen(item.EnableWhen).ToList();
 
             if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
             {
-                if(item.Required.HasValue)
-                    itemComponent.Required = item.Required;
+                itemComponent.Required = item.Required.HasValue ? item.Required : null;
                 itemComponent.ReadOnly = item.ReadOnly;
-                if(!string.IsNullOrEmpty(item.Initial))
-                    itemComponent.Initial = GetElement(itemType.Value, item.Initial);
-                if(item.MaxLength.HasValue)
-                    itemComponent.MaxLength = item.MaxLength;
+                itemComponent.Initial = string.IsNullOrEmpty(item.Initial) ? null : GetElement(itemType.Value, item.Initial);
+                itemComponent.MaxLength = item.MaxLength.HasValue ? item.MaxLength : null;
             }
 
             if(itemType != Questionnaire.QuestionnaireItemType.Display)
@@ -632,10 +611,7 @@ namespace FhirTool
 
             if (!string.IsNullOrEmpty(item.Options) && item.Options.IndexOf('#') == 0)
                 itemComponent.Options = new ResourceReference($"#{item.Options.Substring(1)}");
-
-            if (!string.IsNullOrEmpty(item.EnableWhen))
-                itemComponent.EnableWhen = ParseEnableWhen(item.EnableWhen).ToList();
-
+            
             if (!string.IsNullOrEmpty(item.EntryFormat))
                 itemComponent.SetStringExtension(EntryFormatUri, item.EntryFormat);
 
@@ -740,32 +716,17 @@ namespace FhirTool
                     Profile = new string[] { "http://ehelse.no/fhir/StructureDefinition/sdf-Questionnaire" }
                 };
 
-                if (!string.IsNullOrEmpty(masterDetail.Master.Id))
-                    questionnaire.Id = masterDetail.Master.Id;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Url))
-                    questionnaire.Url = masterDetail.Master.Url;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Version))
-                    questionnaire.Version = masterDetail.Master.Version;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Name))
-                {
-                    // TODO: Name er søkbart, vi må definere dette som en unik del enten kun ved seg selv eller i kombinasjon med eksempelvis en Tag
-                    questionnaire.Name = masterDetail.Master.Name;
-                }
-                if (!string.IsNullOrEmpty(masterDetail.Master.Title))
-                    questionnaire.Title = masterDetail.Master.Title;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Status))
-                    questionnaire.Status = EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status);
-                if (!string.IsNullOrEmpty(masterDetail.Master.Date))
-                    questionnaire.Date = masterDetail.Master.Date;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Publisher))
-                    questionnaire.Publisher = masterDetail.Master.Publisher;
-                if (!string.IsNullOrEmpty(masterDetail.Master.Description))
-                    questionnaire.Description = new Markdown(masterDetail.Master.Description);
-                if (!string.IsNullOrEmpty(masterDetail.Master.Purpose))
-                    questionnaire.Purpose = new Markdown(masterDetail.Master.Purpose);
-                if (!string.IsNullOrEmpty(masterDetail.Master.Contact))
-                    questionnaire.Contact = new List<ContactDetail> { new ContactDetail { Telecom = new List<ContactPoint> { new ContactPoint { System = ContactPoint.ContactPointSystem.Url, Value = masterDetail.Master.Contact } } } };
-
+                questionnaire.Id = string.IsNullOrEmpty(masterDetail.Master.Id) ? null : masterDetail.Master.Id;
+                questionnaire.Url = string.IsNullOrEmpty(masterDetail.Master.Url) ? null : masterDetail.Master.Url;
+                questionnaire.Version = string.IsNullOrEmpty(masterDetail.Master.Version) ? null : masterDetail.Master.Version;
+                questionnaire.Name = string.IsNullOrEmpty(masterDetail.Master.Name) ? null : masterDetail.Master.Name;
+                questionnaire.Title = string.IsNullOrEmpty(masterDetail.Master.Title) ? null : masterDetail.Master.Title;
+                questionnaire.Status = string.IsNullOrEmpty(masterDetail.Master.Status) ? null : EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status);
+                questionnaire.Date = string.IsNullOrEmpty(masterDetail.Master.Date) ? null : masterDetail.Master.Date;
+                questionnaire.Publisher = string.IsNullOrEmpty(masterDetail.Master.Publisher) ? null : masterDetail.Master.Publisher;
+                questionnaire.Description = string.IsNullOrEmpty(masterDetail.Master.Description) ? null : new Markdown(masterDetail.Master.Description);
+                questionnaire.Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose);
+                questionnaire.Contact = string.IsNullOrEmpty(masterDetail.Master.Contact) ? null : new List<ContactDetail> { new ContactDetail { Telecom = new List<ContactPoint> { new ContactPoint { System = ContactPoint.ContactPointSystem.Url, Value = masterDetail.Master.Contact } } } };
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.Language))
                 {
@@ -773,8 +734,6 @@ namespace FhirTool
                     // TODO: Vi trenger definere Visningsnavn for språket, eksempelvis: Norsk (bokmål), osv.
                     questionnaire.Meta.Tag.Add(new Coding("urn:ietf:bcp:47", questionnaire.Language));
                 }
-
-                questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-endpoint", new ResourceReference("http://nde-fhir-ehelse.azurewebsites.net/fhir/Endpoint/1"));
 
                 IList<string> linkIds = new List<string>();
                 Questionnaire.ItemComponent item = null;
@@ -894,20 +853,17 @@ namespace FhirTool
             {
                 Type = itemType,
             };
-            if (!string.IsNullOrEmpty(item.LinkId))
-                itemComponent.LinkId = item.LinkId;
-            if (!string.IsNullOrEmpty(item.Prefix))
-                itemComponent.Prefix = item.Prefix;
-            if (!string.IsNullOrEmpty(item.Text))
-                itemComponent.Text = item.Text;
+
+            itemComponent.LinkId = string.IsNullOrEmpty(item.LinkId) ? null : item.LinkId;
+            itemComponent.Prefix = string.IsNullOrEmpty(item.Prefix) ? null : item.Prefix;
+            itemComponent.Text = string.IsNullOrEmpty(item.Text) ? null : item.Text;
+            itemComponent.EnableWhen = string.IsNullOrEmpty(item.EnableWhen) ? null : ParseEnableWhen(item.EnableWhen).ToList();
 
             if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
             {
-                if (item.Required.HasValue)
-                    itemComponent.Required = item.Required;
+                itemComponent.Required = item.Required.HasValue ? item.Required : null;
                 itemComponent.ReadOnly = item.ReadOnly;
-                if (!string.IsNullOrEmpty(item.Initial))
-                    itemComponent.Initial = GetElement(itemType.Value, item.Initial);
+                itemComponent.Initial = string.IsNullOrEmpty(item.Initial) ? null : GetElement(itemType.Value, item.Initial);
             }
 
             if (itemType != Questionnaire.QuestionnaireItemType.Display)
@@ -919,8 +875,6 @@ namespace FhirTool
                 itemComponent.SetStringExtension(ValidationTextUri, item.ValidationText);
             if (!string.IsNullOrEmpty(item.ReferenceValue) && item.ReferenceValue.IndexOf('#') == 0)
                 itemComponent.Options = new ResourceReference($"#{item.ReferenceValue.Substring(1)}");
-            if (!string.IsNullOrEmpty(item.EnableWhen))
-                itemComponent.EnableWhen = ParseEnableWhen(item.EnableWhen).ToList();
             if (!string.IsNullOrEmpty(item.EntryFormat))
                 itemComponent.SetStringExtension(EntryFormatUri, item.EntryFormat);
             if (item.MaxValue.HasValue)
