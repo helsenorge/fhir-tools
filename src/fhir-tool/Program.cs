@@ -326,7 +326,16 @@ namespace FhirTool
                 return;
             }
 
-            Bundle bundle = FhirLoader.ImportFolder(arguments.SourcePath).ToBundle();
+            Bundle bundle = null;
+            Uri uri = new Uri(arguments.SourcePath);
+            if (uri.IsHttpScheme())
+            {
+                throw new NotImplementedException("argument '--source | -S' do not currently support a HTTP scheme.");
+            }
+            else
+            {
+                bundle = FhirLoader.ImportFolder(arguments.SourcePath).ToBundle();
+            }
             string filePath = $"bundle-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
             if (!string.IsNullOrEmpty(arguments.OutPath) && Directory.Exists(arguments.OutPath))
                 filePath = Path.Combine(arguments.OutPath, filePath);

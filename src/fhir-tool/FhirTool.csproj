@@ -75,6 +75,7 @@
     <Compile Include="Exceptions\RequiredAttributeException.cs" />
     <Compile Include="Extensions\FhirToolArgumentsExtensionMethods.cs" />
     <Compile Include="Extensions\KeyExtensionMethods.cs" />
+    <Compile Include="Extensions\UriExtensionMethods.cs" />
     <Compile Include="FhirLoader.cs" />
     <Compile Include="FhirToolArguments.cs" />
     <Compile Include="IOHelpers.cs" />
