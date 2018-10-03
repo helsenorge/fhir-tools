@@ -996,12 +996,11 @@ namespace FhirTool
             }
             else if (elementJObject.ContainsKey("valueInteger"))
             {
-                FhirJsonParser parser = new FhirJsonParser();
-                return parser.Parse<Integer>(elementJObject["valueInteger"].ToString());
+                return new Integer((int?)elementJObject["valueInteger"]);
             }
             else if (elementJObject.ContainsKey("valueDate"))
             {
-                return new Date(elementJObject["valueDateTime"].ToString());
+                return new Date(elementJObject["valueDate"].ToString());
             }
             else if (elementJObject.ContainsKey("valueDateTime"))
             {
@@ -1009,7 +1008,7 @@ namespace FhirTool
             }
             else if (elementJObject.ContainsKey("valueTime"))
             {
-                return new Time(elementJObject["valueDateTime"].ToString());
+                return new Time(elementJObject["valueTime"].ToString());
             }
             else if (elementJObject.ContainsKey("valueString"))
             {
