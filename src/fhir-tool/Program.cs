@@ -461,34 +461,44 @@ namespace FhirTool
             {
                 Logger.DebugWriteLineToOutput($"Questionnaire: {masterDetail.Master.Name} - {masterDetail.Master.Title}");
 
-                Questionnaire questionnaire = new Questionnaire
+                Questionnaire questionnaire = new Questionnaire();
+
+                questionnaire.Meta = new Meta
                 {
-                    Id = masterDetail.Master.Id,
-                    Url = masterDetail.Master.Url,
-                    Version = masterDetail.Master.Version,
-
-                    //
-                    // Helse Vest
-                    //
-                    // MRSA
-                    //Id = "120",
-                    //Url = "urn:uuid:659c3c2a-8715-4cf1-8abd-afc1d8972b72",
-                    //Language = "nb-NO",
-
-                    // TODO: Name er søkbart, vi må definere dette som en unik del enten kun ved seg selv eller i kombinasjon med eksempelvis en Tag
-                    Name = masterDetail.Master.Name,
-                    Title = masterDetail.Master.Title,
-                    Status = EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status),
-                    Date = masterDetail.Master.Date,
-                    Publisher = masterDetail.Master.Publisher,
-                    Description = new Markdown(masterDetail.Master.Description),
-                    Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose),
-                    ApprovalDate = masterDetail.Master.ApprovalDate,
-                    LastReviewDate = masterDetail.Master.LastReviewDate,
-                    //EffectivePeriod = masterDetail.Master.EffectivePeriod
-                    Contact = new List<ContactDetail> { new ContactDetail { Name = masterDetail.Master.ContactName } },
-                    Copyright = new Markdown(masterDetail.Master.Copyright)
+                    Profile = new string[] { "http://ehelse.no/fhir/StructureDefinition/sdf-Questionnaire" }
                 };
+
+                if (!string.IsNullOrEmpty(masterDetail.Master.Id))
+                    questionnaire.Id = masterDetail.Master.Id;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Url))
+                    questionnaire.Url = masterDetail.Master.Url;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Version))
+                    questionnaire.Version = masterDetail.Master.Version;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Name))
+                {
+                    // TODO: Name er søkbart, vi må definere dette som en unik del enten kun ved seg selv eller i kombinasjon med eksempelvis en Tag
+                    questionnaire.Name = masterDetail.Master.Name;
+                }
+                if (!string.IsNullOrEmpty(masterDetail.Master.Title))
+                    questionnaire.Title = masterDetail.Master.Title;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Status))
+                    questionnaire.Status = EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status);
+                if (!string.IsNullOrEmpty(masterDetail.Master.Date))
+                    questionnaire.Date = masterDetail.Master.Date;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Publisher))
+                    questionnaire.Publisher = masterDetail.Master.Publisher;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Description))
+                    questionnaire.Description = new Markdown(masterDetail.Master.Description);
+                if (!string.IsNullOrEmpty(masterDetail.Master.Purpose))
+                    questionnaire.Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose);
+                if (!string.IsNullOrEmpty(masterDetail.Master.ApprovalDate))
+                    questionnaire.ApprovalDate = masterDetail.Master.ApprovalDate;
+                if (!string.IsNullOrEmpty(masterDetail.Master.LastReviewDate))
+                    questionnaire.LastReviewDate = masterDetail.Master.LastReviewDate;
+                if (!string.IsNullOrEmpty(masterDetail.Master.ContactName))
+                    questionnaire.Contact = new List<ContactDetail> { new ContactDetail { Name = masterDetail.Master.ContactName } };
+                if (!string.IsNullOrEmpty(masterDetail.Master.Copyright))
+                    questionnaire.Copyright = new Markdown(masterDetail.Master.Copyright);
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.SubjectType))
                 {
@@ -502,21 +512,7 @@ namespace FhirTool
                     }
                     questionnaire.SubjectType = resourceTypes;
                 }
-                
-                questionnaire.Meta = new Meta
-                {
-                    Profile = new string[] { "http://ehelse.no/fhir/StructureDefinition/sdf-questionnaire" },
-                    Tag = new List<Coding>
-                    {
-                        // TODO: Vi trenger definere en Tag som anigr det tekniske navnet til
-                        //new Coding("http://fhi.no/fylkeshelseundersokelse", "1.0"),
-                        //new Coding("http://helfo.no/questionnaire", "E121"),
-                        
-                        // TODO: Vi trenger definere tilgangsstyring i Excel-arket
-                        new Coding("urn:2.16.578.1.12.4.1.1.7607", "3")
-                    }
-                };
-                
+
                 if (!string.IsNullOrEmpty(masterDetail.Master.Language))
                 {
                     questionnaire.Language = masterDetail.Master.Language;
@@ -616,17 +612,23 @@ namespace FhirTool
             Questionnaire.ItemComponent itemComponent = new Questionnaire.ItemComponent
             {
                 Type = itemType,
-                LinkId = item.LinkId,
-                Prefix = string.IsNullOrEmpty(item.Prefix) ? null : item.Prefix,
-                Text = string.IsNullOrEmpty(item.Text) ? null : item.Text
             };
+            if (!string.IsNullOrEmpty(item.LinkId))
+                itemComponent.LinkId = item.LinkId;
+            if (!string.IsNullOrEmpty(item.Prefix))
+                itemComponent.Prefix = item.Prefix;
+            if (!string.IsNullOrEmpty(item.Text))
+                itemComponent.Text = item.Text;
 
             if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
             {
-                itemComponent.Required = item.Required;
+                if(item.Required.HasValue)
+                    itemComponent.Required = item.Required;
                 itemComponent.ReadOnly = item.ReadOnly;
-                itemComponent.Initial = GetElement(itemType.Value, item.Initial);
-                itemComponent.MaxLength = item.MaxLength;
+                if(!string.IsNullOrEmpty(item.Initial))
+                    itemComponent.Initial = GetElement(itemType.Value, item.Initial);
+                if(item.MaxLength.HasValue)
+                    itemComponent.MaxLength = item.MaxLength;
             }
 
             if(itemType != Questionnaire.QuestionnaireItemType.Display)
@@ -740,44 +742,39 @@ namespace FhirTool
             {
                 Logger.DebugWriteLineToOutput($"Questionnaire: {masterDetail.Master.Name} - {masterDetail.Master.Title}");
 
-                Questionnaire questionnaire = new Questionnaire
-                {
-                    Id = masterDetail.Master.Id,
-                    Url = masterDetail.Master.Url,
-
-                    //
-                    // Helse Vest
-                    //
-                    // MRSA
-                    //Id = "120",
-                    //Url = "urn:uuid:659c3c2a-8715-4cf1-8abd-afc1d8972b72",
-                    //Language = "nb-NO",
-
-                    // TODO: Name er søkbart, vi må definere dette som en unik del enten kun ved seg selv eller i kombinasjon med eksempelvis en Tag
-                    Name = masterDetail.Master.Name,
-                    Title = masterDetail.Master.Title,
-                    Status = EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status),
-                    Date = masterDetail.Master.Date,
-                    Publisher = masterDetail.Master.Publisher,
-                    Description = new Markdown(masterDetail.Master.Description),
-                    Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose),
-                    Contact = new List<ContactDetail> { new ContactDetail { Telecom = new List<ContactPoint> { new ContactPoint { System = ContactPoint.ContactPointSystem.Url, Value = masterDetail.Master.Contact } } } }
-                };
+                Questionnaire questionnaire = new Questionnaire();
 
                 questionnaire.Meta = new Meta
                 {
-                    Profile = new string[] { "http://ehelse.no/fhir/StructureDefinition/sdf-questionnaire" },
-                    Tag = new List<Coding>
-                    {
-                        // TODO: Vi trenger definere en Tag som anigr det tekniske navnet til
-                        //new Coding("http://fhi.no/fylkeshelseundersokelse", "1.0"),
-                        //new Coding("http://helfo.no/questionnaire", "E121"),
-                        
-                        // TODO: Vi trenger definere tilgangsstyring i Excel-arket
-                        new Coding("urn:2.16.578.1.12.4.1.1.7607", "3")
-                    }
+                    Profile = new string[] { "http://ehelse.no/fhir/StructureDefinition/sdf-Questionnaire" }
                 };
 
+                if (!string.IsNullOrEmpty(masterDetail.Master.Id))
+                    questionnaire.Id = masterDetail.Master.Id;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Url))
+                    questionnaire.Url = masterDetail.Master.Url;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Version))
+                    questionnaire.Version = masterDetail.Master.Version;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Name))
+                {
+                    // TODO: Name er søkbart, vi må definere dette som en unik del enten kun ved seg selv eller i kombinasjon med eksempelvis en Tag
+                    questionnaire.Name = masterDetail.Master.Name;
+                }
+                if (!string.IsNullOrEmpty(masterDetail.Master.Title))
+                    questionnaire.Title = masterDetail.Master.Title;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Status))
+                    questionnaire.Status = EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status);
+                if (!string.IsNullOrEmpty(masterDetail.Master.Date))
+                    questionnaire.Date = masterDetail.Master.Date;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Publisher))
+                    questionnaire.Publisher = masterDetail.Master.Publisher;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Description))
+                    questionnaire.Description = new Markdown(masterDetail.Master.Description);
+                if (!string.IsNullOrEmpty(masterDetail.Master.Purpose))
+                    questionnaire.Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose);
+                if (!string.IsNullOrEmpty(masterDetail.Master.Contact))
+                    questionnaire.Contact = new List<ContactDetail> { new ContactDetail { Name = masterDetail.Master.Contact } };
+                
                 if (!string.IsNullOrEmpty(masterDetail.Master.Language))
                 {
                     questionnaire.Language = masterDetail.Master.Language;
@@ -902,14 +899,28 @@ namespace FhirTool
             Questionnaire.ItemComponent itemComponent = new Questionnaire.ItemComponent
             {
                 Type = itemType,
-                LinkId = item.LinkId,
-                Prefix = string.IsNullOrEmpty(item.Prefix) ? null : item.Prefix,
-                Text = string.IsNullOrEmpty(item.Text) ? null : item.Text,
-                Required = item.Required.HasValue ? item.Required : null,
-                Repeats = item.Repeats,
-                ReadOnly = item.ReadOnly,
-                Initial = GetElement(itemType.Value, item.Initial)
             };
+            if (!string.IsNullOrEmpty(item.LinkId))
+                itemComponent.LinkId = item.LinkId;
+            if (!string.IsNullOrEmpty(item.Prefix))
+                itemComponent.Prefix = item.Prefix;
+            if (!string.IsNullOrEmpty(item.Text))
+                itemComponent.Text = item.Text;
+
+            if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
+            {
+                if (item.Required.HasValue)
+                    itemComponent.Required = item.Required;
+                itemComponent.ReadOnly = item.ReadOnly;
+                if (!string.IsNullOrEmpty(item.Initial))
+                    itemComponent.Initial = GetElement(itemType.Value, item.Initial);
+            }
+
+            if (itemType != Questionnaire.QuestionnaireItemType.Display)
+            {
+                itemComponent.Repeats = item.Repeats;
+            }
+
             if (!string.IsNullOrEmpty(item.ValidationText))
                 itemComponent.SetStringExtension(ValidationTextUri, item.ValidationText);
             if (!string.IsNullOrEmpty(item.ReferenceValue) && item.ReferenceValue.IndexOf('#') == 0)
