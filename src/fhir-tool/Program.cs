@@ -776,7 +776,7 @@ namespace FhirTool
                     questionnaire.Meta.Tag.Add(new Coding("urn:ietf:bcp:47", questionnaire.Language));
                 }
 
-                questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-endpoint", new ResourceReference("http://nde-fhir-ehelse.azurewebsites.net/fhir/Endpoint/1"));
+                questionnaire.SetExtension("http://ehelse.no/fhir/StructureDefinition/sdf-endpoint", new ResourceReference($"{FhirBaseUrl}Endpoint/1"));
 
                 IList<string> linkIds = new List<string>();
                 Questionnaire.ItemComponent item = null;
