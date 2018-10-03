@@ -490,7 +490,7 @@ namespace FhirTool
                 if (!string.IsNullOrEmpty(masterDetail.Master.Description))
                     questionnaire.Description = new Markdown(masterDetail.Master.Description);
                 if (!string.IsNullOrEmpty(masterDetail.Master.Purpose))
-                    questionnaire.Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose);
+                    questionnaire.Purpose = new Markdown(masterDetail.Master.Purpose);
                 if (!string.IsNullOrEmpty(masterDetail.Master.ApprovalDate))
                     questionnaire.ApprovalDate = masterDetail.Master.ApprovalDate;
                 if (!string.IsNullOrEmpty(masterDetail.Master.LastReviewDate))
@@ -771,10 +771,11 @@ namespace FhirTool
                 if (!string.IsNullOrEmpty(masterDetail.Master.Description))
                     questionnaire.Description = new Markdown(masterDetail.Master.Description);
                 if (!string.IsNullOrEmpty(masterDetail.Master.Purpose))
-                    questionnaire.Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose);
+                    questionnaire.Purpose = new Markdown(masterDetail.Master.Purpose);
                 if (!string.IsNullOrEmpty(masterDetail.Master.Contact))
-                    questionnaire.Contact = new List<ContactDetail> { new ContactDetail { Name = masterDetail.Master.Contact } };
-                
+                    questionnaire.Contact = new List<ContactDetail> { new ContactDetail { Telecom = new List<ContactPoint> { new ContactPoint { System = ContactPoint.ContactPointSystem.Url, Value = masterDetail.Master.Contact } } } };
+
+
                 if (!string.IsNullOrEmpty(masterDetail.Master.Language))
                 {
                     questionnaire.Language = masterDetail.Master.Language;
