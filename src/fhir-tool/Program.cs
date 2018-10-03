@@ -50,7 +50,7 @@ namespace FhirTool
 
         public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
 
-        //private static string FhirBaseUrl = "http://nde-fhir-ehelse.azurewebsites.net/fhir";
+        private static string FhirBaseUrl = "https://skjemakatalog-dev-fhir-apimgmt.azure-api.net/api/v1/";
         //private static string FhirBaseUrl = "http://localhost:49911/fhir";
 
         private static string FileNameReservedCharacters = "<>:\"/\\|?*";
@@ -58,20 +58,20 @@ namespace FhirTool
         private static TextWriter _out = null;
 
         // First example
-        // fhir-tool.exe --version 1 --questionnaire HELFO_E106_NB.txt --valueset HELFO_E106_NB_Kodeverk.txt --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe --version 1 --questionnaire HELFO_E106_NB.txt --valueset HELFO_E106_NB_Kodeverk.txt --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
 
         // Splitting up operations
         // fhir-tool.exe generate --version 1 --format json --questionnaire HELFO_E121_NB.txt --valueset HELFO_E121_NB_Kodeverk.txt
-        // fhir-tool.exe upload --format json --questionnaire Questionnaire-Helfo_E121_NB-no.json --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe upload --format json --questionnaire Questionnaire-Helfo_E121_NB-no.json --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
 
         // fhir-tool.exe generate --version 2 --format xml --questionnaire KlamydiatestHelseVest_NN.txt --valueset KlamydiatestHelseVest_Kodeverk_NN.txt
         // fhir-tool.exe generate --version 2 --format xml --questionnaire HelseVestFøde_NB.txt --valueset HelseVestFøde_Kodeverk_NB.txt
         // fhir-tool.exe generate --version 2 --format xml --questionnaire AlleKonstruksjoner_NB.txt --valueset AlleKonstruksjoner_Kodeverk_NB.txt
-        // fhir-tool.exe upload --format xml --questionnaire HV-KGBS-nb-NN-1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
-        // fhir-tool.exe upload --format xml --questionnaire HVIIFJ-nb-NO-0.1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
-        // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe upload --format xml --questionnaire HV-KGBS-nb-NN-1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
+        // fhir-tool.exe upload --format xml --questionnaire HVIIFJ-nb-NO-0.1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
+        // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
 
-        // fhir-tool.exe upload-definitions --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url --credentials user:password
+        // fhir-tool.exe upload-definitions --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url --credentials user:password
 
         // fhir-tool.exe bundle --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --out C:\dev\src\fhir-sdf\
         // fhir-tool.exe bundle --format xml --source F:\dev\src\fhir-sdf\resources --out F:\dev\src\fhir-sdf\
@@ -79,12 +79,13 @@ namespace FhirTool
         // fhir-tool.exe upload-resources -- format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition
 
         // fhir-tool.exe upload-definitions --format xml --source F:\patient-observations.xml --fhir-base-url https://smart-fhir-api.azurewebsites.net/fhir
+        // fhir-tool.exe upload-definitions --format xml --source F:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url https://stu3.simplifier.net/Digitaleskjema --credentials <username>:<password>
 
         // fhir-tool.exe split-bundle --format xml --source F:\patient-observations.xml --format xml
 
         // Unsure if we should handle kith and messaging in this tool
-        // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
-        // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url http://nde-fhir-ehelse.azurewebsites.net/fhir --resolve-url
+        // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
+        // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         static void Main(string[] args)
         {
             try
