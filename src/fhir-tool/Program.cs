@@ -23,6 +23,8 @@ namespace FhirTool
 {
     class Program
     {
+        public const string QuestionnaireProfileUri = "http://ehelse.no/fhir/StructureDefinition/sdf-Questionnaire";
+
         public const string EntryFormatUri = "http://hl7.org/fhir/StructureDefinition/entryFormat";
         public const string MaxDecimalPlacesUri = "http://hl7.org/fhir/StructureDefinition/maxDecimalPlaces";
         public const string MinLenghtUri = "http://hl7.org/fhir/StructureDefinition/minLength";
@@ -465,7 +467,7 @@ namespace FhirTool
 
                 questionnaire.Meta = new Meta
                 {
-                    Profile = new string[] { "http://ehelse.no/fhir/StructureDefinition/sdf-Questionnaire" }
+                    Profile = new string[] { QuestionnaireProfileUri }
                 };
 
                 questionnaire.Id = string.IsNullOrEmpty(masterDetail.Master.Id) ? null : masterDetail.Master.Id;
