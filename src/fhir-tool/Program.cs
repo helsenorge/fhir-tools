@@ -250,10 +250,6 @@ namespace FhirTool
             {
                 questionnaire.Url = $"{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}";
             }
-            else
-            {
-                questionnaire.Url = string.Empty;
-            }
             
             // Initialize a FhirClient and POST or PUT Questionnaire to server.
             FhirClient fhirClient = new FhirClient(arguments.FhirBaseUrl);
