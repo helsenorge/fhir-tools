@@ -44,6 +44,7 @@ namespace FhirTool
         public const string AccessibilityToResponseUri = "http://ehelse.no/fhir/StructureDefinition/sdf-accessibilitytoresponse";
         public const string CanBePerformedByUri = "http://ehelse.no/fhir/StructureDefinition/sdf-canbeperformedby";
         public const string DiscretionUri = "http://ehelse.no/fhir/StructureDefinition/sdf-discretion";
+        public const string OptionReferenceUri = "http://ehelse.no/fhir/StructureDefinition/sdf-optionReference";
 
         public const string AuthenticationRequirementSystem = "http://ehelse.no/fhir/ValueSet/AuthenticationRequirement";
         public const string AccessibilityToResponseSystem = "http://ehelse.no/fhir/ValueSet/AccessibilityToResponse";
@@ -688,7 +689,14 @@ namespace FhirTool
                 List<Element> options = ParseArrayOfElement(item.Option);
                 foreach (Element element in options)
                 {
-                    itemComponent.Option.Add(new Questionnaire.OptionComponent { Value = element });
+                    if (element is ResourceReference)
+                    {
+                        itemComponent.AddExtension(OptionReferenceUri, element);
+                    }
+                    else
+                    {
+                        itemComponent.Option.Add(new Questionnaire.OptionComponent { Value = element });
+                    }
                 }
             }
 
