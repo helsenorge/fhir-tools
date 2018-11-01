@@ -299,6 +299,11 @@ namespace FhirTool
             foreach (Resource resource in resources)
             {
                 Resource resource2;
+                if(resource is Questionnaire && !string.IsNullOrEmpty(resource.Id))
+                {
+                    Questionnaire questionnaire = resource as Questionnaire;
+                    questionnaire.Url = $"{FhirBaseUrl}Questionnaire/{resource.Id}";
+                }
                 if (string.IsNullOrEmpty(resource.Id))
                 {
                     Logger.WriteLineToOutput($"Creating new resource of type: '{resource.TypeName}'");
