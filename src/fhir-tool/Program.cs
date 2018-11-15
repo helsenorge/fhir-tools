@@ -15,9 +15,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 
 namespace FhirTool
 {
@@ -53,8 +53,7 @@ namespace FhirTool
 
         public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
 
-        private static string FhirBaseUrl = "https://skjemakatalog-dev-fhir-apimgmt.azure-api.net/api/v1/";
-        //private static string FhirBaseUrl = "http://localhost:49911/fhir";
+        private static readonly string ProxyBaseUrl = "https://skjemakatalog-test-fhir-apimgmt.azure-api.net/api/v1/";
 
         private static string FileNameReservedCharacters = "<>:\"/\\|?*";
         private static FhirToolArguments _arguments = null;
@@ -73,6 +72,7 @@ namespace FhirTool
         // fhir-tool.exe upload --format xml --questionnaire HV-KGBS-nb-NN-1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         // fhir-tool.exe upload --format xml --questionnaire HVIIFJ-nb-NO-0.1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
+        // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --environment dev
 
         // fhir-tool.exe upload-definitions --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url --credentials user:password
 
@@ -95,6 +95,9 @@ namespace FhirTool
             {
                 _out = Console.Out;
                 _arguments = FhirToolArguments.Create(args);
+                if (string.IsNullOrWhiteSpace(_arguments.ProxyBaseUrl))
+                    _arguments.ProxyBaseUrl = ProxyBaseUrl;
+
                 Logger.Initialize(_out, _arguments.Verbose);
 
                 FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
@@ -216,7 +219,7 @@ namespace FhirTool
         {
             if (string.IsNullOrEmpty(arguments.FhirBaseUrl))
             {
-                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}'.");
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}' or '{FhirToolArguments.ENVIRONMENT_ARG}'.");
                 return;
             }
             if (string.IsNullOrEmpty(arguments.QuestionnairePath))
@@ -268,7 +271,7 @@ namespace FhirTool
         {
             if (string.IsNullOrEmpty(arguments.FhirBaseUrl))
             {
-                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}'.");
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.UPLOAD_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}' or '{FhirToolArguments.ENVIRONMENT_ARG}'.");
                 return;
             }
             if (string.IsNullOrEmpty(arguments.SourcePath))
@@ -302,7 +305,7 @@ namespace FhirTool
                 if(resource is Questionnaire && !string.IsNullOrEmpty(resource.Id))
                 {
                     Questionnaire questionnaire = resource as Questionnaire;
-                    questionnaire.Url = $"{FhirBaseUrl}Questionnaire/{resource.Id}";
+                    questionnaire.Url = $"{_arguments.ProxyBaseUrl}Questionnaire/{resource.Id}";
                 }
                 if (string.IsNullOrEmpty(resource.Id))
                 {
@@ -509,7 +512,7 @@ namespace FhirTool
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.Endpoint))
                 {
-                    questionnaire.SetExtension(EndPointUri, new ResourceReference(masterDetail.Master.Endpoint));
+                    questionnaire.SetExtension(EndPointUri, new ResourceReference($"{_arguments.ProxyBaseUrl}{masterDetail.Master.Endpoint}"));
                 }
 
                 if(!string.IsNullOrEmpty(masterDetail.Master.AuthenticationRequirement))

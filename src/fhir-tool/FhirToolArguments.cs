@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using FhirTool.Configuration;
+using System.Linq;
+using System.Configuration;
 
 namespace FhirTool
 {
@@ -42,11 +44,14 @@ namespace FhirTool
         public const string OUT_SHORT_ARG = "-o";
         public const string CREDENTIALS_ARG = "--credentials";
         public const string CREDENTIALS_SHORT_ARG = "-c";
+        public const string ENVIRONMENT_ARG = "--environment";
+        public const string ENVIRONMENT_SHORT_ARG = "-e";
 
         public OperationEnum Operation { get; private set; }
         public string QuestionnairePath { get; private set; }
         public string ValueSetPath { get; private set; }
         public string FhirBaseUrl { get; private set; }
+        public string ProxyBaseUrl { get; internal set; }
         public bool ResolveUrl { get; private set; }
         public string Version { get; private set; }
         public bool Verbose { get; private set; }
@@ -54,6 +59,7 @@ namespace FhirTool
         public string SourcePath { get; private set; }
         public string OutPath { get; private set; }
         public string Credentials { get; private set; }
+        public string Environment { get; set; }
 
         public static FhirToolArguments Create(string[] args)
         {
@@ -125,6 +131,15 @@ namespace FhirTool
                     case CREDENTIALS_ARG:
                     case CREDENTIALS_SHORT_ARG:
                         arguments.Credentials = args[i + 1];
+                        break;
+                    case ENVIRONMENT_ARG:
+                    case ENVIRONMENT_SHORT_ARG:
+                        arguments.Environment = args[i + 1];
+
+                        EnvironmentSection environmentSection = (EnvironmentSection)ConfigurationManager.GetSection($"environmentSection");
+                        EnvironmentElement environment = (EnvironmentElement)environmentSection.Items[arguments.Environment];
+                        arguments.FhirBaseUrl = environment.FhirBaseUrl;
+                        arguments.ProxyBaseUrl = environment.ProxyBaseUrl;
                         break;
                     default:
                         break;
