@@ -88,6 +88,7 @@
     <Compile Include="Model\EnableWhen.cs" />
     <Compile Include="Model\EnableWhenQuantity.cs" />
     <Compile Include="Extensions\FhirExtensionMethods.cs" />
+    <Compile Include="Model\EnableWhenReference.cs" />
     <Compile Include="Model\FlatFile\Questionnaire-v2.cs" />
     <Compile Include="Model\FlatFile\Questionnaire-v1.cs" />
     <Compile Include="Model\FlatFile\ValueSet.cs" />

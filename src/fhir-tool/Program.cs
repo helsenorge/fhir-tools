@@ -950,6 +950,10 @@ namespace FhirTool
                         quantity.Unit = enableWhen.AnswerQuantity.Unit;
                     enableWhenComponent.Answer = quantity;
                 }
+                if(enableWhen.AnswerReference != null)
+                {
+                    enableWhenComponent.Answer = new ResourceReference(enableWhen.AnswerReference.Reference);
+                }
 
                 yield return enableWhenComponent;
             }

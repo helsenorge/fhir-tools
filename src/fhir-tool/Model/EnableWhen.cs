@@ -12,6 +12,7 @@
         public string AnswerTime { get; set; }
         public string AnswerString { get; set; }
         public string AnswerUri { get; set; }
+        public EnableWhenReference AnswerReference { get; set; }
         public EnableWhenCoding AnswerCoding { get; set; }
         public EnableWhenQuantity AnswerQuantity { get; set; }
     }
