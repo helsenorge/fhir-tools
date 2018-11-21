@@ -213,6 +213,8 @@ namespace FhirTool
                 Logger.WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
                 questionnaire.SerializeResourceToDiskAsJson(GenerateLegalFilename(path));
             }
+            Logger.WriteLineToOutput("Successfully generated Questionnaire.");
+            Logger.WriteLineToOutput($"Questionnaire will be assigned the Id: {questionnaire.Id}");
         }
 
         private static void UploadToFhirServerOperation(FhirToolArguments arguments)
@@ -265,6 +267,17 @@ namespace FhirTool
             Logger.WriteLineToOutput($"Successfully uploaded Questionnaire to endpoint.");
             Logger.WriteLineToOutput($"Questionnaire was assigned the Id: {questionnaire.Id}");
             Logger.WriteLineToOutput($"Questionnaire can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}");
+        }
+
+        private static void ValidateOperation(FhirToolArguments arguments)
+        {
+            if (string.IsNullOrEmpty(arguments.QuestionnairePath))
+            {
+                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.VALIDATE_OP}' requires argument '{FhirToolArguments.QUESTIONNAIRE_ARG}' or '{FhirToolArguments.QUESTIONNAIRE_SHORT_ARG}'.");
+                return;
+            }
+
+            Validator validator = new Validator(new ValidationSettings { EnableXsdValidation = true });
         }
 
         private static void UploadDefintitionsOperation(FhirToolArguments arguments)
