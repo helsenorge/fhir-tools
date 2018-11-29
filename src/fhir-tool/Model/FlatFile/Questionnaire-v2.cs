@@ -44,6 +44,7 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string SubjectType;
         [FieldOptional]
+        [FieldQuoted]
         public string UseContext;
         [FieldOptional]
         public string Endpoint;

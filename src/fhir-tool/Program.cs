@@ -523,6 +523,11 @@ namespace FhirTool
                     questionnaire.Meta.Tag.Add(new Coding("urn:ietf:bcp:47", questionnaire.Language, displayName == null ? string.Empty : displayName));
                 }
 
+                if(!string.IsNullOrEmpty(masterDetail.Master.UseContext))
+                {
+                    questionnaire.UseContext = ParseUsageContext(masterDetail.Master.UseContext);
+                }
+
                 if (!string.IsNullOrEmpty(masterDetail.Master.Endpoint))
                 {
                     questionnaire.SetExtension(EndPointUri, new ResourceReference($"{_arguments.ProxyBaseUrl}{masterDetail.Master.Endpoint}"));
@@ -919,6 +924,13 @@ namespace FhirTool
                 itemComponent.SetIntegerExtension(MinValueUri, item.MinValue.Value);
 
             return itemComponent;
+        }
+
+        private static List<UsageContext> ParseUsageContext(string value)
+        {
+            JObject usageContextObject = JObject.Parse(value);
+            JArray usageContextArray = usageContextObject["useContext"] as JArray;
+            return JsonConvert.DeserializeObject<List<UsageContext>>(usageContextArray.ToString());
         }
 
         private static IEnumerable<Questionnaire.EnableWhenComponent> ParseEnableWhen(string value)
