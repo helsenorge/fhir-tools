@@ -615,7 +615,7 @@ namespace FhirTool
         private static Questionnaire.ItemComponent CreateItemComponentV2(QuestionnaireItem2 item)
         {
             Questionnaire.QuestionnaireItemType? itemType = EnumUtility.ParseLiteral<Questionnaire.QuestionnaireItemType>(item.Type);
-            if (!itemType.HasValue) throw new Exception(string.Format("QuestionnaireItemType at question with linkId: {} is not conforming to any valid literals. QuestionnaireItemType: {1}", item.LinkId, item.Type));
+            if (!itemType.HasValue) throw new Exception($"QuestionnaireItemType at question with linkId: {item.LinkId} is not conforming to any valid literals. QuestionnaireItemType: {item.Type}");
 
             Questionnaire.ItemComponent itemComponent = new Questionnaire.ItemComponent
             {
