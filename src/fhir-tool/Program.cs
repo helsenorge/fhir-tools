@@ -697,8 +697,10 @@ namespace FhirTool
                 itemComponent.SetStringExtension(RegexUri, item.Regex);
 
             if (!string.IsNullOrEmpty(item.Markdown))
+            {
+                if (itemComponent.Text == null) throw new MissingRequirementException($"Question with linkId: {item.LinkId}. The 'Text' attribute is required when setting the 'Markdown' extension so that form fillers which do not support the 'Markdown' extension still can display informative text to the user.");
                 itemComponent.TextElement.SetExtension(RenderingMarkdownUri, new Markdown(item.Markdown));
-
+            }
             if (!string.IsNullOrEmpty(item.Unit))
             {
                 Coding unitCoding = ParseCoding(item.Unit);

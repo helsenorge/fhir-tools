@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\EnvironmentSection.cs" />
+    <Compile Include="Exceptions\MissingRequirementException.cs" />
     <Compile Include="Exceptions\DuplicateLinkIdException.cs" />
     <Compile Include="Exceptions\MultipleOperationException.cs" />
     <Compile Include="Exceptions\NotSupportedMimeTypeException.cs" />
