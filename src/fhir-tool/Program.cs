@@ -17,7 +17,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Xml.Linq;
 
 namespace FhirTool
 {
@@ -141,6 +140,36 @@ namespace FhirTool
             exit:
             Logger.WriteLineToOutput("\nPress any key to exit. . .");
             Console.ReadKey(true);
+        }
+
+        private static bool IsValidFhirDateTime(string dateTime)
+        {
+            try
+            {
+                FhirDateTime dt = new FhirDateTime(dateTime);
+                DateTimeOffset offset = dt.ToDateTimeOffset(TimeSpan.Zero);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool IsValidFhirDate(string date)
+        {
+            try
+            {
+                Date d = new Date(date);
+                DateTimeOffset? offset = d.ToDateTimeOffset();
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static void GenerateFromFlatFileOperation(FhirToolArguments arguments)
@@ -494,12 +523,24 @@ namespace FhirTool
                 questionnaire.Name = string.IsNullOrEmpty(masterDetail.Master.Name) ? null : masterDetail.Master.Name;
                 questionnaire.Title = string.IsNullOrEmpty(masterDetail.Master.Title) ? null : masterDetail.Master.Title;
                 questionnaire.Status = string.IsNullOrEmpty(masterDetail.Master.Status) ? null : EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status);
-                questionnaire.Date = string.IsNullOrEmpty(masterDetail.Master.Date) ? null : masterDetail.Master.Date;
+                if (!string.IsNullOrEmpty(masterDetail.Master.Date))
+                {
+                    if (!IsValidFhirDateTime(masterDetail.Master.Date)) throw new Exception($"The date {masterDetail.Master.Date} is not conforming to the expected format: 'yyyy-MM-dd'");
+                    questionnaire.DateElement = new FhirDateTime(masterDetail.Master.Date);
+                }
                 questionnaire.Publisher = string.IsNullOrEmpty(masterDetail.Master.Publisher) ? null : masterDetail.Master.Publisher;
                 questionnaire.Description = string.IsNullOrEmpty(masterDetail.Master.Description) ? null : new Markdown(masterDetail.Master.Description);
                 questionnaire.Purpose = string.IsNullOrEmpty(masterDetail.Master.Purpose) ? null : new Markdown(masterDetail.Master.Purpose);
-                questionnaire.ApprovalDate = string.IsNullOrEmpty(masterDetail.Master.ApprovalDate) ? null : masterDetail.Master.ApprovalDate;
-                questionnaire.LastReviewDate = string.IsNullOrEmpty(masterDetail.Master.LastReviewDate) ? null : masterDetail.Master.LastReviewDate;
+                if (!string.IsNullOrEmpty(masterDetail.Master.ApprovalDate))
+                {
+                    if (!IsValidFhirDate(masterDetail.Master.ApprovalDate)) throw new Exception($"The date {masterDetail.Master.ApprovalDate} is not conforming to the expected format: 'yyyy-MM-dd'");
+                    questionnaire.ApprovalDateElement = new Date(masterDetail.Master.ApprovalDate);
+                }
+                if (!string.IsNullOrEmpty(masterDetail.Master.ApprovalDate))
+                {
+                    if (!IsValidFhirDate(masterDetail.Master.LastReviewDate)) throw new Exception($"The date {masterDetail.Master.LastReviewDate} is not conforming to the expected format: 'yyyy-MM-dd'");
+                    questionnaire.LastReviewDateElement = new Date(masterDetail.Master.LastReviewDate);
+                }
                 questionnaire.Contact = string.IsNullOrEmpty(masterDetail.Master.ContactName) ? null : new List<ContactDetail> { new ContactDetail { Name = masterDetail.Master.ContactName } };
                 questionnaire.Copyright = string.IsNullOrEmpty(masterDetail.Master.Copyright) ? null : new Markdown(masterDetail.Master.Copyright);
 
