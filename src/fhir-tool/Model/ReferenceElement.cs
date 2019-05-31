@@ -1,9 +1,8 @@
 ﻿namespace FhirTool.Model
 {
-    public class EnableWhenReference
+    public class ReferenceElement
     {
-        public string Question { get; set; }
-
         public string Reference { get; set; }
+        public string Display { get; set; }
     }
 }

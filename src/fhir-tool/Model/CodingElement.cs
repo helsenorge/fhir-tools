@@ -1,10 +1,10 @@
 ﻿namespace FhirTool.Model
 {
-    public class EnableWhenQuantity
+    public class CodingElement
     {
-        public decimal? Value { get; set; }
-        public string Unit { get; set; }
         public string System { get; set; }
+        public string Version { get; set; }
         public string Code { get; set; }
+        public string Display { get; set; }
     }
 }

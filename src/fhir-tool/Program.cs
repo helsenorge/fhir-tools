@@ -298,17 +298,6 @@ namespace FhirTool
             Logger.WriteLineToOutput($"Questionnaire can be accessed at: {fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}");
         }
 
-        private static void ValidateOperation(FhirToolArguments arguments)
-        {
-            if (string.IsNullOrEmpty(arguments.QuestionnairePath))
-            {
-                Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.VALIDATE_OP}' requires argument '{FhirToolArguments.QUESTIONNAIRE_ARG}' or '{FhirToolArguments.QUESTIONNAIRE_SHORT_ARG}'.");
-                return;
-            }
-
-            Validator validator = new Validator(new ValidationSettings { EnableXsdValidation = true });
-        }
-
         private static void UploadDefintitionsOperation(FhirToolArguments arguments)
         {
             if (string.IsNullOrEmpty(arguments.FhirBaseUrl))
@@ -971,17 +960,55 @@ namespace FhirTool
 
         private static List<UsageContext> ParseUsageContext(string value)
         {
+            List<UsageContext> usageContexts = new List<UsageContext>();
+
             JObject usageContextObject = JObject.Parse(value);
             JArray usageContextArray = usageContextObject["useContext"] as JArray;
-            return JsonConvert.DeserializeObject<List<UsageContext>>(usageContextArray.ToString());
+
+            List<UsageContextElement> usageContextElements = JsonConvert.DeserializeObject<List<UsageContextElement>>(usageContextArray.ToString());
+            foreach(UsageContextElement usageContextElement in usageContextElements)
+            {
+                UsageContext usageContext = new UsageContext();
+                if (usageContextElement.Code != null)
+                {
+                    usageContext.Code = new Coding
+                    {
+                        System = string.IsNullOrEmpty(usageContextElement.Code.System) ? null : usageContextElement.Code.System,
+                        Code = string.IsNullOrEmpty(usageContextElement.Code.Code) ? null : usageContextElement.Code.Code,
+                        Display = string.IsNullOrEmpty(usageContextElement.Code.Display) ? null : usageContextElement.Code.Display
+                    };
+                }
+                if(usageContextElement.ValueCodeableConcept != null)
+                {
+                    foreach(CodingElement codingElement in usageContextElement.ValueCodeableConcept.Coding)
+                    {
+                        usageContext.Value = new CodeableConcept
+                        {
+                            Coding = new List<Coding>
+                            {
+                                new Coding
+                                {
+                                    System = string.IsNullOrEmpty(codingElement.System) ? null : codingElement.System,
+                                    Code = string.IsNullOrEmpty(codingElement.Code) ? null : codingElement.Code,
+                                    Display = string.IsNullOrEmpty(codingElement.Display) ? null : codingElement.Display
+                                }
+                            }
+                        };
+                    }
+                }
+
+                usageContexts.Add(usageContext);
+            }
+
+            return usageContexts;
         }
 
         private static IEnumerable<Questionnaire.EnableWhenComponent> ParseEnableWhen(string value)
         {
             JObject enableWhenObject = JObject.Parse(value);
             JArray enableWhenArray = enableWhenObject["EnableWhen"] as JArray;
-            IList<EnableWhen> enableWhenList = JsonConvert.DeserializeObject<List<EnableWhen>>(enableWhenArray.ToString());
-            foreach (EnableWhen enableWhen in enableWhenList)
+            IList<EnableWhenElement> enableWhenList = JsonConvert.DeserializeObject<List<EnableWhenElement>>(enableWhenArray.ToString());
+            foreach (EnableWhenElement enableWhen in enableWhenList)
             {
                 Questionnaire.EnableWhenComponent enableWhenComponent = new Questionnaire.EnableWhenComponent
                 {
@@ -1118,7 +1145,7 @@ namespace FhirTool
         private static Coding ParseCoding(string value)
         {
             JObject codingJObject = JObject.Parse(value);
-            ValueCoding valueCoding = codingJObject.ToObject<ValueCoding>();
+            CodingElement valueCoding = codingJObject.ToObject<CodingElement>();
             if (string.IsNullOrEmpty(valueCoding.System))
                 throw new RequiredAttributeException("When parsing a Coding type required property System does not have a value.", "System");
             if (string.IsNullOrEmpty(valueCoding.Code))
