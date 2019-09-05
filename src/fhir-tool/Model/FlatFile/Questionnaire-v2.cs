@@ -68,6 +68,10 @@ namespace FhirTool.Model.FlatFile
         public string Reservered6;
         [FieldOptional]
         public string Reservered7;
+        [FieldOptional]
+        public string Reservered8;
+        [FieldOptional]
+        public string Reservered9;
     }
 
     [DelimitedRecord("\t")]
@@ -144,6 +148,13 @@ namespace FhirTool.Model.FlatFile
         [FieldQuoted]
         public string Option;
         [FieldOptional]
-        public string FhirPath;
+        [FieldQuoted]
+        public string FhirPathExpression;
+        [FieldOptional]
+        [FieldNullValue(false)]
+        [FieldConverter(ConverterKind.Boolean, "true", "false")]
+        public bool Hidden;
+        [FieldOptional]
+        public decimal? AttachmentMaxSize;
     }
 }
