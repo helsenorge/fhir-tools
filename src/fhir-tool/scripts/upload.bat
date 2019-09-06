@@ -1,0 +1,1 @@
+fhir-tools.exe upload --format xml --questionnaire %1 --environment %2
