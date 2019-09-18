@@ -1,0 +1,1 @@
+.\fhir-tool.exe generate --version 2 --format xml --questionnaire %1 --valueset %2
