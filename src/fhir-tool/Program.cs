@@ -924,6 +924,8 @@ namespace FhirTool
                 case Questionnaire.QuestionnaireItemType.String:
                 case Questionnaire.QuestionnaireItemType.Text:
                     return new FhirString(value);
+                case Questionnaire.QuestionnaireItemType.Choice:
+                    return ParseElement(value);
                 default:
                     return null;
             }

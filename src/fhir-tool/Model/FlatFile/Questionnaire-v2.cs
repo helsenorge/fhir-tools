@@ -108,6 +108,7 @@ namespace FhirTool.Model.FlatFile
         [FieldConverter(ConverterKind.Boolean, "true", "false")]
         public bool ReadOnly;
         [FieldOptional]
+        [FieldQuoted]
         public string Initial;
         [FieldOptional]
         public string EntryFormat;
