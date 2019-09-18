@@ -914,7 +914,7 @@ namespace FhirTool
                 case Questionnaire.QuestionnaireItemType.Integer:
                     return new Integer(int.Parse(value));
                 case Questionnaire.QuestionnaireItemType.Decimal:
-                    return new FhirDecimal(decimal.Parse(value));
+                    return new FhirDecimal(decimal.Parse(value, CultureInfo.InvariantCulture));
                 case Questionnaire.QuestionnaireItemType.DateTime:
                     return new FhirDateTime(DateTime.Parse(value).ToUniversalTime());
                 case Questionnaire.QuestionnaireItemType.Date:
