@@ -1148,7 +1148,9 @@ namespace FhirTool
             }
             else if(elementJObject.ContainsKey("valueReference"))
             {
-                element = new ResourceReference(elementJObject["valueReference"].ToString());
+                //element = new ResourceReference(c);
+                FhirJsonParser parser = new FhirJsonParser();
+                element = parser.Parse<ResourceReference>(elementJObject["valueReference"].ToString());
             }
 
             if (element != null && extension.Count > 0)
