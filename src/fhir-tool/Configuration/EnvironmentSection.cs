@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Linq;
 
 namespace FhirTool.Configuration
 {
@@ -40,6 +41,12 @@ namespace FhirTool.Configuration
             {
                 return BaseGet(key);
             }
+        }
+
+        public bool Exists(object key)
+        {
+            object[] keys = BaseGetAllKeys();
+            return keys.Any(k => k.Equals(key));
         }
     }
 

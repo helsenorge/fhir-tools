@@ -1,4 +1,5 @@
-﻿using FhirTool.Extensions;
+﻿using FhirTool.Configuration;
+using FhirTool.Extensions;
 using FhirTool.Model;
 using FhirTool.Model.FlatFile;
 using FileHelpers.MasterDetail;
@@ -15,6 +16,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 
@@ -90,6 +93,8 @@ namespace FhirTool
         // Unsure if we should handle kith and messaging in this tool
         // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
+
+        // fhir-tool.exe transfer-data --environment-source test --environment-destination qa --resourcetype Questionnaire --searchcount 1000
         static void Main(string[] args)
         {
             try
@@ -130,6 +135,9 @@ namespace FhirTool
                     case OperationEnum.SplitBundle:
                         SplitBundleOperation(_arguments);
                         break;
+                    case OperationEnum.TransferData:
+                        TransferData(_arguments);
+                        break;
                     default:
                         throw new NotSupportedOperationException(_arguments.Operation);
                 }
@@ -142,6 +150,87 @@ namespace FhirTool
             exit:
             Logger.WriteLineToOutput("\nPress any key to exit. . .");
             Console.ReadKey(true);
+        }
+
+        private static void TransferData(FhirToolArguments arguments)
+        {
+            if (string.IsNullOrWhiteSpace(arguments.SourceEnvironment)) throw new RequiredArgumentException($"{FhirToolArguments.ENVIRONMENT_SOURCE_ARG}|{FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG}");
+            if (string.IsNullOrWhiteSpace(arguments.DestinationEnvironment)) throw new RequiredArgumentException($"{FhirToolArguments.ENVIRONMENT_DESTINATION_ARG}|{FhirToolArguments.ENVIRONMENT_DESTINATION_SHORT_ARG}");
+            if (!FhirToolArguments.IsKnownEnvironment(arguments.SourceEnvironment)) throw new UnknownEnvironmentNameException($"Argument {FhirToolArguments.ENVIRONMENT_SOURCE_ARG}|{FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG} with value '{arguments.SourceEnvironment}'  is not known.", arguments.SourceEnvironment);
+            if (!FhirToolArguments.IsKnownEnvironment(arguments.DestinationEnvironment)) throw new UnknownEnvironmentNameException($"Argument {FhirToolArguments.ENVIRONMENT_SOURCE_ARG}|{FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG} with value '{arguments.DestinationEnvironment}' is not known.", arguments.DestinationEnvironment);
+            if (!arguments.ResourceType.HasValue) throw new RequiredArgumentException($"{FhirToolArguments.RESOURCETYPE_ARG}|{FhirToolArguments.RESOURCETYPE_SHORT_ARG}");
+
+            EnvironmentElement sourceEnvironment = FhirToolArguments.GetEnvironmentElement(arguments.SourceEnvironment);
+            EnvironmentElement destinationEnvironment = FhirToolArguments.GetEnvironmentElement(arguments.DestinationEnvironment);
+
+            FhirJsonSerializer serializer = new FhirJsonSerializer();
+            FhirClient sourceClient = new FhirClient(sourceEnvironment.FhirBaseUrl);
+            sourceClient.ParserSettings = new ParserSettings
+            {
+                PermissiveParsing = true
+            };
+            HttpClient client = new HttpClient
+            {
+                BaseAddress = new Uri(destinationEnvironment.FhirBaseUrl)
+            };
+            string relativeUrl = $"{arguments.ResourceType.GetLiteral()}";
+            if (_arguments.SearchCount > 0)
+                relativeUrl += $"?_count={_arguments.SearchCount}";
+            Bundle sourceBundle = sourceClient.Get(relativeUrl) as Bundle;
+            foreach(Bundle.EntryComponent entry in sourceBundle.Entry)
+            {
+                Resource resource = entry.Resource;
+                string resourceType = resource.ResourceType.GetLiteral();
+
+                if(resource is Questionnaire)
+                {
+                    Questionnaire questionnaire = (Questionnaire)resource;
+                    // This part gets rid of some legacy
+                    // TODO: Remove when we have gotten rid of the legacy
+                    if (questionnaire.ApprovalDate == string.Empty) questionnaire.ApprovalDate = null;
+                    if (questionnaire.LastReviewDate == string.Empty) questionnaire.LastReviewDate = null;
+                    if (questionnaire.Copyright != null && questionnaire.Copyright.Value == string.Empty) questionnaire.Copyright = null;
+
+                    // Update known properties and extensions with urls that points to the old source instance.
+                    // TODO: The lines referring FhirBaseUrl is legacy and can be removed in a future version.
+                    questionnaire.Url = questionnaire.Url.Replace(sourceEnvironment.ProxyBaseUrl, string.Empty);
+                    questionnaire.Url = questionnaire.Url.Replace(sourceEnvironment.FhirBaseUrl, string.Empty);
+
+                    IEnumerable<Extension> extensions = questionnaire.GetExtensions(EndPointUri);
+                    foreach(Extension extension in extensions)
+                    {
+                        if(extension.Value is ResourceReference)
+                        {
+                            ResourceReference v = (ResourceReference)extension.Value;
+                            v.Reference = v.Reference.Replace(sourceEnvironment.ProxyBaseUrl, string.Empty);
+                            v.Reference = v.Reference.Replace(sourceEnvironment.FhirBaseUrl, string.Empty);
+                        }
+                    }
+
+                    extensions = questionnaire.GetExtensions(OptionReferenceUri);
+                    foreach (Extension extension in extensions)
+                    {
+                        if (extension.Value is ResourceReference)
+                        {
+                            ResourceReference v = (ResourceReference)extension.Value;
+                            v.Reference = v.Reference.Replace(sourceEnvironment.ProxyBaseUrl, string.Empty);
+                            v.Reference = v.Reference.Replace(sourceEnvironment.FhirBaseUrl, string.Empty);
+                        }
+                    }
+                }
+
+                Logger.WriteLineToOutput($"Preparing to write resource of type '{resourceType}' to '{destinationEnvironment.FhirBaseUrl}'");
+                HttpContent content = new StringContent(serializer.SerializeToString(resource));
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/fhir+json");
+                HttpResponseMessage response;
+                if (string.IsNullOrWhiteSpace(resource.Id))
+                    response = client.PostAsync($"{resource.ResourceType.GetLiteral()}", content).WaitResult();
+                else
+                    response = client.PutAsync($"{resource.ResourceType.GetLiteral()}/{resource.Id}", content).WaitResult();
+
+                Logger.WriteLineToOutput($"{response.StatusCode} - {response.RequestMessage.Method} {response.RequestMessage.RequestUri}");
+                Logger.WriteLineToOutput();
+            }
         }
 
         private static bool IsValidFhirDateTime(string dateTime)

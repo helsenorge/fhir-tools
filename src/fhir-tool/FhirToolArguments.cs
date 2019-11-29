@@ -1,6 +1,8 @@
 ﻿using FhirTool.Configuration;
 using System.Linq;
 using System.Configuration;
+using Hl7.Fhir.Model;
+using Hl7.Fhir.Utility;
 
 namespace FhirTool
 {
@@ -11,7 +13,8 @@ namespace FhirTool
         Upload = 2,
         UploadDefinitions = 3,
         Bundle = 4,
-        SplitBundle = 5
+        SplitBundle = 5,
+        TransferData = 6
     }
 
     public sealed class FhirToolArguments
@@ -23,6 +26,7 @@ namespace FhirTool
         public const string UPLOAD_DEFINITIONS_OP = "upload-definitions";
         public const string BUNDLE_OP = "bundle";
         public const string SPLIT_BUNDLE_OP = "split-bundle";
+        public const string TRANSFER_DATA_OP = "transfer-data";
 
         public const string QUESTIONNAIRE_ARG = "--questionnaire";
         public const string QUESTIONNAIRE_SHORT_ARG = "-q";
@@ -47,6 +51,16 @@ namespace FhirTool
         public const string ENVIRONMENT_ARG = "--environment";
         public const string ENVIRONMENT_SHORT_ARG = "-e";
 
+        public const string ENVIRONMENT_SOURCE_ARG = "--environment-source";
+        public const string ENVIRONMENT_SOURCE_SHORT_ARG = "-es";
+        public const string ENVIRONMENT_DESTINATION_ARG = "--environment-destination";
+        public const string ENVIRONMENT_DESTINATION_SHORT_ARG = "-ed";
+        public const string RESOURCETYPE_ARG = "--resourcetype";
+        public const string RESOURCETYPE_SHORT_ARG = "-R";
+
+        public const string SEARCHCOUNT_ARG = "--searchcount";
+        public const string SEARCHCOUNT_SHORT_ARG = "-sc";
+
         public OperationEnum Operation { get; private set; }
         public string QuestionnairePath { get; private set; }
         public string ValueSetPath { get; private set; }
@@ -60,6 +74,10 @@ namespace FhirTool
         public string OutPath { get; private set; }
         public string Credentials { get; private set; }
         public string Environment { get; set; }
+        public string SourceEnvironment { get; set; }
+        public string DestinationEnvironment { get; set; }
+        public ResourceType? ResourceType { get; set; }
+        public int SearchCount { get; set; }
 
         public static FhirToolArguments Create(string[] args)
         {
@@ -89,6 +107,10 @@ namespace FhirTool
                     case SPLIT_BUNDLE_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.SplitBundle;
+                        break;
+                    case TRANSFER_DATA_OP:
+                        if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
+                        arguments.Operation = OperationEnum.TransferData;
                         break;
                     case QUESTIONNAIRE_ARG:
                     case QUESTIONNAIRE_SHORT_ARG:
@@ -135,11 +157,29 @@ namespace FhirTool
                     case ENVIRONMENT_ARG:
                     case ENVIRONMENT_SHORT_ARG:
                         arguments.Environment = args[i + 1];
-
                         EnvironmentSection environmentSection = (EnvironmentSection)ConfigurationManager.GetSection($"environmentSection");
                         EnvironmentElement environment = (EnvironmentElement)environmentSection.Items[arguments.Environment];
                         arguments.FhirBaseUrl = environment.FhirBaseUrl;
                         arguments.ProxyBaseUrl = environment.ProxyBaseUrl;
+                        break;
+                    case ENVIRONMENT_SOURCE_ARG:
+                    case ENVIRONMENT_SOURCE_SHORT_ARG:
+                        arguments.SourceEnvironment = args[i + 1];
+                        break;
+                    case ENVIRONMENT_DESTINATION_ARG:
+                    case ENVIRONMENT_DESTINATION_SHORT_ARG:
+                        arguments.DestinationEnvironment = args[i + 1];
+                        break;
+                    case RESOURCETYPE_ARG:
+                    case RESOURCETYPE_SHORT_ARG:
+                        arguments.ResourceType = EnumUtility.ParseLiteral<ResourceType>(args[i + 1]);
+                        break;
+                    case SEARCHCOUNT_ARG:
+                    case SEARCHCOUNT_SHORT_ARG:
+                        int searchCount;
+                        if (!int.TryParse(args[i + 1], out searchCount))
+                            throw new RequiredArgumentException($"{SEARCHCOUNT_ARG}|{SEARCHCOUNT_SHORT_ARG}");
+                        arguments.SearchCount = searchCount;
                         break;
                     default:
                         break;
@@ -147,6 +187,27 @@ namespace FhirTool
             }
 
             return arguments;
+        }
+
+        private static EnvironmentSection _environmentSection;
+        private static EnvironmentSection GetEnvironmentSection()
+        {
+            if(_environmentSection == null) _environmentSection = (EnvironmentSection)ConfigurationManager.GetSection($"environmentSection");
+            return _environmentSection;
+        }
+
+        public static EnvironmentElement GetEnvironmentElement(string name)
+        {
+            EnvironmentSection environmentSection = GetEnvironmentSection();
+            if (!environmentSection.Items.Exists(name)) return null;
+            EnvironmentElement environment = environmentSection.Items[name] as EnvironmentElement;
+
+            return environment;
+        }
+
+        public static bool IsKnownEnvironment(string name)
+        {
+            return GetEnvironmentElement(name) != null;
         }
     }
 }

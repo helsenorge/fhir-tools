@@ -81,7 +81,9 @@
     <Compile Include="Exceptions\MultipleOperationException.cs" />
     <Compile Include="Exceptions\NotSupportedMimeTypeException.cs" />
     <Compile Include="Exceptions\NotSupportedOperationException.cs" />
+    <Compile Include="Exceptions\RequiredArgumentException.cs" />
     <Compile Include="Exceptions\RequiredAttributeException.cs" />
+    <Compile Include="Exceptions\UnknownEnvironmentNameException.cs" />
     <Compile Include="Extensions\FhirToolArgumentsExtensionMethods.cs" />
     <Compile Include="Extensions\KeyExtensionMethods.cs" />
     <Compile Include="Extensions\UriExtensionMethods.cs" />
