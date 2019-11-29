@@ -1178,9 +1178,9 @@ namespace FhirTool
             JObject codingJObject = JObject.Parse(value);
             CodingElement valueCoding = codingJObject.ToObject<CodingElement>();
             if (string.IsNullOrEmpty(valueCoding.System))
-                throw new RequiredAttributeException("When parsing a Coding type required property System does not have a value.", "System");
+                throw new RequiredAttributeException("When parsing a Coding type required attribute System does not have a value.", "System");
             if (string.IsNullOrEmpty(valueCoding.Code))
-                throw new RequiredAttributeException("When parsing a Coding type required property Code does not have a value.", "Code");
+                throw new RequiredAttributeException("When parsing a Coding type required attribute Code does not have a value.", "Code");
 
             Coding coding = new Coding
             {
