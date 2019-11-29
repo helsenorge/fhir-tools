@@ -746,13 +746,20 @@ namespace FhirTool
             itemComponent.LinkId = string.IsNullOrEmpty(item.LinkId) ? null : item.LinkId;
             itemComponent.Prefix = string.IsNullOrEmpty(item.Prefix) ? null : item.Prefix;
             itemComponent.Text = string.IsNullOrEmpty(item.Text) ? null  : item.Text;
-            itemComponent.EnableWhen = string.IsNullOrEmpty(item.EnableWhen) ? null : ParseEnableWhen(item.EnableWhen).ToList();
+            if (!string.IsNullOrWhiteSpace(item.EnableWhen))
+            {
+                itemComponent.EnableWhen = ParseEnableWhen(item.EnableWhen).ToList();
+                // TODO: Defaults to 'any' in the first iteration of "migrate to R4".
+                itemComponent.EnableBehavior = Questionnaire.EnableWhenBehavior.Any;
+            }
 
             if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
             {
                 itemComponent.Required = item.Required.HasValue ? item.Required : null;
                 itemComponent.ReadOnly = item.ReadOnly;
-                itemComponent.Initial = string.IsNullOrEmpty(item.Initial) ? null : GetElement(itemType.Value, item.Initial);
+                itemComponent.Initial = string.IsNullOrEmpty(item.Initial) 
+                    ? null 
+                    : new List<Questionnaire.InitialComponent> { new Questionnaire.InitialComponent { Value = GetElement(itemType.Value, item.Initial) } };
                 itemComponent.MaxLength = item.MaxLength.HasValue ? item.MaxLength : null;
             }
 
@@ -765,7 +772,7 @@ namespace FhirTool
                 itemComponent.SetStringExtension(ValidationTextUri, item.ValidationText);
 
             if (!string.IsNullOrEmpty(item.Options) && item.Options.IndexOf('#') == 0)
-                itemComponent.Options = new ResourceReference($"#{item.Options.Substring(1)}");
+                itemComponent.AnswerValueSetElement = new Canonical($"#{item.Options.Substring(1)}");
             
             if (!string.IsNullOrEmpty(item.EntryFormat))
                 itemComponent.SetStringExtension(EntryFormatUri, item.EntryFormat);
@@ -844,7 +851,7 @@ namespace FhirTool
                     }
                     else
                     {
-                        itemComponent.Option.Add(new Questionnaire.OptionComponent { Value = element });
+                        itemComponent.AnswerOption.Add(new Questionnaire.AnswerOptionComponent { Value = element });
                     }
                 }
             }
@@ -1033,13 +1040,20 @@ namespace FhirTool
             itemComponent.LinkId = string.IsNullOrEmpty(item.LinkId) ? null : item.LinkId;
             itemComponent.Prefix = string.IsNullOrEmpty(item.Prefix) ? null : item.Prefix;
             itemComponent.Text = string.IsNullOrEmpty(item.Text) ? null : item.Text;
-            itemComponent.EnableWhen = string.IsNullOrEmpty(item.EnableWhen) ? null : ParseEnableWhen(item.EnableWhen).ToList();
+            if (!string.IsNullOrWhiteSpace(item.EnableWhen))
+            {
+                itemComponent.EnableWhen = ParseEnableWhen(item.EnableWhen).ToList();
+                // TODO: Defaults to 'any' in the first iteration of "migrate to R4".
+                itemComponent.EnableBehavior = Questionnaire.EnableWhenBehavior.Any;
+            }
 
             if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
             {
                 itemComponent.Required = item.Required.HasValue ? item.Required : null;
                 itemComponent.ReadOnly = item.ReadOnly;
-                itemComponent.Initial = string.IsNullOrEmpty(item.Initial) ? null : GetElement(itemType.Value, item.Initial);
+                itemComponent.Initial = string.IsNullOrEmpty(item.Initial) 
+                    ? null 
+                    : new List<Questionnaire.InitialComponent> { new Questionnaire.InitialComponent { Value = GetElement(itemType.Value, item.Initial) } };
             }
 
             if (itemType != Questionnaire.QuestionnaireItemType.Display)
@@ -1050,7 +1064,7 @@ namespace FhirTool
             if (!string.IsNullOrEmpty(item.ValidationText))
                 itemComponent.SetStringExtension(ValidationTextUri, item.ValidationText);
             if (!string.IsNullOrEmpty(item.ReferenceValue) && item.ReferenceValue.IndexOf('#') == 0)
-                itemComponent.Options = new ResourceReference($"#{item.ReferenceValue.Substring(1)}");
+                itemComponent.AnswerValueSetElement = new Canonical($"#{item.ReferenceValue.Substring(1)}");
             if (!string.IsNullOrEmpty(item.EntryFormat))
                 itemComponent.SetStringExtension(EntryFormatUri, item.EntryFormat);
             if (item.MaxValue.HasValue)
@@ -1116,9 +1130,18 @@ namespace FhirTool
                 Questionnaire.EnableWhenComponent enableWhenComponent = new Questionnaire.EnableWhenComponent
                 {
                     Question = enableWhen.Question,
+                    // TODO: Defaults to Equal for the first iteration of "migrate to R4"
+                    Operator = Questionnaire.QuestionnaireItemOperator.Equal
                 };
                 if (enableWhen.HasAnswer.HasValue)
-                    enableWhenComponent.HasAnswer = enableWhen.HasAnswer;
+                {
+                    if (enableWhen.Answer == null)
+                    {
+                        // TODO: Having trouble understanding this migration, must test!
+                        enableWhenComponent.Operator = Questionnaire.QuestionnaireItemOperator.Exists;
+                        enableWhenComponent.Answer = new FhirBoolean(enableWhen.HasAnswer);
+                    }
+                }
                 if (enableWhen.AnswerBoolean.HasValue)
                     enableWhenComponent.Answer = new FhirBoolean(enableWhen.AnswerBoolean);
                 if (enableWhen.AnswerDecimal.HasValue)
