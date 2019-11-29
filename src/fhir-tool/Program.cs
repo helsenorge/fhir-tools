@@ -531,9 +531,9 @@ namespace FhirTool
 
             using (StreamReader reader = new StreamReader(path))
             {
-                IElementNavigator navigator = JsonDomFhirNavigator.Create(reader.ReadToEnd());
-                BaseFhirParser parser = new FhirJsonParser();
-                resource = parser.Parse<T>(navigator);
+                ISourceNode node = FhirJsonNode.Parse(reader.ReadToEnd());
+                var parser = new FhirJsonParser();
+                resource = parser.Parse<T>(node);
             }
             return resource;
         }
@@ -544,9 +544,9 @@ namespace FhirTool
             T resource = null;
             using (StreamReader reader = new StreamReader(path))
             {
-                IElementNavigator navigator = XmlDomFhirNavigator.Create(reader.ReadToEnd());
-                BaseFhirParser parser = new FhirXmlParser();
-                resource = parser.Parse<T>(navigator);
+                ISourceNode node = FhirJsonNode.Parse(reader.ReadToEnd());
+                var parser = new FhirXmlParser();
+                resource = parser.Parse<T>(node);
             }
             return resource;
         }
@@ -776,14 +776,14 @@ namespace FhirTool
                 itemComponent.SetIntegerExtension(MinValueUri, item.MinValueInteger.Value);
 
             if (item.MaxValueDate.HasValue)
-                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
             if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(MinValueUri, new FhirDateTime(new DateTimeOffset(item.MinValueDate.Value.ToUniversalTime())));
 
             if (item.MaxValueDate.HasValue)
-                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
             if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(MinValueUri, new FhirDateTime(new DateTimeOffset(item.MinValueDate.Value.ToUniversalTime())));
 
             if (item.MinLength.HasValue)
                 itemComponent.SetIntegerExtension(MinLenghtUri, item.MinLength.Value);
@@ -1005,7 +1005,7 @@ namespace FhirTool
                 case Questionnaire.QuestionnaireItemType.Decimal:
                     return new FhirDecimal(decimal.Parse(value, CultureInfo.InvariantCulture));
                 case Questionnaire.QuestionnaireItemType.DateTime:
-                    return new FhirDateTime(DateTime.Parse(value).ToUniversalTime());
+                    return new FhirDateTime(DateTimeOffset.Parse(value).ToUniversalTime());
                 case Questionnaire.QuestionnaireItemType.Date:
                     return new Date(value);
                 case Questionnaire.QuestionnaireItemType.Time:
