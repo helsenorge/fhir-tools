@@ -23,7 +23,7 @@ using System.Text;
 
 namespace FhirTool
 {
-    class Program
+    partial class Program
     {
         public const string QuestionnaireProfileUri = "http://ehelse.no/fhir/StructureDefinition/sdf-Questionnaire";
 
@@ -138,6 +138,9 @@ namespace FhirTool
                     case OperationEnum.TransferData:
                         TransferData(_arguments);
                         break;
+                    case OperationEnum.VerifyValidation:
+                        Console.WriteLine($"VerifyItemValidation: {VerifyItemValidation(_arguments)}");
+                        break;
                     default:
                         throw new NotSupportedOperationException(_arguments.Operation);
                 }
@@ -150,6 +153,220 @@ namespace FhirTool
             exit:
             Logger.WriteLineToOutput("\nPress any key to exit. . .");
             Console.ReadKey(true);
+        }
+
+        private static bool VerifyItemValidation(FhirToolArguments arguments)
+        {
+            if (string.IsNullOrEmpty(arguments.QuestionnairePath))
+            {
+                Logger.ErrorWriteLineToOutput($"Operation '{arguments.Operation}' requires argument '{FhirToolArguments.QUESTIONNAIRE_ARG}' or '{FhirToolArguments.QUESTIONNAIRE_SHORT_ARG}'.");
+                return false;
+            }
+            string mimeType = arguments.MimeType;
+            if(string.IsNullOrEmpty(mimeType))
+            {
+                string extension = Path.GetExtension(arguments.QuestionnairePath).ToLowerInvariant();
+                // Remove the '.' in front of the extension
+                if (!string.IsNullOrEmpty(extension)) extension = extension.Substring(1);
+                // Is supported MimeType?
+                if(!FhirToolArguments.SUPPORTED_MIMETYPES.Contains(extension))
+                {
+                    Logger.ErrorWriteLineToOutput($"Operation '{arguments.Operation}' requires argument '{FhirToolArguments.MIMETYPE_ARG}' or '{FhirToolArguments.MIMETYPE_SHORT_ARG}'.");
+                }
+                mimeType = extension;
+            }
+
+            Logger.WriteLineToOutput($"Deserializing Fhir resource at '{arguments.QuestionnairePath}'.");
+            Logger.WriteLineToOutput($"Expecting format: '{arguments.MimeType}'.");
+            Questionnaire questionnaire = null;
+            switch (mimeType)
+            {
+                case "xml":
+                    questionnaire = DeserializeXmlResource<Questionnaire>(arguments.QuestionnairePath);
+                    break;
+                case "json":
+                    questionnaire = DeserializeJsonResource<Questionnaire>(arguments.QuestionnairePath);
+                    break;
+                default:
+                    break;
+            }
+            if (questionnaire == null)
+            {
+                Logger.ErrorWriteLineToOutput($"Failed to extract Questionnaire from flat file format\nLocation: '{arguments.QuestionnairePath}'.");
+                return false;
+            }
+
+            IEnumerable<MissingValidationIssue> issues = VerifyItemValidation(questionnaire.Item);
+
+            foreach (MissingValidationIssue issue in issues)
+            {
+                switch (issue.Severity)
+                {
+                    case MissingValidationSeverityEnum.Error:
+                        Logger.ErrorWriteLineToOutput($"LinkId: {issue.LinkId}, Severity: {issue.Severity}, Details: {issue.Details}");
+                        break;
+                    case MissingValidationSeverityEnum.Warning:
+                        Logger.WarnWriteLineToOutput($"LinkId: {issue.LinkId}, Severity: {issue.Severity}, Details: {issue.Details}");
+                        break;
+                    case MissingValidationSeverityEnum.Information:
+                        Logger.InfoWriteLineToOutput($"LinkId: {issue.LinkId}, Severity: {issue.Severity}, Details: {issue.Details}");
+                        break;
+                    default:
+                        Logger.WriteLineToOutput($"LinkId: {issue.LinkId}, Severity: {issue.Severity}, Details: {issue.Details}");
+                        break;
+                }
+            }
+
+            return !issues.Any(i => i.Severity == MissingValidationSeverityEnum.Error);
+        }
+
+        private static IEnumerable<MissingValidationIssue> VerifyItemValidation(IEnumerable<Questionnaire.ItemComponent> items)
+        {
+            var issues = new List<MissingValidationIssue>();
+            foreach(Questionnaire.ItemComponent item in items)
+            {
+                issues.AddRange(VerifyItemValidation(item));
+            }
+
+            return issues;
+        }
+
+        private static IEnumerable<MissingValidationIssue> VerifyItemValidation(Questionnaire.ItemComponent item)
+        {
+            var issues = new List<MissingValidationIssue>();
+
+            if(item.Type == Questionnaire.QuestionnaireItemType.String || item.Type == Questionnaire.QuestionnaireItemType.Text)
+            {
+                issues.AddRange(VerifyStringAndTextValidation(item));
+                issues.AddRange(VerifyRepeatingItemValidation(item));
+                issues.AddRange(VerifyMaxOrMinValueIsSet(item));
+                issues.AddRange(VerifyAttachmentValidation(item));
+            }
+
+            foreach(Questionnaire.ItemComponent itm in item.Item)
+            {
+                issues.AddRange(VerifyItemValidation(itm));
+            }
+
+            return issues;
+        }
+
+        private static IEnumerable<MissingValidationIssue> VerifyAttachmentValidation(Questionnaire.ItemComponent item)
+        {
+            if (item.Type != Questionnaire.QuestionnaireItemType.Attachment) return new MissingValidationIssue[0];
+
+            var issues = new List<MissingValidationIssue>();
+
+            if (item.GetExtensions(QuestionnaireAttachmentMaxSize).Count() == 0)
+            {
+                issues.Add(new MissingValidationIssue
+                {
+                    LinkId = item.LinkId,
+                    Severity = MissingValidationSeverityEnum.Warning,
+                    Details = $"An item where the attribute 'repeats' is set to 'true' a 'maxOccurs' should be set."
+                });
+            }
+
+            return issues;
+        }
+
+        private static IEnumerable<MissingValidationIssue> VerifyMaxOrMinValueIsSet(Questionnaire.ItemComponent item)
+        {
+            if(!(item.Type == Questionnaire.QuestionnaireItemType.Date
+                || item.Type == Questionnaire.QuestionnaireItemType.DateTime
+                || item.Type == Questionnaire.QuestionnaireItemType.Time
+                || item.Type == Questionnaire.QuestionnaireItemType.Integer
+                || item.Type == Questionnaire.QuestionnaireItemType.Decimal))
+            {
+                return new MissingValidationIssue[0];
+            }
+
+            var issues = new List<MissingValidationIssue>();
+            if(item.GetExtensions(MaxValueUri).Count() == 0 || item.GetExtensions(MinValueUri).Count() == 0)
+            {
+                issues.Add(new MissingValidationIssue
+                {
+                    LinkId = item.LinkId,
+                    Severity = MissingValidationSeverityEnum.Information,
+                    Details = $"Consider setting the 'maxValue' and 'minValue' attribute for items of type '{item.Type}'."
+                });
+            }
+
+            return issues;
+        }
+
+        private static IEnumerable<MissingValidationIssue> VerifyRepeatingItemValidation(Questionnaire.ItemComponent item)
+        {
+            var issues = new List<MissingValidationIssue>();
+            if (item.Repeats == true)
+            {
+                if (item.GetExtensions(MaxOccursUri).Count() == 0)
+                {
+                    issues.Add(new MissingValidationIssue
+                    {
+                        LinkId = item.LinkId,
+                        Severity = MissingValidationSeverityEnum.Warning,
+                        Details = $"An item where of type '{item.Type}' is missing the 'maxSize attribute."
+                    });
+                }
+            }
+
+            return issues;
+        }
+
+        private static IEnumerable<MissingValidationIssue> VerifyStringAndTextValidation(Questionnaire.ItemComponent item)
+        {
+            if (item.Type != Questionnaire.QuestionnaireItemType.String && item.Type != Questionnaire.QuestionnaireItemType.Text) return new MissingValidationIssue[0];
+
+            var issues = new List<MissingValidationIssue>();
+            // Issues an error if a maxLength has NOT been set
+            if (!item.MaxLength.HasValue)
+            {
+                issues.Add(new MissingValidationIssue
+                {
+                    LinkId = item.LinkId,
+                    Severity = MissingValidationSeverityEnum.Error,
+                    Details = $"An item of type '{item.Type}' must have the 'maxLength' attribute set."
+                });
+            }
+            // Issues an error if a regex has NOT been set
+            if (item.GetExtensions(RegexUri).Count() == 0)
+            {
+                issues.Add(new MissingValidationIssue
+                {
+                    LinkId = item.LinkId,
+                    Severity = MissingValidationSeverityEnum.Error,
+                    Details = $"An item of type '{item.Type}' must have the 'regex' attribute set."
+                });
+            }
+            if (item.Type == Questionnaire.QuestionnaireItemType.String)
+            {
+                // Issues an error for ItemType == 'string' if a maxLength of no more than 250 characters has been set.
+                if (item.MaxLength.HasValue && item.MaxLength.Value > 250)
+                {
+                    issues.Add(new MissingValidationIssue
+                    {
+                        LinkId = item.LinkId,
+                        Severity = MissingValidationSeverityEnum.Error,
+                        Details = $"An item of type '{item.Type}' must have a 'maxLength' of no more than 250 characters."
+                    });
+                }
+            }
+            if (item.Type == Questionnaire.QuestionnaireItemType.Text)
+            {
+                // Issues a warning for ItemType == 'text' if a maxLength of more than 2500 characters has been set.
+                if (item.MaxLength.HasValue && item.MaxLength.Value > 2500)
+                {
+                    issues.Add(new MissingValidationIssue
+                    {
+                        LinkId = item.LinkId,
+                        Severity = MissingValidationSeverityEnum.Warning,
+                        Details = $"Item field of '{item.Type}' has a 'maxLength' of more than 2500 characters. This is allowed, but not recommended."
+                    });
+                }
+            }
+
+            return issues;
         }
 
         private static void TransferData(FhirToolArguments arguments)

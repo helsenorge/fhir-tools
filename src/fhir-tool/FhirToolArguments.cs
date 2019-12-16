@@ -14,7 +14,8 @@ namespace FhirTool
         UploadDefinitions = 3,
         Bundle = 4,
         SplitBundle = 5,
-        TransferData = 6
+        TransferData = 6,
+        VerifyValidation = 7
     }
 
     public sealed class FhirToolArguments
@@ -27,6 +28,7 @@ namespace FhirTool
         public const string BUNDLE_OP = "bundle";
         public const string SPLIT_BUNDLE_OP = "split-bundle";
         public const string TRANSFER_DATA_OP = "transfer-data";
+        public const string VERIFY_VALIDATION_OP = "verify-validation";
 
         public const string QUESTIONNAIRE_ARG = "--questionnaire";
         public const string QUESTIONNAIRE_SHORT_ARG = "-q";
@@ -111,6 +113,10 @@ namespace FhirTool
                     case TRANSFER_DATA_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.TransferData;
+                        break;
+                    case VERIFY_VALIDATION_OP:
+                        if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
+                        arguments.Operation = OperationEnum.VerifyValidation;
                         break;
                     case QUESTIONNAIRE_ARG:
                     case QUESTIONNAIRE_SHORT_ARG:
