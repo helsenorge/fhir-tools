@@ -1,0 +1,1 @@
+.\fhir-tool.exe verify-validation --questionnaire %1

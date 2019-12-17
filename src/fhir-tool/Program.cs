@@ -77,6 +77,8 @@ namespace FhirTool
         // fhir-tool.exe upload --format xml --questionnaire HVIIFJ-nb-NO-0.1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --environment dev
+        
+        // fhir-tool.exe verify-validation --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml
 
         // fhir-tool.exe upload-definitions --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url --credentials user:password
 
@@ -121,10 +123,15 @@ namespace FhirTool
                 switch(_arguments.Operation)
                 {
                     case OperationEnum.Generate:
-                        GenerateFromFlatFileOperation(_arguments);
+                        string filename = GenerateFromFlatFileOperation(_arguments);
+                        if (!string.IsNullOrWhiteSpace(filename))
+                        {
+                            Logger.WriteLineToOutput("\nVerifying validation requirements");
+                            VerifyItemValidation(new FhirToolArguments { QuestionnairePath = filename, MimeType = _arguments.MimeType });
+                        }
                         break;
                     case OperationEnum.Upload:
-                        UploadToFhirServerOperation(_arguments);
+                        if (VerifyItemValidation(_arguments)) UploadToFhirServerOperation(_arguments);
                         break;
                     case OperationEnum.UploadDefinitions:
                         UploadDefintitionsOperation(_arguments);
@@ -177,7 +184,7 @@ namespace FhirTool
             }
 
             Logger.WriteLineToOutput($"Deserializing Fhir resource at '{arguments.QuestionnairePath}'.");
-            Logger.WriteLineToOutput($"Expecting format: '{arguments.MimeType}'.");
+            Logger.WriteLineToOutput($"Expecting format: '{mimeType}'.");
             Questionnaire questionnaire = null;
             switch (mimeType)
             {
@@ -480,7 +487,7 @@ namespace FhirTool
             return true;
         }
 
-        private static void GenerateFromFlatFileOperation(FhirToolArguments arguments)
+        private static string GenerateFromFlatFileOperation(FhirToolArguments arguments)
         {
             // Validate path to Questionnaire Flat File.
             if (!string.IsNullOrEmpty(_arguments.QuestionnairePath))
@@ -488,13 +495,13 @@ namespace FhirTool
                 if (!File.Exists(_arguments.QuestionnairePath))
                 {
                     Logger.ErrorWriteLineToOutput($"File specified by argument {FhirToolArguments.QUESTIONNAIRE_ARG} | {FhirToolArguments.QUESTIONNAIRE_SHORT_ARG} was not found: '{_arguments.QuestionnairePath}'");
-                    return;
+                    return null;
                 }
             }
             else
             {
                 Logger.ErrorWriteLineToOutput($"Operation '{FhirToolArguments.GENERATE_OP}' requires argument {FhirToolArguments.QUESTIONNAIRE_ARG} | {FhirToolArguments.QUESTIONNAIRE_SHORT_ARG} is required.");
-                return;
+                return null;
             }
 
             Logger.WriteLineToOutput($"Expecting flat file format to conform to version: {arguments.Version}");
@@ -519,13 +526,13 @@ namespace FhirTool
             {
                 string version = string.IsNullOrEmpty(arguments.Version) ? "missing" : arguments.Version;
                 Logger.ErrorWriteLineToOutput($"Operation {FhirToolArguments.GENERATE_OP} requires argument '{FhirToolArguments.VERSION_ARG}'. Argument is either missing or an unknown value was set.\nValue: '{version}'");
-                return;
+                return null;
             }
 
             if (questionnaire == null)
             {
                 Logger.ErrorWriteLineToOutput($"Failed to extract Questionnaire from flat file format\nLocation: '{arguments.QuestionnairePath}'.");
-                return;
+                return null;
             }
             
             if (valueSets != null && valueSets.Count > 0)
@@ -541,17 +548,21 @@ namespace FhirTool
             if (arguments.MimeType == "xml")
             {
                 string path = $"{filename}.xml";
-                Logger.WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {path}");
-                questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename(path));
+                filename = GenerateLegalFilename(path);
+                Logger.WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {filename}");
+                questionnaire.SerializeResourceToDiskAsXml(filename);
             }
             else if (arguments.MimeType == "json")
             {
                 string path = $"{filename}.json";
-                Logger.WriteLineToOutput($"Writing Questionnaire in json format to local disk: {path}");
-                questionnaire.SerializeResourceToDiskAsJson(GenerateLegalFilename(path));
+                filename = GenerateLegalFilename(path);
+                Logger.WriteLineToOutput($"Writing Questionnaire in json format to local disk: {filename}");
+                questionnaire.SerializeResourceToDiskAsJson(filename);
             }
             Logger.WriteLineToOutput("Successfully generated Questionnaire.");
             Logger.WriteLineToOutput($"Questionnaire will be assigned the Id: {questionnaire.Id}");
+
+            return filename;
         }
 
         private static void UploadToFhirServerOperation(FhirToolArguments arguments)

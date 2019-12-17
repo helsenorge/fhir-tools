@@ -63,18 +63,18 @@ namespace FhirTool
         public const string SEARCHCOUNT_ARG = "--searchcount";
         public const string SEARCHCOUNT_SHORT_ARG = "-sc";
 
-        public OperationEnum Operation { get; private set; }
-        public string QuestionnairePath { get; private set; }
-        public string ValueSetPath { get; private set; }
-        public string FhirBaseUrl { get; private set; }
+        public OperationEnum Operation { get; internal set; }
+        public string QuestionnairePath { get; internal set; }
+        public string ValueSetPath { get; internal set; }
+        public string FhirBaseUrl { get; internal set; }
         public string ProxyBaseUrl { get; internal set; }
-        public bool ResolveUrl { get; private set; }
-        public string Version { get; private set; }
-        public bool Verbose { get; private set; }
-        public string MimeType { get; private set; }
-        public string SourcePath { get; private set; }
-        public string OutPath { get; private set; }
-        public string Credentials { get; private set; }
+        public bool ResolveUrl { get; internal set; }
+        public string Version { get; internal set; }
+        public bool Verbose { get; internal set; }
+        public string MimeType { get; internal set; }
+        public string SourcePath { get; internal set; }
+        public string OutPath { get; internal set; }
+        public string Credentials { get; internal set; }
         public string Environment { get; set; }
         public string SourceEnvironment { get; set; }
         public string DestinationEnvironment { get; set; }
