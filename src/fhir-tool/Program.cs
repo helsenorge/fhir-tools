@@ -270,7 +270,7 @@ namespace FhirTool
                 {
                     LinkId = item.LinkId,
                     Severity = MissingValidationSeverityEnum.Warning,
-                    Details = $"An item where the attribute 'repeats' is set to 'true' a 'maxOccurs' should be set."
+                    Details = $"An item of type '{item.Type}' is missing the 'maxSize' attribute. Consider setting the 'maxSize' attribute."
                 });
             }
 
@@ -313,7 +313,7 @@ namespace FhirTool
                     {
                         LinkId = item.LinkId,
                         Severity = MissingValidationSeverityEnum.Warning,
-                        Details = $"An item where of type '{item.Type}' is missing the 'maxSize attribute."
+                        Details = $"An item where the attribute 'repeats' is set to 'true' a 'maxOccurs' is recommended to be set."
                     });
                 }
             }
