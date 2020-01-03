@@ -135,6 +135,7 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public int? MaxOccurs;
         [FieldOptional]
+        [FieldQuoted]
         public string Regex;
         [FieldOptional]
         [FieldQuoted]
