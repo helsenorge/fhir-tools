@@ -126,12 +126,23 @@ namespace FhirTool
                         string filename = GenerateFromFlatFileOperation(_arguments);
                         if (!string.IsNullOrWhiteSpace(filename))
                         {
-                            Logger.WriteLineToOutput("\nVerifying validation requirements");
-                            VerifyItemValidation(new FhirToolArguments { QuestionnairePath = filename, MimeType = _arguments.MimeType });
+                            if (!_arguments.SkipValidation)
+                            {
+                                Logger.WriteLineToOutput("\nVerifying validation requirements");
+                                VerifyItemValidation(new FhirToolArguments { QuestionnairePath = filename, MimeType = _arguments.MimeType });
+                            }
                         }
                         break;
                     case OperationEnum.Upload:
-                        if (VerifyItemValidation(_arguments)) UploadToFhirServerOperation(_arguments);
+                        if (_arguments.SkipValidation)
+                        {
+                            UploadToFhirServerOperation(_arguments);
+                        }
+                        else
+                        {
+                            Logger.WriteLineToOutput("\nVerifying validation requirements");
+                            if (VerifyItemValidation(_arguments)) UploadToFhirServerOperation(_arguments);
+                        }
                         break;
                     case OperationEnum.UploadDefinitions:
                         UploadDefintitionsOperation(_arguments);

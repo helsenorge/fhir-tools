@@ -60,6 +60,9 @@ namespace FhirTool
         public const string RESOURCETYPE_ARG = "--resourcetype";
         public const string RESOURCETYPE_SHORT_ARG = "-R";
 
+        public const string SKIP_VALIDATION_ARG = "--skip-validation";
+        public const string SKIP_VALIDATION_SHORT_ARG = "-sv";
+
         public const string SEARCHCOUNT_ARG = "--searchcount";
         public const string SEARCHCOUNT_SHORT_ARG = "-sc";
 
@@ -80,6 +83,7 @@ namespace FhirTool
         public string DestinationEnvironment { get; set; }
         public ResourceType? ResourceType { get; set; }
         public int SearchCount { get; set; }
+        public bool SkipValidation { get; set; }
 
         public static FhirToolArguments Create(string[] args)
         {
@@ -186,6 +190,10 @@ namespace FhirTool
                         if (!int.TryParse(args[i + 1], out searchCount))
                             throw new RequiredArgumentException($"{SEARCHCOUNT_ARG}|{SEARCHCOUNT_SHORT_ARG}");
                         arguments.SearchCount = searchCount;
+                        break;
+                    case SKIP_VALIDATION_ARG:
+                    case SKIP_VALIDATION_SHORT_ARG:
+                        arguments.SkipValidation = true;
                         break;
                     default:
                         break;
