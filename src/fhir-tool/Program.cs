@@ -49,6 +49,7 @@ namespace FhirTool
         public const string OptionReferenceUri = "http://ehelse.no/fhir/StructureDefinition/sdf-optionReference";
         public const string QuestionnaireItemHidden = "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden";
         public const string QuestionnaireAttachmentMaxSize = "http://hl7.org/fhir/StructureDefinition/maxSize";
+        public const string CalculatedExpressionUri = "http://ehelse.no/fhir/StructureDefinition/sdf-calculatedExpression";
 
         public const string AuthenticationRequirementSystem = "http://ehelse.no/fhir/ValueSet/AuthenticationRequirement";
         public const string AccessibilityToResponseSystem = "http://ehelse.no/fhir/ValueSet/AccessibilityToResponse";
@@ -1101,6 +1102,10 @@ namespace FhirTool
             if(item.AttachmentMaxSize.HasValue && itemComponent.Type == Questionnaire.QuestionnaireItemType.Attachment)
             {
                 itemComponent.SetExtension(QuestionnaireAttachmentMaxSize, new FhirDecimal(item.AttachmentMaxSize));
+            }
+            if(!string.IsNullOrWhiteSpace(item.CalculatedExpression))
+            {
+                itemComponent.SetStringExtension(CalculatedExpressionUri, item.CalculatedExpression);
             }
             
             return itemComponent;

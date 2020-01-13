@@ -158,5 +158,8 @@ namespace FhirTool.Model.FlatFile
         public bool Hidden;
         [FieldOptional]
         public decimal? AttachmentMaxSize;
+        [FieldOptional]
+        [FieldQuoted]
+        public string CalculatedExpression;
     }
 }
