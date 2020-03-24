@@ -50,6 +50,8 @@ namespace FhirTool
         public const string QuestionnaireItemHidden = "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden";
         public const string QuestionnaireAttachmentMaxSize = "http://hl7.org/fhir/StructureDefinition/maxSize";
         public const string CalculatedExpressionUri = "http://ehelse.no/fhir/StructureDefinition/sdf-calculatedExpression";
+        public const string GeneratePdfUri = "http://ehelse.no/fhir/StructureDefinition/sdf-generatepdf";
+        public const string GenerateNarrativeUri = "http://ehelse.no/fhir/StructureDefinition/sdf-generatenarrative";
 
         public const string AuthenticationRequirementSystem = "http://ehelse.no/fhir/ValueSet/AuthenticationRequirement";
         public const string AccessibilityToResponseSystem = "http://ehelse.no/fhir/ValueSet/AccessibilityToResponse";
@@ -912,6 +914,24 @@ namespace FhirTool
                 if (!string.IsNullOrEmpty(masterDetail.Master.Discretion))
                 {
                     questionnaire.SetExtension(DiscretionUri, new Coding(DiscretionSystem, masterDetail.Master.Discretion));
+                }
+
+                if (masterDetail.Master.GeneratePdf.HasValue)
+                {
+                    questionnaire.SetExtension(GeneratePdfUri, new FhirBoolean(masterDetail.Master.GeneratePdf.Value));
+                }
+                else
+                {
+                    questionnaire.SetExtension(GeneratePdfUri, new FhirBoolean(true));
+                }
+
+                if (masterDetail.Master.GenerateNarrative.HasValue)
+                {
+                    questionnaire.SetExtension(GenerateNarrativeUri, new FhirBoolean(masterDetail.Master.GenerateNarrative.Value));
+                }
+                else
+                {
+                    questionnaire.SetExtension(GenerateNarrativeUri, new FhirBoolean(true));
                 }
 
                 IList<string> linkIds = new List<string>();

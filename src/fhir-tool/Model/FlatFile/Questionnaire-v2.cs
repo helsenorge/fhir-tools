@@ -57,9 +57,11 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string Discretion;
         [FieldOptional]
-        public string Reservered2;
+        [FieldConverter(ConverterKind.Boolean, "true", "false")]
+        public bool? GeneratePdf;
         [FieldOptional]
-        public string Reservered3;
+        [FieldConverter(ConverterKind.Boolean, "true", "false")]
+        public bool? GenerateNarrative;
         [FieldOptional]
         public string Reservered4;
         [FieldOptional]
