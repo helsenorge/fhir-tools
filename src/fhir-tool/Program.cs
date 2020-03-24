@@ -53,12 +53,21 @@ namespace FhirTool
         public const string GeneratePdfUri = "http://ehelse.no/fhir/StructureDefinition/sdf-generatepdf";
         public const string GenerateNarrativeUri = "http://ehelse.no/fhir/StructureDefinition/sdf-generatenarrative";
 
+        public const string PresentationButtonsUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-presentationbuttons";
+        public const string GuidanceActionUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-guidanceaction";
+        public const string GuidanceParameterUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-guidanceparameter";
+        public const string FhirPathValidationUri = "http://ehelse.no/fhir/StructureDefinition/sdf-fhirpathvalidation";
+        public const string SdfMaxValueUri = "http://ehelse.no/fhir/StructureDefinition/sdf-maxvalue";
+        public const string SdfMinValueUri = "http://ehelse.no/fhir/StructureDefinition/sdf-minvalue";
+
         public const string AuthenticationRequirementSystem = "http://ehelse.no/fhir/ValueSet/AuthenticationRequirement";
         public const string AccessibilityToResponseSystem = "http://ehelse.no/fhir/ValueSet/AccessibilityToResponse";
         public const string CanBePerformedBySystem = "http://ehelse.no/fhir/ValueSet/CanBePerformedBy";
         public const string DiscretionSystem = "http://ehelse.no/fhir/ValueSet/Discretion";
 
         public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
+
+        public const string PresentationButtonsSystem = "http://helsenorge.no/fhir/ValueSet/presentationbuttons";
 
         private static readonly string ProxyBaseUrl = "https://skjemakatalog-test-fhir-apimgmt.azure-api.net/api/v1/";
 
@@ -934,6 +943,19 @@ namespace FhirTool
                     questionnaire.SetExtension(GenerateNarrativeUri, new FhirBoolean(true));
                 }
 
+                if (!string.IsNullOrEmpty(masterDetail.Master.PresentationsButton))
+                {
+                    questionnaire.SetExtension(PresentationButtonsUri, new Coding(PresentationButtonsSystem, masterDetail.Master.PresentationsButton));
+                }
+                else
+                {
+                    questionnaire.SetExtension(PresentationButtonsUri, new Coding(PresentationButtonsSystem, "sticky"));
+                }
+                if (!string.IsNullOrEmpty(masterDetail.Master.GuidanceAction))
+                {
+                    questionnaire.SetExtension(GuidanceActionUri, new FhirString(masterDetail.Master.GuidanceAction));
+                }
+
                 IList<string> linkIds = new List<string>();
                 Questionnaire.ItemComponent item = null;
                 for (int i = 0; i < masterDetail.Details.Length; i++)
@@ -1123,11 +1145,32 @@ namespace FhirTool
             {
                 itemComponent.SetExtension(QuestionnaireAttachmentMaxSize, new FhirDecimal(item.AttachmentMaxSize));
             }
+
             if(!string.IsNullOrWhiteSpace(item.CalculatedExpression))
             {
                 itemComponent.SetStringExtension(CalculatedExpressionUri, item.CalculatedExpression);
             }
-            
+
+            if (!string.IsNullOrWhiteSpace(item.GuidanceParameter))
+            {
+                itemComponent.SetStringExtension(GuidanceParameterUri, $"hn_frontend_{item.GuidanceParameter}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(item.FhirPathValidation))
+            {
+                itemComponent.SetStringExtension(FhirPathValidationUri, item.FhirPathValidation);
+            }
+
+            if (!string.IsNullOrWhiteSpace(item.FhirPathMaxValue))
+            {
+                itemComponent.SetStringExtension(SdfMaxValueUri, item.FhirPathMaxValue);
+            }
+
+            if (!string.IsNullOrWhiteSpace(item.FhirPathMinValue))
+            {
+                itemComponent.SetStringExtension(SdfMinValueUri, item.FhirPathMinValue);
+            }
+
             return itemComponent;
         }
 

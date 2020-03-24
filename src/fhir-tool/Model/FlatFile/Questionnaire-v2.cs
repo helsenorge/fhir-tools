@@ -63,9 +63,9 @@ namespace FhirTool.Model.FlatFile
         [FieldConverter(ConverterKind.Boolean, "true", "false")]
         public bool? GenerateNarrative;
         [FieldOptional]
-        public string Reservered4;
+        public string PresentationsButton;
         [FieldOptional]
-        public string Reservered5;
+        public string GuidanceAction;
         [FieldOptional]
         public string Reservered6;
         [FieldOptional]
@@ -165,5 +165,13 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         [FieldQuoted]
         public string CalculatedExpression;
+        [FieldOptional]
+        public string GuidanceParameter;
+        [FieldOptional]
+        public string FhirPathValidation;
+        [FieldOptional]
+        public string FhirPathMaxValue;
+        [FieldOptional]
+        public string FhirPathMinValue;
     }
 }
