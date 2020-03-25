@@ -943,17 +943,13 @@ namespace FhirTool
                     questionnaire.SetExtension(GenerateNarrativeUri, new FhirBoolean(true));
                 }
 
-                if (!string.IsNullOrEmpty(masterDetail.Master.PresentationsButton))
+                if (!string.IsNullOrEmpty(masterDetail.Master.PresentationButtons))
                 {
-                    questionnaire.SetExtension(PresentationButtonsUri, new Coding(PresentationButtonsSystem, masterDetail.Master.PresentationsButton));
+                    questionnaire.SetExtension(PresentationButtonsUri, new Coding(PresentationButtonsSystem, masterDetail.Master.PresentationButtons));
                 }
                 else
                 {
                     questionnaire.SetExtension(PresentationButtonsUri, new Coding(PresentationButtonsSystem, "sticky"));
-                }
-                if (!string.IsNullOrEmpty(masterDetail.Master.GuidanceAction))
-                {
-                    questionnaire.SetExtension(GuidanceActionUri, new FhirString(masterDetail.Master.GuidanceAction));
                 }
 
                 IList<string> linkIds = new List<string>();
@@ -1149,6 +1145,11 @@ namespace FhirTool
             if(!string.IsNullOrWhiteSpace(item.CalculatedExpression))
             {
                 itemComponent.SetStringExtension(CalculatedExpressionUri, item.CalculatedExpression);
+            }
+
+            if (!string.IsNullOrEmpty(item.GuidanceAction))
+            {
+                itemComponent.SetStringExtension(GuidanceActionUri, item.GuidanceAction);
             }
 
             if (!string.IsNullOrWhiteSpace(item.GuidanceParameter))
