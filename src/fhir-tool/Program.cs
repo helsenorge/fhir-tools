@@ -1149,12 +1149,12 @@ namespace FhirTool
 
             if (!string.IsNullOrEmpty(item.GuidanceAction))
             {
-                itemComponent.SetStringExtension(GuidanceActionUri, item.GuidanceAction);
+                itemComponent.SetStringExtension(GuidanceActionUri, item.GuidanceAction.Trim());
             }
 
             if (!string.IsNullOrWhiteSpace(item.GuidanceParameter))
             {
-                itemComponent.SetStringExtension(GuidanceParameterUri, $"hn_frontend_{item.GuidanceParameter}");
+                itemComponent.SetStringExtension(GuidanceParameterUri, $"hn_frontend_{item.GuidanceParameter.Trim()}");
             }
 
             if (!string.IsNullOrWhiteSpace(item.FhirPathValidation))
