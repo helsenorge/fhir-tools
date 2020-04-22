@@ -1,4 +1,5 @@
-﻿using Hl7.Fhir.Model;
+﻿using EnsureThat;
+using Hl7.Fhir.Model;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +19,16 @@ namespace FhirTool.Extensions
 
             return false;
         }
-        
+
+        public static bool HasContainedValueSet(this Questionnaire questionnaire, ResourceReference reference)
+        {
+            EnsureArg.IsNotNull(reference, nameof(reference));
+
+            string literal = reference.Reference.IndexOf("#") == 0 ? reference.Reference.Substring(1) : string.Empty;
+
+            return questionnaire.Contained.Any(r => r.ResourceType == ResourceType.ValueSet && r.Id == literal);
+        }
+
         public static IEnumerable<MissingValidationIssue> VerifyItemValidation(this Questionnaire questionnaire, Questionnaire.ItemComponent item)
         {
             var issues = new List<MissingValidationIssue>();
@@ -27,10 +37,33 @@ namespace FhirTool.Extensions
             issues.AddRange(VerifyRepeatingItemValidation(item));
             issues.AddRange(VerifyMaxOrMinValueIsSet(item));
             issues.AddRange(VerifyAttachmentValidation(item));
+            issues.AddRange(VerifyOptionsReferenceExists(questionnaire, item));
 
             foreach (Questionnaire.ItemComponent itm in item.Item)
             {
                 issues.AddRange(questionnaire.VerifyItemValidation(itm));
+            }
+
+            return issues;
+        }
+
+        private static IEnumerable<MissingValidationIssue> VerifyOptionsReferenceExists(Questionnaire questionnaire, Questionnaire.ItemComponent item)
+        {
+            if (item.Type != Questionnaire.QuestionnaireItemType.Choice && item.Type != Questionnaire.QuestionnaireItemType.OpenChoice)
+                return new MissingValidationIssue[0];
+            if(item.Options == null)
+                return new MissingValidationIssue[0];
+
+            var issues = new List<MissingValidationIssue>();
+
+            if (!questionnaire.HasContainedValueSet(item.Options))
+            {
+                issues.Add(new MissingValidationIssue
+                {
+                    LinkId = item.LinkId,
+                    Severity = MissingValidationSeverityEnum.Error,
+                    Details = $"Cannot find the reference to ValueSet {item.Options?.Reference}"
+                });
             }
 
             return issues;
