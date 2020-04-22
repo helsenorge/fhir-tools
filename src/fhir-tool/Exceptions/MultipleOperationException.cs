@@ -1,8 +1,11 @@
 ﻿using Hl7.Fhir.Utility;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FhirTool
 {
+    [SuppressMessage("Usage", "CA2237:Mark ISerializable types with serializable", Justification = "<Pending>")]
+    [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "<Pending>")]
     public class MultipleOperationException : Exception
     {
         public MultipleOperationException(OperationEnum operation)

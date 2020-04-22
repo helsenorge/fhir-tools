@@ -35,6 +35,7 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string Code;
         [FieldOptional]
+        [FieldQuoted]
         public string Display;
         [FieldOptional]
         public string Reservered0;

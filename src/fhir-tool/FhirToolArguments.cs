@@ -3,6 +3,7 @@ using System.Linq;
 using System.Configuration;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Utility;
+using EnsureThat;
 
 namespace FhirTool
 {
@@ -14,7 +15,8 @@ namespace FhirTool
         UploadDefinitions = 3,
         Bundle = 4,
         SplitBundle = 5,
-        TransferData = 6
+        TransferData = 6,
+        VerifyValidation = 7
     }
 
     public sealed class FhirToolArguments
@@ -27,6 +29,7 @@ namespace FhirTool
         public const string BUNDLE_OP = "bundle";
         public const string SPLIT_BUNDLE_OP = "split-bundle";
         public const string TRANSFER_DATA_OP = "transfer-data";
+        public const string VERIFY_VALIDATION_OP = "verify-validation";
 
         public const string QUESTIONNAIRE_ARG = "--questionnaire";
         public const string QUESTIONNAIRE_SHORT_ARG = "-q";
@@ -58,29 +61,35 @@ namespace FhirTool
         public const string RESOURCETYPE_ARG = "--resourcetype";
         public const string RESOURCETYPE_SHORT_ARG = "-R";
 
+        public const string SKIP_VALIDATION_ARG = "--skip-validation";
+        public const string SKIP_VALIDATION_SHORT_ARG = "-sv";
+
         public const string SEARCHCOUNT_ARG = "--searchcount";
         public const string SEARCHCOUNT_SHORT_ARG = "-sc";
 
-        public OperationEnum Operation { get; private set; }
-        public string QuestionnairePath { get; private set; }
-        public string ValueSetPath { get; private set; }
-        public string FhirBaseUrl { get; private set; }
+        public OperationEnum Operation { get; internal set; }
+        public string QuestionnairePath { get; internal set; }
+        public string ValueSetPath { get; internal set; }
+        public string FhirBaseUrl { get; internal set; }
         public string ProxyBaseUrl { get; internal set; }
-        public bool ResolveUrl { get; private set; }
-        public string Version { get; private set; }
-        public bool Verbose { get; private set; }
-        public string MimeType { get; private set; }
-        public string SourcePath { get; private set; }
-        public string OutPath { get; private set; }
-        public string Credentials { get; private set; }
+        public bool ResolveUrl { get; internal set; }
+        public string Version { get; internal set; }
+        public bool Verbose { get; internal set; }
+        public string MimeType { get; internal set; }
+        public string SourcePath { get; internal set; }
+        public string OutPath { get; internal set; }
+        public string Credentials { get; internal set; }
         public string Environment { get; set; }
         public string SourceEnvironment { get; set; }
         public string DestinationEnvironment { get; set; }
         public ResourceType? ResourceType { get; set; }
         public int SearchCount { get; set; }
+        public bool SkipValidation { get; set; }
 
         public static FhirToolArguments Create(string[] args)
         {
+            EnsureArg.IsNotNull(args, nameof(args));
+
             FhirToolArguments arguments = new FhirToolArguments();
 
             for(int i = 0; i < args.Length; i++)
@@ -111,6 +120,10 @@ namespace FhirTool
                     case TRANSFER_DATA_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.TransferData;
+                        break;
+                    case VERIFY_VALIDATION_OP:
+                        if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
+                        arguments.Operation = OperationEnum.VerifyValidation;
                         break;
                     case QUESTIONNAIRE_ARG:
                     case QUESTIONNAIRE_SHORT_ARG:
@@ -181,6 +194,10 @@ namespace FhirTool
                             throw new RequiredArgumentException($"{SEARCHCOUNT_ARG}|{SEARCHCOUNT_SHORT_ARG}");
                         arguments.SearchCount = searchCount;
                         break;
+                    case SKIP_VALIDATION_ARG:
+                    case SKIP_VALIDATION_SHORT_ARG:
+                        arguments.SkipValidation = true;
+                        break;
                     default:
                         break;
                 }
@@ -198,6 +215,8 @@ namespace FhirTool
 
         public static EnvironmentElement GetEnvironmentElement(string name)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(name, nameof(name));
+
             EnvironmentSection environmentSection = GetEnvironmentSection();
             if (!environmentSection.Items.Exists(name)) return null;
             EnvironmentElement environment = environmentSection.Items[name] as EnvironmentElement;
@@ -207,6 +226,8 @@ namespace FhirTool
 
         public static bool IsKnownEnvironment(string name)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(name, nameof(name));
+
             return GetEnvironmentElement(name) != null;
         }
     }

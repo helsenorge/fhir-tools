@@ -33,26 +33,29 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ensure.That, Version=8.2.0.0, Culture=neutral, PublicKeyToken=d7cf9132176ba30b, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Ensure.That.8.2.0\lib\net451\Ensure.That.dll</HintPath>
+    </Reference>
     <Reference Include="FileHelpers, Version=3.3.0.0, Culture=neutral, PublicKeyToken=3e0c08d59cc3d657, processorArchitecture=MSIL">
       <HintPath>..\..\packages\FileHelpers.3.3.0\lib\net45\FileHelpers.dll</HintPath>
     </Reference>
-    <Reference Include="Hl7.Fhir.ElementModel, Version=1.4.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Hl7.Fhir.ElementModel.1.4.0\lib\net45\Hl7.Fhir.ElementModel.dll</HintPath>
+    <Reference Include="Hl7.Fhir.ElementModel, Version=1.6.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Hl7.Fhir.ElementModel.1.6.0\lib\net45\Hl7.Fhir.ElementModel.dll</HintPath>
     </Reference>
-    <Reference Include="Hl7.Fhir.R4.Core, Version=1.4.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Hl7.Fhir.R4.1.4.0\lib\net45\Hl7.Fhir.R4.Core.dll</HintPath>
+    <Reference Include="Hl7.Fhir.R4.Core, Version=1.6.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Hl7.Fhir.R4.1.6.0\lib\net45\Hl7.Fhir.R4.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Hl7.Fhir.Serialization, Version=1.4.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Hl7.Fhir.Serialization.1.4.0\lib\net45\Hl7.Fhir.Serialization.dll</HintPath>
+    <Reference Include="Hl7.Fhir.Serialization, Version=1.6.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Hl7.Fhir.Serialization.1.6.0\lib\net45\Hl7.Fhir.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Hl7.Fhir.Support, Version=1.4.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Hl7.Fhir.Support.1.4.0\lib\net45\Hl7.Fhir.Support.dll</HintPath>
+    <Reference Include="Hl7.Fhir.Support, Version=1.6.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Hl7.Fhir.Support.1.6.0\lib\net45\Hl7.Fhir.Support.dll</HintPath>
     </Reference>
-    <Reference Include="Hl7.Fhir.Support.Poco, Version=1.4.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Hl7.Fhir.Support.Poco.1.4.0\lib\net45\Hl7.Fhir.Support.Poco.dll</HintPath>
+    <Reference Include="Hl7.Fhir.Support.Poco, Version=1.6.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Hl7.Fhir.Support.Poco.1.6.0\lib\net45\Hl7.Fhir.Support.Poco.dll</HintPath>
     </Reference>
-    <Reference Include="Hl7.FhirPath, Version=1.4.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Hl7.FhirPath.1.4.0\lib\net45\Hl7.FhirPath.dll</HintPath>
+    <Reference Include="Hl7.FhirPath, Version=1.6.0.0, Culture=neutral, PublicKeyToken=d706911480550fc3, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Hl7.FhirPath.1.6.0\lib\net45\Hl7.FhirPath.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -93,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\EnvironmentSection.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Exceptions\DuplicateLinkIdException.cs" />
     <Compile Include="Exceptions\MissingRequirementException.cs" />
     <Compile Include="Exceptions\MultipleOperationException.cs" />
@@ -101,19 +105,23 @@
     <Compile Include="Exceptions\RequiredArgumentException.cs" />
     <Compile Include="Exceptions\RequiredAttributeException.cs" />
     <Compile Include="Exceptions\UnknownEnvironmentNameException.cs" />
-    <Compile Include="Extensions\FhirToolArgumentsExtensionMethods.cs" />
-    <Compile Include="Extensions\KeyExtensionMethods.cs" />
-    <Compile Include="Extensions\UriExtensionMethods.cs" />
+    <Compile Include="Extensions\BundleExtensions.cs" />
+    <Compile Include="Extensions\FhirToolArgumentsExtensions.cs" />
+    <Compile Include="Extensions\QuestionnaireExtensions.cs" />
+    <Compile Include="Extensions\KeyExtensions.cs" />
+    <Compile Include="Extensions\ResourceExtensions.cs" />
+    <Compile Include="Extensions\UriExtensions.cs" />
+    <Compile Include="Extensions\ValueSetExtensions.cs" />
     <Compile Include="FhirLoader.cs" />
     <Compile Include="FhirToolArguments.cs" />
     <Compile Include="IOHelpers.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MissingValidationIssue.cs" />
     <Compile Include="Model\CodeableConceptElement.cs" />
     <Compile Include="Model\CodingElement.cs" />
     <Compile Include="Model\DataTypeEnum.cs" />
     <Compile Include="Model\EnableWhenElement.cs" />
-    <Compile Include="Extensions\FhirExtensionMethods.cs" />
     <Compile Include="Model\FlatFile\Questionnaire-v2.cs" />
     <Compile Include="Model\FlatFile\Questionnaire-v1.cs" />
     <Compile Include="Model\FlatFile\ValueSet.cs" />
@@ -122,7 +130,7 @@
     <Compile Include="Model\UsageContextElement.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extensions\StringExtensionMethods.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

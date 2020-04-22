@@ -1,10 +1,11 @@
-﻿using System;
+﻿using EnsureThat;
+using System;
 using System.IO;
 using System.Net.Http;
 
 namespace FhirTool.Extensions
 {
-    public static class FhirToolArgumentsExtensionMethods
+    internal static class FhirToolArgumentsExtensions
     {
         public static bool Validate(this FhirToolArguments arguments)
         {
@@ -45,6 +46,8 @@ namespace FhirTool.Extensions
 
         public static HttpResponseMessage ResolveUrl(this FhirToolArguments arguments, Uri uri)
         {
+            EnsureArg.IsNotNull(uri, nameof(uri));
+
             HttpResponseMessage response = null;
             HttpRequestMessage request = new HttpRequestMessage
             {

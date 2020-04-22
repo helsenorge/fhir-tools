@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using EnsureThat;
+using System.IO;
 
 namespace FhirTool
 {
@@ -6,6 +7,8 @@ namespace FhirTool
     {
         internal static bool IsDirectory(string path)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(path, nameof(path));
+
             FileAttributes attr = File.GetAttributes(path);
             return (attr & FileAttributes.Directory) == FileAttributes.Directory;
         }

@@ -1,4 +1,5 @@
-﻿using FhirTool.Extensions;
+﻿using EnsureThat;
+using FhirTool.Extensions;
 
 namespace FhirTool
 {
@@ -65,6 +66,8 @@ namespace FhirTool
 
         public static Key ParseOperationPath(string path)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(path, nameof(path));
+
             Key key = new Key();
             path = path.Trim('/');
             int indexOfQueryString = path.IndexOf('?');

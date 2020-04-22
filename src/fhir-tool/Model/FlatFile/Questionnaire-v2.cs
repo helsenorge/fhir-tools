@@ -57,6 +57,18 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string Discretion;
         [FieldOptional]
+        [FieldConverter(ConverterKind.Boolean, "true", "false")]
+        public bool? GeneratePdf;
+        [FieldOptional]
+        [FieldConverter(ConverterKind.Boolean, "true", "false")]
+        public bool? GenerateNarrative;
+        [FieldOptional]
+        public string PresentationButtons;
+        [FieldOptional]
+        public string Reservered0;
+        [FieldOptional]
+        public string Reservered1;
+        [FieldOptional]
         public string Reservered2;
         [FieldOptional]
         public string Reservered3;
@@ -72,6 +84,8 @@ namespace FhirTool.Model.FlatFile
         public string Reservered8;
         [FieldOptional]
         public string Reservered9;
+        [FieldOptional]
+        public string Reservered10;
     }
 
     [DelimitedRecord("\t")]
@@ -135,6 +149,7 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public int? MaxOccurs;
         [FieldOptional]
+        [FieldQuoted]
         public string Regex;
         [FieldOptional]
         [FieldQuoted]
@@ -157,5 +172,18 @@ namespace FhirTool.Model.FlatFile
         public bool Hidden;
         [FieldOptional]
         public decimal? AttachmentMaxSize;
+        [FieldOptional]
+        [FieldQuoted]
+        public string CalculatedExpression;
+        [FieldOptional]
+        public string GuidanceAction;
+        [FieldOptional]
+        public string GuidanceParameter;
+        [FieldOptional]
+        public string FhirPathValidation;
+        [FieldOptional]
+        public string FhirPathMaxValue;
+        [FieldOptional]
+        public string FhirPathMinValue;
     }
 }

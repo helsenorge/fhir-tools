@@ -2,7 +2,7 @@
 
 namespace FhirTool.Extensions
 {
-    public static class KeyExtensionMethods
+    internal static class KeyExtensions
     {
         public static IEnumerable<string> GetSegments(this IKey key)
         {
