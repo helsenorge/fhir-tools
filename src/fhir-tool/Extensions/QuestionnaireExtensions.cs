@@ -103,6 +103,12 @@ namespace FhirTool.Extensions
                 return new MissingValidationIssue[0];
             }
 
+            // If this is a read-only field and it contains a fhirpath for data extraction do not suggest any validation
+            if (item.ReadOnly == true && item.GetExtensions(Constants.FhirPathUri).Any())
+            {
+                return new MissingValidationIssue[0];
+            }
+
             var issues = new List<MissingValidationIssue>();
             if (item.GetExtensions(Constants.MaxValueUri).Count() == 0 || item.GetExtensions(Constants.MinValueUri).Count() == 0)
             {
@@ -140,6 +146,11 @@ namespace FhirTool.Extensions
         {
             if ((item.Type != Questionnaire.QuestionnaireItemType.String && item.Type != Questionnaire.QuestionnaireItemType.Text)
                 || !item.IsItemControlOfType("help", "help-link", "inline"))
+            {
+                return new MissingValidationIssue[0];
+            }
+            // If this is a read-only field and it contains a fhirpath for data extraction do not suggest any validation
+            if(item.ReadOnly == true && item.GetExtensions(Constants.FhirPathUri).Any())
             {
                 return new MissingValidationIssue[0];
             }
