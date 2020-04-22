@@ -25,50 +25,6 @@ namespace FhirTool
 {
     partial class Program
     {
-        public const string QuestionnaireProfileUri = "http://ehelse.no/fhir/StructureDefinition/sdf-Questionnaire";
-
-        public const string EntryFormatUri = "http://hl7.org/fhir/StructureDefinition/entryFormat";
-        public const string MaxDecimalPlacesUri = "http://hl7.org/fhir/StructureDefinition/maxDecimalPlaces";
-        public const string MinLenghtUri = "http://hl7.org/fhir/StructureDefinition/minLength";
-        public const string RegexUri = "http://hl7.org/fhir/StructureDefinition/regex";
-        public const string MaxValueUri = "http://hl7.org/fhir/StructureDefinition/maxValue";
-        public const string MinValueUri = "http://hl7.org/fhir/StructureDefinition/minValue";
-        public const string ValidationTextUri = "http://ehelse.no/fhir/StructureDefinition/validationtext";
-        public const string RepeatsTextUri = "http://ehelse.no/fhir/StructureDefinition/repeatstext";
-        public const string ItemControlUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl";
-        public const string MaxOccursUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-maxOccurs";
-        public const string MinOccursUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-minOccurs";
-        public const string QuestionnaireUnitUri = "http://hl7.org/fhir/StructureDefinition/questionnaire-unit";
-        public const string RenderingMarkdownUri = "http://hl7.org/fhir/StructureDefinition/rendering-markdown";
-        public const string EndPointUri = "http://ehelse.no/fhir/StructureDefinition/sdf-endpoint";
-        public const string AuthenticationRequirementUri = "http://ehelse.no/fhir/StructureDefinition/sdf-authenticationrequirement";
-        public const string FhirPathUri = "http://ehelse.no/fhir/StructureDefinition/sdf-fhirpath";
-        public const string AccessibilityToResponseUri = "http://ehelse.no/fhir/StructureDefinition/sdf-accessibilitytoresponse";
-        public const string CanBePerformedByUri = "http://ehelse.no/fhir/StructureDefinition/sdf-canbeperformedby";
-        public const string DiscretionUri = "http://ehelse.no/fhir/StructureDefinition/sdf-discretion";
-        public const string OptionReferenceUri = "http://ehelse.no/fhir/StructureDefinition/sdf-optionReference";
-        public const string QuestionnaireItemHidden = "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden";
-        public const string QuestionnaireAttachmentMaxSize = "http://hl7.org/fhir/StructureDefinition/maxSize";
-        public const string CalculatedExpressionUri = "http://ehelse.no/fhir/StructureDefinition/sdf-calculatedExpression";
-        public const string GeneratePdfUri = "http://ehelse.no/fhir/StructureDefinition/sdf-generatepdf";
-        public const string GenerateNarrativeUri = "http://ehelse.no/fhir/StructureDefinition/sdf-generatenarrative";
-
-        public const string PresentationButtonsUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-presentationbuttons";
-        public const string GuidanceActionUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-guidanceaction";
-        public const string GuidanceParameterUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-guidanceparameter";
-        public const string FhirPathValidationUri = "http://ehelse.no/fhir/StructureDefinition/sdf-fhirpathvalidation";
-        public const string SdfMaxValueUri = "http://ehelse.no/fhir/StructureDefinition/sdf-maxvalue";
-        public const string SdfMinValueUri = "http://ehelse.no/fhir/StructureDefinition/sdf-minvalue";
-
-        public const string AuthenticationRequirementSystem = "http://ehelse.no/fhir/ValueSet/AuthenticationRequirement";
-        public const string AccessibilityToResponseSystem = "http://ehelse.no/fhir/ValueSet/AccessibilityToResponse";
-        public const string CanBePerformedBySystem = "http://ehelse.no/fhir/ValueSet/CanBePerformedBy";
-        public const string DiscretionSystem = "http://ehelse.no/fhir/ValueSet/Discretion";
-
-        public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
-
-        public const string PresentationButtonsSystem = "http://helsenorge.no/fhir/ValueSet/presentationbuttons";
-
         private static readonly string ProxyBaseUrl = "https://skjemakatalog-test-fhir-apimgmt.azure-api.net/api/v1/";
 
         private static string FileNameReservedCharacters = "<>:\"/\\|?*";
@@ -287,7 +243,7 @@ namespace FhirTool
 
             var issues = new List<MissingValidationIssue>();
 
-            if (item.GetExtensions(QuestionnaireAttachmentMaxSize).Count() == 0)
+            if (item.GetExtensions(Constants.QuestionnaireAttachmentMaxSize).Count() == 0)
             {
                 issues.Add(new MissingValidationIssue
                 {
@@ -312,7 +268,7 @@ namespace FhirTool
             }
 
             var issues = new List<MissingValidationIssue>();
-            if(item.GetExtensions(MaxValueUri).Count() == 0 || item.GetExtensions(MinValueUri).Count() == 0)
+            if(item.GetExtensions(Constants.MaxValueUri).Count() == 0 || item.GetExtensions(Constants.MinValueUri).Count() == 0)
             {
                 issues.Add(new MissingValidationIssue
                 {
@@ -330,7 +286,7 @@ namespace FhirTool
             var issues = new List<MissingValidationIssue>();
             if (item.Repeats == true)
             {
-                if (item.GetExtensions(MaxOccursUri).Count() == 0)
+                if (item.GetExtensions(Constants.MaxOccursUri).Count() == 0)
                 {
                     issues.Add(new MissingValidationIssue
                     {
@@ -360,7 +316,7 @@ namespace FhirTool
                 });
             }
             // Issues an error if a regex has NOT been set
-            if (item.GetExtensions(RegexUri).Count() == 0)
+            if (item.GetExtensions(Constants.RegexUri).Count() == 0)
             {
                 issues.Add(new MissingValidationIssue
                 {
@@ -443,7 +399,7 @@ namespace FhirTool
                     questionnaire.Url = questionnaire.Url.Replace(sourceEnvironment.ProxyBaseUrl, string.Empty);
                     questionnaire.Url = questionnaire.Url.Replace(sourceEnvironment.FhirBaseUrl, string.Empty);
 
-                    IEnumerable<Extension> extensions = questionnaire.GetExtensions(EndPointUri);
+                    IEnumerable<Extension> extensions = questionnaire.GetExtensions(Constants.EndPointUri);
                     foreach(Extension extension in extensions)
                     {
                         if(extension.Value is ResourceReference)
@@ -454,7 +410,7 @@ namespace FhirTool
                         }
                     }
 
-                    extensions = questionnaire.GetExtensions(OptionReferenceUri);
+                    extensions = questionnaire.GetExtensions(Constants.OptionReferenceUri);
                     foreach (Extension extension in extensions)
                     {
                         if (extension.Value is ResourceReference)
@@ -845,7 +801,7 @@ namespace FhirTool
 
                 questionnaire.Meta = new Meta
                 {
-                    Profile = new string[] { QuestionnaireProfileUri }
+                    Profile = new string[] { Constants.QuestionnaireProfileUri }
                 };
 
                 questionnaire.Id = string.IsNullOrEmpty(masterDetail.Master.Id) ? null : masterDetail.Master.Id;
@@ -902,54 +858,54 @@ namespace FhirTool
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.Endpoint))
                 {
-                    questionnaire.SetExtension(EndPointUri, new ResourceReference($"{_arguments.ProxyBaseUrl}{masterDetail.Master.Endpoint}"));
+                    questionnaire.SetExtension(Constants.EndPointUri, new ResourceReference($"{_arguments.ProxyBaseUrl}{masterDetail.Master.Endpoint}"));
                 }
 
                 if(!string.IsNullOrEmpty(masterDetail.Master.AuthenticationRequirement))
                 {
-                    questionnaire.SetExtension(AuthenticationRequirementUri, new Coding(AuthenticationRequirementSystem, masterDetail.Master.AuthenticationRequirement));
+                    questionnaire.SetExtension(Constants.AuthenticationRequirementUri, new Coding(Constants.AuthenticationRequirementSystem, masterDetail.Master.AuthenticationRequirement));
                 }
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.AccessibilityToResponse))
                 {
-                    questionnaire.SetExtension(AccessibilityToResponseUri, new Coding(AccessibilityToResponseSystem, masterDetail.Master.AccessibilityToResponse));
+                    questionnaire.SetExtension(Constants.AccessibilityToResponseUri, new Coding(Constants.AccessibilityToResponseSystem, masterDetail.Master.AccessibilityToResponse));
                 }
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.CanBePerformedBy))
                 {
-                    questionnaire.SetExtension(CanBePerformedByUri, new Coding(CanBePerformedBySystem, masterDetail.Master.CanBePerformedBy));
+                    questionnaire.SetExtension(Constants.CanBePerformedByUri, new Coding(Constants.CanBePerformedBySystem, masterDetail.Master.CanBePerformedBy));
                 }
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.Discretion))
                 {
-                    questionnaire.SetExtension(DiscretionUri, new Coding(DiscretionSystem, masterDetail.Master.Discretion));
+                    questionnaire.SetExtension(Constants.DiscretionUri, new Coding(Constants.DiscretionSystem, masterDetail.Master.Discretion));
                 }
 
                 if (masterDetail.Master.GeneratePdf.HasValue)
                 {
-                    questionnaire.SetExtension(GeneratePdfUri, new FhirBoolean(masterDetail.Master.GeneratePdf.Value));
+                    questionnaire.SetExtension(Constants.GeneratePdfUri, new FhirBoolean(masterDetail.Master.GeneratePdf.Value));
                 }
                 else
                 {
-                    questionnaire.SetExtension(GeneratePdfUri, new FhirBoolean(true));
+                    questionnaire.SetExtension(Constants.GeneratePdfUri, new FhirBoolean(true));
                 }
 
                 if (masterDetail.Master.GenerateNarrative.HasValue)
                 {
-                    questionnaire.SetExtension(GenerateNarrativeUri, new FhirBoolean(masterDetail.Master.GenerateNarrative.Value));
+                    questionnaire.SetExtension(Constants.GenerateNarrativeUri, new FhirBoolean(masterDetail.Master.GenerateNarrative.Value));
                 }
                 else
                 {
-                    questionnaire.SetExtension(GenerateNarrativeUri, new FhirBoolean(true));
+                    questionnaire.SetExtension(Constants.GenerateNarrativeUri, new FhirBoolean(true));
                 }
 
                 if (!string.IsNullOrEmpty(masterDetail.Master.PresentationButtons))
                 {
-                    questionnaire.SetExtension(PresentationButtonsUri, new Coding(PresentationButtonsSystem, masterDetail.Master.PresentationButtons));
+                    questionnaire.SetExtension(Constants.PresentationButtonsUri, new Coding(Constants.PresentationButtonsSystem, masterDetail.Master.PresentationButtons));
                 }
                 else
                 {
-                    questionnaire.SetExtension(PresentationButtonsUri, new Coding(PresentationButtonsSystem, "sticky"));
+                    questionnaire.SetExtension(Constants.PresentationButtonsUri, new Coding(Constants.PresentationButtonsSystem, "sticky"));
                 }
 
                 IList<string> linkIds = new List<string>();
@@ -1040,37 +996,37 @@ namespace FhirTool
             }
 
             if (!string.IsNullOrEmpty(item.ValidationText))
-                itemComponent.SetStringExtension(ValidationTextUri, item.ValidationText);
+                itemComponent.SetStringExtension(Constants.ValidationTextUri, item.ValidationText);
 
             if (!string.IsNullOrEmpty(item.Options) && item.Options.IndexOf('#') == 0)
                 itemComponent.Options = new ResourceReference($"#{item.Options.Substring(1)}");
             
             if (!string.IsNullOrEmpty(item.EntryFormat))
-                itemComponent.SetStringExtension(EntryFormatUri, item.EntryFormat);
+                itemComponent.SetStringExtension(Constants.EntryFormatUri, item.EntryFormat);
 
             if (item.MaxValueInteger.HasValue)
-                itemComponent.SetIntegerExtension(MaxValueUri, item.MaxValueInteger.Value);
+                itemComponent.SetIntegerExtension(Constants.MaxValueUri, item.MaxValueInteger.Value);
             if (item.MinValueInteger.HasValue)
-                itemComponent.SetIntegerExtension(MinValueUri, item.MinValueInteger.Value);
+                itemComponent.SetIntegerExtension(Constants.MinValueUri, item.MinValueInteger.Value);
 
             if (item.MaxValueDate.HasValue)
-                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(Constants.MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
             if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(Constants.MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
 
             if (item.MaxValueDate.HasValue)
-                itemComponent.SetExtension(MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(Constants.MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
             if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(Constants.MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
 
             if (item.MinLength.HasValue)
-                itemComponent.SetIntegerExtension(MinLenghtUri, item.MinLength.Value);
+                itemComponent.SetIntegerExtension(Constants.MinLenghtUri, item.MinLength.Value);
 
             if (item.MaxDecimalPlaces.HasValue)
-                itemComponent.SetIntegerExtension(MaxDecimalPlacesUri, item.MaxDecimalPlaces.Value);
+                itemComponent.SetIntegerExtension(Constants.MaxDecimalPlacesUri, item.MaxDecimalPlaces.Value);
 
             if (!string.IsNullOrEmpty(item.RepeatsText))
-                itemComponent.SetStringExtension(RepeatsTextUri, item.RepeatsText);
+                itemComponent.SetStringExtension(Constants.RepeatsTextUri, item.RepeatsText);
 
             if (!string.IsNullOrEmpty(item.ItemControl))
             {
@@ -1078,32 +1034,32 @@ namespace FhirTool
                 {
                     Coding = new List<Coding> { new Coding
                         {
-                            System = ItemControlSystem,
+                            System = Constants.ItemControlSystem,
                             Code = item.ItemControl
                         }
                     }
                 };
                 
-                itemComponent.SetExtension(ItemControlUri, codeableConcept);
+                itemComponent.SetExtension(Constants.ItemControlUri, codeableConcept);
             }
 
             if (item.MaxOccurs.HasValue)
-                itemComponent.SetIntegerExtension(MaxOccursUri, item.MaxOccurs.Value);
+                itemComponent.SetIntegerExtension(Constants.MaxOccursUri, item.MaxOccurs.Value);
             if (item.MinOccurs.HasValue)
-                itemComponent.SetIntegerExtension(MinOccursUri, item.MinOccurs.Value);
+                itemComponent.SetIntegerExtension(Constants.MinOccursUri, item.MinOccurs.Value);
 
             if (!string.IsNullOrEmpty(item.Regex))
-                itemComponent.SetStringExtension(RegexUri, item.Regex);
+                itemComponent.SetStringExtension(Constants.RegexUri, item.Regex);
 
             if (!string.IsNullOrEmpty(item.Markdown))
             {
                 if (itemComponent.Text == null) throw new MissingRequirementException($"Question with linkId: {item.LinkId}. The 'Text' attribute is required when setting the 'Markdown' extension so that form fillers which do not support the 'Markdown' extension still can display informative text to the user.");
-                itemComponent.TextElement.SetExtension(RenderingMarkdownUri, new Markdown(item.Markdown));
+                itemComponent.TextElement.SetExtension(Constants.RenderingMarkdownUri, new Markdown(item.Markdown));
             }
             if (!string.IsNullOrEmpty(item.Unit))
             {
                 Coding unitCoding = ParseCoding(item.Unit);
-                itemComponent.SetExtension(QuestionnaireUnitUri, unitCoding);
+                itemComponent.SetExtension(Constants.QuestionnaireUnitUri, unitCoding);
             }
 
             if(!string.IsNullOrEmpty(item.Code))
@@ -1118,7 +1074,7 @@ namespace FhirTool
                 {
                     if (element is ResourceReference)
                     {
-                        itemComponent.AddExtension(OptionReferenceUri, element);
+                        itemComponent.AddExtension(Constants.OptionReferenceUri, element);
                     }
                     else
                     {
@@ -1129,47 +1085,47 @@ namespace FhirTool
 
             if(!string.IsNullOrEmpty(item.FhirPathExpression))
             {
-                itemComponent.SetStringExtension(FhirPathUri, item.FhirPathExpression);
+                itemComponent.SetStringExtension(Constants.FhirPathUri, item.FhirPathExpression);
             }
 
             if (item.Hidden)
             {
-                itemComponent.SetBoolExtension(QuestionnaireItemHidden, item.Hidden);
+                itemComponent.SetBoolExtension(Constants.QuestionnaireItemHidden, item.Hidden);
             }
 
             if(item.AttachmentMaxSize.HasValue && itemComponent.Type == Questionnaire.QuestionnaireItemType.Attachment)
             {
-                itemComponent.SetExtension(QuestionnaireAttachmentMaxSize, new FhirDecimal(item.AttachmentMaxSize));
+                itemComponent.SetExtension(Constants.QuestionnaireAttachmentMaxSize, new FhirDecimal(item.AttachmentMaxSize));
             }
 
             if(!string.IsNullOrWhiteSpace(item.CalculatedExpression))
             {
-                itemComponent.SetStringExtension(CalculatedExpressionUri, item.CalculatedExpression);
+                itemComponent.SetStringExtension(Constants.CalculatedExpressionUri, item.CalculatedExpression);
             }
 
             if (!string.IsNullOrEmpty(item.GuidanceAction))
             {
-                itemComponent.SetStringExtension(GuidanceActionUri, item.GuidanceAction.Trim());
+                itemComponent.SetStringExtension(Constants.GuidanceActionUri, item.GuidanceAction.Trim());
             }
 
             if (!string.IsNullOrWhiteSpace(item.GuidanceParameter))
             {
-                itemComponent.SetStringExtension(GuidanceParameterUri, $"hn_frontend_{item.GuidanceParameter.Trim()}");
+                itemComponent.SetStringExtension(Constants.GuidanceParameterUri, $"hn_frontend_{item.GuidanceParameter.Trim()}");
             }
 
             if (!string.IsNullOrWhiteSpace(item.FhirPathValidation))
             {
-                itemComponent.SetStringExtension(FhirPathValidationUri, item.FhirPathValidation);
+                itemComponent.SetStringExtension(Constants.FhirPathValidationUri, item.FhirPathValidation);
             }
 
             if (!string.IsNullOrWhiteSpace(item.FhirPathMaxValue))
             {
-                itemComponent.SetStringExtension(SdfMaxValueUri, item.FhirPathMaxValue);
+                itemComponent.SetStringExtension(Constants.SdfMaxValueUri, item.FhirPathMaxValue);
             }
 
             if (!string.IsNullOrWhiteSpace(item.FhirPathMinValue))
             {
-                itemComponent.SetStringExtension(SdfMinValueUri, item.FhirPathMinValue);
+                itemComponent.SetStringExtension(Constants.SdfMinValueUri, item.FhirPathMinValue);
             }
 
             return itemComponent;
@@ -1356,15 +1312,15 @@ namespace FhirTool
             }
 
             if (!string.IsNullOrEmpty(item.ValidationText))
-                itemComponent.SetStringExtension(ValidationTextUri, item.ValidationText);
+                itemComponent.SetStringExtension(Constants.ValidationTextUri, item.ValidationText);
             if (!string.IsNullOrEmpty(item.ReferenceValue) && item.ReferenceValue.IndexOf('#') == 0)
                 itemComponent.Options = new ResourceReference($"#{item.ReferenceValue.Substring(1)}");
             if (!string.IsNullOrEmpty(item.EntryFormat))
-                itemComponent.SetStringExtension(EntryFormatUri, item.EntryFormat);
+                itemComponent.SetStringExtension(Constants.EntryFormatUri, item.EntryFormat);
             if (item.MaxValue.HasValue)
-                itemComponent.SetIntegerExtension(MaxValueUri, item.MaxValue.Value);
+                itemComponent.SetIntegerExtension(Constants.MaxValueUri, item.MaxValue.Value);
             if (item.MinValue.HasValue)
-                itemComponent.SetIntegerExtension(MinValueUri, item.MinValue.Value);
+                itemComponent.SetIntegerExtension(Constants.MinValueUri, item.MinValue.Value);
 
             return itemComponent;
         }

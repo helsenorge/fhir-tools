@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\EnvironmentSection.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Exceptions\DuplicateLinkIdException.cs" />
     <Compile Include="Exceptions\MissingRequirementException.cs" />
     <Compile Include="Exceptions\MultipleOperationException.cs" />
