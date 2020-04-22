@@ -3,6 +3,7 @@ using System.Linq;
 using System.Configuration;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Utility;
+using EnsureThat;
 
 namespace FhirTool
 {
@@ -87,6 +88,8 @@ namespace FhirTool
 
         public static FhirToolArguments Create(string[] args)
         {
+            EnsureArg.IsNotNull(args, nameof(args));
+
             FhirToolArguments arguments = new FhirToolArguments();
 
             for(int i = 0; i < args.Length; i++)
@@ -212,6 +215,8 @@ namespace FhirTool
 
         public static EnvironmentElement GetEnvironmentElement(string name)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(name, nameof(name));
+
             EnvironmentSection environmentSection = GetEnvironmentSection();
             if (!environmentSection.Items.Exists(name)) return null;
             EnvironmentElement environment = environmentSection.Items[name] as EnvironmentElement;
@@ -221,6 +226,8 @@ namespace FhirTool
 
         public static bool IsKnownEnvironment(string name)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(name, nameof(name));
+
             return GetEnvironmentElement(name) != null;
         }
     }

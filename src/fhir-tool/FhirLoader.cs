@@ -1,4 +1,5 @@
-﻿using Hl7.Fhir.Model;
+﻿using EnsureThat;
+using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Utility;
 using Newtonsoft.Json.Linq;
@@ -15,7 +16,9 @@ namespace FhirTool
     {
         public static bool IsKnownResourceType(string data)
         {
-            if(SerializationUtil.ProbeIsJson(data))
+            EnsureArg.IsNotNull(data, nameof(data));
+
+            if (SerializationUtil.ProbeIsJson(data))
             {
                 JObject resource = JObject.Parse(data);
                 return resource != null
@@ -52,6 +55,8 @@ namespace FhirTool
 
         public static IEnumerable<Resource> ImportData(string data)
         {
+            EnsureArg.IsNotNull(data, nameof(data));
+
             if (!IsKnownResourceType(data)) return new Resource[] { }; ;
 
             Resource resource = ParseResource(data);
@@ -81,6 +86,8 @@ namespace FhirTool
 
         public static IEnumerable<Resource> ImportFile(string filename)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(filename, nameof(filename));
+
             string data = File.ReadAllText(filename);
             return ImportData(data);
         }
@@ -106,6 +113,8 @@ namespace FhirTool
 
         public static IEnumerable<Resource> ImportZip(string filename)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(filename, nameof(filename));
+
             return File.ReadAllBytes(filename).ExtractZipEntries().SelectMany(ImportData); ;
         }
 

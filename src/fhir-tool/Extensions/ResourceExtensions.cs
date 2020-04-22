@@ -1,4 +1,5 @@
-﻿using Hl7.Fhir.Model;
+﻿using EnsureThat;
+using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Newtonsoft.Json;
 using System;
@@ -47,12 +48,13 @@ namespace FhirTool.Extensions
         {
             string _base = (resource.ResourceBase != null) ? resource.ResourceBase.ToString() : null;
             Key key = new Key(_base, resource.TypeName, resource.Id, resource.VersionId);
-            Key a = new Key();
             return key;
         }
 
         public static void SerializeResourceToDiskAsXml(this Resource resource, string path)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(path, nameof(path));
+
             using (XmlWriter writer = new XmlTextWriter(new StreamWriter(path)))
             {
                 var serializer = new FhirXmlSerializer();
@@ -62,6 +64,8 @@ namespace FhirTool.Extensions
 
         public static void SerializeResourceToDiskAsJson(this Resource resource, string path)
         {
+            EnsureArg.IsNotNullOrWhiteSpace(path, nameof(path));
+
             using (JsonWriter writer = new JsonTextWriter(new StreamWriter(path)))
             {
                 var serializer = new FhirJsonSerializer();

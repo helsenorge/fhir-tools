@@ -1,4 +1,5 @@
-﻿using Hl7.Fhir.Model;
+﻿using EnsureThat;
+using Hl7.Fhir.Model;
 using System;
 
 namespace FhirTool.Extensions
@@ -7,11 +8,15 @@ namespace FhirTool.Extensions
     {
         public static void Append(this Bundle bundle, Resource resource)
         {
+            EnsureArg.IsNotNull(resource, nameof(resource));
+
             bundle.Entry.Add(CreateEntryForResource(resource));
         }
 
         public static void Append(this Bundle bundle, Bundle.HTTPVerb method, Resource resource)
         {
+            EnsureArg.IsNotNull(resource, nameof(resource));
+
             Bundle.EntryComponent entry = CreateEntryForResource(resource);
 
             if (entry.Request == null) entry.Request = new Bundle.RequestComponent();

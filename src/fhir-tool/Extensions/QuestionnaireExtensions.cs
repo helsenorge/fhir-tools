@@ -9,6 +9,8 @@ namespace FhirTool.Extensions
     {
         public static bool IsItemControlOfType(this Questionnaire.ItemComponent item, params string[] itemControlType)
         {
+            EnsureArg.IsNotNull(itemControlType, nameof(itemControlType));
+
             IEnumerable<Extension> extensions = item.GetExtensions(Constants.ItemControlUri);
             foreach (Extension extension in extensions)
             {
@@ -31,6 +33,8 @@ namespace FhirTool.Extensions
 
         public static IEnumerable<MissingValidationIssue> VerifyItemValidation(this Questionnaire questionnaire, Questionnaire.ItemComponent item)
         {
+            EnsureArg.IsNotNull(item, nameof(item));
+
             var issues = new List<MissingValidationIssue>();
 
             issues.AddRange(VerifyStringAndTextValidation(item));
