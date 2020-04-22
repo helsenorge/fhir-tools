@@ -21,13 +21,13 @@ namespace FhirTool.Extensions
 
         private static Bundle.EntryComponent CreateEntryForResource(Resource resource)
         {
-            var entry = new Bundle.EntryComponent();
-            entry.Resource = resource;
-            //            entry.FullUrl = resource.ResourceIdentity().ToString();
-            if (resource.ResourceBase == null)
-                entry.FullUrl = $"urn:uuid:{Guid.NewGuid().ToString("D")}";
-            else
-                entry.FullUrl = resource.ExtractKey().ToUriString();
+            var entry = new Bundle.EntryComponent
+            {
+                Resource = resource,
+                FullUrl = resource.ResourceBase == null 
+                    ? $"urn:uuid:{Guid.NewGuid().ToString("D")}" 
+                    : resource.ExtractKey().ToUriString()
+            };
 
             return entry;
         }
