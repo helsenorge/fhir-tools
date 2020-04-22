@@ -221,7 +221,8 @@ namespace FhirTool
         {
             var issues = new List<MissingValidationIssue>();
 
-            if(item.Type == Questionnaire.QuestionnaireItemType.String || item.Type == Questionnaire.QuestionnaireItemType.Text)
+            if((item.Type == Questionnaire.QuestionnaireItemType.String || item.Type == Questionnaire.QuestionnaireItemType.Text)
+                && !item.IsItemControlOfType("help", "help-link", "inline"))
             {
                 issues.AddRange(VerifyStringAndTextValidation(item));
                 issues.AddRange(VerifyRepeatingItemValidation(item));
