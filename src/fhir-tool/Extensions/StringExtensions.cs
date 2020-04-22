@@ -3,7 +3,7 @@ using System.Text;
 
 namespace FhirTool.Extensions
 {
-    internal static class StringExtensionMethods
+    internal static class StringExtensions
     {
         internal static string UpperCaseFirstCharacter(this string s)
         {

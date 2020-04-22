@@ -2,7 +2,7 @@
 
 namespace FhirTool.Extensions
 {
-    public static class UriExtensionMethods
+    public static class UriExtensions
     {
         public static bool IsHttpScheme(this Uri uri)
         {

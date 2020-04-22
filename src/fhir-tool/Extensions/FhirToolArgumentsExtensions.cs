@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace FhirTool.Extensions
 {
-    public static class FhirToolArgumentsExtensionMethods
+    public static class FhirToolArgumentsExtensions
     {
         public static bool Validate(this FhirToolArguments arguments)
         {
