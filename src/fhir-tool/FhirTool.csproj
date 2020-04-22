@@ -87,7 +87,7 @@
     <Compile Include="Exceptions\UnknownEnvironmentNameException.cs" />
     <Compile Include="Extensions\BundleExtensions.cs" />
     <Compile Include="Extensions\FhirToolArgumentsExtensions.cs" />
-    <Compile Include="Extensions\ItemComponentExtensions.cs" />
+    <Compile Include="Extensions\QuestionnaireExtensions.cs" />
     <Compile Include="Extensions\KeyExtensions.cs" />
     <Compile Include="Extensions\ResourceExtensions.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
