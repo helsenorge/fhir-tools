@@ -770,6 +770,12 @@ namespace FhirTool
                     questionnaire.SetExtension(Constants.PresentationButtonsUri, new Coding(Constants.PresentationButtonsSystem, "sticky"));
                 }
 
+                if(masterDetail.Master.SaveToDocumentArchive.HasValue && masterDetail.Master.SaveToDocumentArchive.Value != false)
+                {
+                    // Only set if it is true, it defaults to false.
+                    questionnaire.SetBoolExtension(Constants.SdfSaveToDocumentUri, true);
+                }
+
                 IList<string> linkIds = new List<string>();
                 Questionnaire.ItemComponent item = null;
                 for (int i = 0; i < masterDetail.Details.Length; i++)
