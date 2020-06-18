@@ -773,7 +773,7 @@ namespace FhirTool
                 if(masterDetail.Master.SaveToDocumentArchive.HasValue && masterDetail.Master.SaveToDocumentArchive.Value != false)
                 {
                     // Only set if it is true, it defaults to false.
-                    questionnaire.SetBoolExtension(Constants.SdfSaveToDocumentUri, true);
+                    questionnaire.SetBoolExtension(Constants.SaveToDocumentUri, true);
                 }
 
                 IList<string> linkIds = new List<string>();
