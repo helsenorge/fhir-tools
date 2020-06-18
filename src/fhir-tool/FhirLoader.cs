@@ -1,4 +1,5 @@
 ﻿using EnsureThat;
+using FhirTool.Core;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Utility;

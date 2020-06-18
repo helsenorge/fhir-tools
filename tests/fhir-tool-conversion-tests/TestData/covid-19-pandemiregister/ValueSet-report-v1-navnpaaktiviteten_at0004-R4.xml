@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-navnpaaktiviteten_at0004-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Navn på aktiviteten. Navnet på sykdomshåndteringen (tiltaket) eller behandlingsaktiviteten som blir registrert.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from terminology SNOMED-CT</p>
+         <ul>
+            <li>361235007: Isolation of infected patient (procedure)</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-navnpaaktiviteten_at0004-R4"/>
+   <version value="20200603"/>
+   <name value="Navn på aktiviteten"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Navnet på sykdomshåndteringen (tiltaket) eller behandlingsaktiviteten som blir registrert."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.management_screening.v0"/>
+         <concept>
+            <code value="361235007"/>
+            <display value="Isolation of infected patient (procedure)"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

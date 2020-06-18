@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Questionnaire xmlns="http://hl7.org/fhir">
+   <id value="questionnaire-Blodtrykk-R4"/>
+   <url value="http://linkehr.com/fhir/questionnaire-blodtrykk-R4"/>
+   <version value="0"/>
+   <name value="Blodtrykk"/>
+   <status value="draft"/>
+   <date value="2020-04-28"/>
+   <publisher value="openEHR"/>
+   <contact>
+      <telecom>
+         <system value="url"/>
+         <value value="http://www.veratech.es"/>
+      </telecom>
+   </contact>
+   <description value="Måling av blodtrykket som uttrykk for det arterielle blodtrykk i det systemiske kretsløp."/>
+   <item>
+      <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0000"/>
+      <text value="Generelt - konsept - Blodtrykk"/>
+      <type value="group"/>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0004"/>
+         <text value="Systolisk"/>
+         <type value="quantity"/>
+      </item>
+      <code>
+         <system value="SNOMED-CT(2003)"/>
+         <code value="271649006"/>
+      </code>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0005"/>
+         <text value="Diastolisk"/>
+         <type value="quantity"/>
+      </item>
+      <code>
+         <system value="SNOMED-CT(2003)"/>
+         <code value="271650006"/>
+      </code>
+   </item>
+   <code>
+      <system value="SNOMED-CT(2003)"/>
+      <code value="364090009"/>
+   </code>
+</Questionnaire>

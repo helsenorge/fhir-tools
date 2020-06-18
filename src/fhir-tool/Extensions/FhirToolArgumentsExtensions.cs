@@ -1,4 +1,5 @@
 ﻿using EnsureThat;
+using FhirTool.Core;
 using System;
 using System.IO;
 using System.Net.Http;

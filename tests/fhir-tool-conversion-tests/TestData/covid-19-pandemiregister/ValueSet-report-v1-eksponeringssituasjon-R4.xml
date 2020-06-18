@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-eksponeringssituasjon-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Eksponeringssituasjon. Omstendigheten rundt mulig eksponering.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from terminology SNOMED-CT</p>
+         <ul>
+            <li>1821000202107: Finding of close encounter with person with confirmed or probable covid-19 while subject has symptoms (finding)</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-eksponeringssituasjon-R4"/>
+   <version value="20200603"/>
+   <name value="Eksponeringssituasjon"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Omstendigheten rundt mulig eksponering."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.exposure_assessment.v0"/>
+         <concept>
+            <code value="1821000202107"/>
+            <display value="Finding of close encounter with person with confirmed or probable covid-19 while subject has symptoms (finding)"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

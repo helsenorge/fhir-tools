@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-blood-pressure-v2-method-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Method. Method of measurement of blood pressure.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from archetype openEHR-EHR-OBSERVATION.blood_pressure.v2 internal terminology</p>
+         <ul>
+            <li>at1036: Auscultation</li>
+            <li>at1037: Palpation</li>
+            <li>at1039: Machine</li>
+            <li>at1040: Invasive</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-blood-pressure-v2-method-R4"/>
+   <version value="20200424"/>
+   <name value="Method"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Method of measurement of blood pressure."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.blood_pressure.v2"/>
+         <concept>
+            <code value="at1036"/>
+            <display value="Auscultation"/>
+            <designation>
+               <language value="ja"/>
+               <value value="聴診"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Auskultation"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="听诊法"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Auscultatie"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Аускультация"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Auscultation(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="التسمع"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Auscultación"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Ausculta"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*청진(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Auscultación"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Auskultasjon"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Auskultation"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Auskultaatio"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1037"/>
+            <display value="Palpation"/>
+            <designation>
+               <language value="ja"/>
+               <value value="触診"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Palpation"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="触诊法"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Palpatie"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Пальпация"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Palpation(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الجس"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Palpación"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Palpação"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*타진(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Palpación"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Palpasjon"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Palpation"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Palpaatio"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1039"/>
+            <display value="Machine"/>
+            <designation>
+               <language value="ja"/>
+               <value value="機械"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Machine"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="仪器法"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Machinaal"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Автоматический тонометр"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Machine(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الآلة"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Máquina"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Aparelho de pressão"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*장비(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Dispositivo"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Automatisk, non-invasivt"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Blodtrycksmaskin"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Kone"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1040"/>
+            <display value="Invasive"/>
+            <designation>
+               <language value="ja"/>
+               <value value="侵襲的"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Invasiv"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="有创法"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Invasief"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Инвазивный"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Invasive(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="باضع"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Invasivo"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Invasivo"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*침습적 방법(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Invasivo"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Automatisk, invasivt"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Invasiv"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Invasiivinen"/>
+            </designation>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

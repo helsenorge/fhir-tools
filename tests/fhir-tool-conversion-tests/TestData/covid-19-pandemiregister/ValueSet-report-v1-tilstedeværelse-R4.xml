@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-tilstedeværelse-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Tilstedeværelse. Tilstedeværelse av eksponeringssituasjon.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from archetype openEHR-EHR-COMPOSITION.report.v1 internal terminology</p>
+         <ul>
+            <li>at0047: Tilstede</li>
+            <li>at0049: Ikke tilstede</li>
+            <li>at0048: Ukjent</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-tilstedeværelse-R4"/>
+   <version value="20200603"/>
+   <name value="Tilstedeværelse"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Tilstedeværelse av eksponeringssituasjon."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.exposure_assessment.v0"/>
+         <concept>
+            <code value="at0047"/>
+            <display value="Tilstede"/>
+         </concept>
+         <concept>
+            <code value="at0049"/>
+            <display value="Ikke tilstede"/>
+         </concept>
+         <concept>
+            <code value="at0048"/>
+            <display value="Ukjent"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

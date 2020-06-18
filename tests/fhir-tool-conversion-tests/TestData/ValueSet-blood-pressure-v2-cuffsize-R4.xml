@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-blood-pressure-v2-cuffsize-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Cuff size. The size of the cuff used for blood pressure measurement.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from archetype openEHR-EHR-OBSERVATION.blood_pressure.v2 internal terminology</p>
+         <ul>
+            <li>at0015: Adult Thigh</li>
+            <li>at0016: Large Adult</li>
+            <li>at0017: Adult</li>
+            <li>at1008: Small Adult</li>
+            <li>at1009: Paediatric/Child</li>
+            <li>at1018: Infant</li>
+            <li>at1019: Neonatal</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-blood-pressure-v2-cuffsize-R4"/>
+   <version value="20200424"/>
+   <name value="Cuff size"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="The size of the cuff used for blood pressure measurement."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.blood_pressure.v2"/>
+         <concept>
+            <code value="at0015"/>
+            <display value="Adult Thigh"/>
+            <designation>
+               <language value="ja"/>
+               <value value="成人大腿"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Oberschenkel eines Erwachsenen"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="成年人大腿型"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Volwassen dijbeen"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Взрослая для бедра"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="ران بزرگسال"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="فخذ البالغ"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Muslo Adulto"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Coxa de adulto"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="성인 허벅지"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Muslo adulto"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Lår voksne"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Vuxet lår"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Aikuisen reisi"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at0016"/>
+            <display value="Large Adult"/>
+            <designation>
+               <language value="ja"/>
+               <value value="大柄な成人"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Großer Erwachsener"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="成年人粗大型"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Grote volwassene"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Взрослая большая"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="بزرگسال درشت"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="بالغ كبير"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Adulto grande"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Adulto Grande"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*큰 성인(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Adulto grande"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Store voksne"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Stor vuxen"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Aikuiset, suuri"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at0017"/>
+            <display value="Adult"/>
+            <designation>
+               <language value="ja"/>
+               <value value="成人"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Erwachsener"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="成年人标准型"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Volwassene"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Взрослая"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Adult(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="البالغ"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Adulto"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Adulto"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*성인(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Adulto"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Voksne"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Vuxen"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Aikuinen"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1008"/>
+            <display value="Small Adult"/>
+            <designation>
+               <language value="ja"/>
+               <value value="小柄な成人"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Kleiner Erwachsener"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="成年人细小型"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Kleine volwassene"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Взрослая малая"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Small Adult(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="البالغ الصغير"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Adulto pequeño"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Adulto pequeno"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*작은 성인(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Adulto pequeño"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Små voksne"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Liten Vuxen"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Aikuiset, pieni"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1009"/>
+            <display value="Paediatric/Child"/>
+            <designation>
+               <language value="ja"/>
+               <value value="幼児/小児"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Pädiatrisch/Kind"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="儿科型/儿童型"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Pediatrie/kinder"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Педиатрическая(детская)"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Paediatric/Child(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="طفل"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Pediátrico/Niño"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Criança/Pediátrico"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*소아/아동(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Pediátrico"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Barn"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Pediatrisk/Barn"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Pediatrinen/lapsi"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1018"/>
+            <display value="Infant"/>
+            <designation>
+               <language value="ja"/>
+               <value value="幼児"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Kleinkind"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="婴幼儿型"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Zuigeling"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Для младенцев"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Infant(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="رضيع"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Infantil"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Criança pequena "/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*영아(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Infante"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Spedbarn"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Spädbarn"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Vauva"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1019"/>
+            <display value="Neonatal"/>
+            <designation>
+               <language value="ja"/>
+               <value value="新生児"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Neonatal"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="新生儿型"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Neonaat"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Для новорожденных"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Neonatal(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="حديث الولادة"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Neonatal"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Neonatal"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*신생아(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Neonato"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Neonatale"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Nyfödd"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Vastasyntynyt"/>
+            </designation>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

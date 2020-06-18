@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-innenlands_utenlands-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Innenlands/utenlands. Var reisingen innenlands, utenlands eller begge?</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from archetype openEHR-EHR-COMPOSITION.report.v1 internal terminology</p>
+         <ul>
+            <li>at0029: Utenlands reise</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-innenlands_utenlands-R4"/>
+   <version value="20200603"/>
+   <name value="Innenlands/utenlands"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Var reisingen innenlands, utenlands eller begge?"/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.travel_event.v0"/>
+         <concept>
+            <code value="at0029"/>
+            <display value="Utenlands reise"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

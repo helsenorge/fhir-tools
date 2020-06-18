@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-legemiddelklasse-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Legemiddelklasse. Navnet på klassen eller typen legemiddel.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from terminology SNOMED-CT</p>
+         <ul>
+            <li>419241000: Substance with antibacterial mechanism of action (substance)</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelklasse-R4"/>
+   <version value="20200603"/>
+   <name value="Legemiddelklasse"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Navnet på klassen eller typen legemiddel."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.medication_use.v0"/>
+         <concept>
+            <code value="419241000"/>
+            <display value="Substance with antibacterial mechanism of action (substance)"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

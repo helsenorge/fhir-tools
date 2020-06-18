@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-navnpatilstand-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Navn på tilstand. Navnet på tilstanden som blir registrert.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from terminology SNOMED-CT</p>
+         <ul>
+            <li>363346000: Malignant neoplastic disease (disorder)</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand-R4"/>
+   <version value="20200603"/>
+   <name value="Navn på tilstand"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Navnet på tilstanden som blir registrert."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.condition_screening.v0"/>
+         <concept>
+            <code value="363346000"/>
+            <display value="Malignant neoplastic disease (disorder)"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

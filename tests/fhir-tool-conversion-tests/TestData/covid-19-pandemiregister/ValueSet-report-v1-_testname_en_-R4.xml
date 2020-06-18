@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-_testname_en_-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set *Test name (en). *The name of the imaging examination or procedure performed. (en)</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from terminology NCRP</p>
+         <ul>
+            <li>SSC0AA: RG Toraks</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-_testname_en_-R4"/>
+   <version value="20200603"/>
+   <name value="*Test name (en)"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="*The name of the imaging examination or procedure performed. (en)"/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.imaging_exam_result.v0"/>
+         <concept>
+            <code value="SSC0AA"/>
+            <display value="RG Toraks"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

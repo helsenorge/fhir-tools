@@ -1,7 +1,9 @@
 ﻿using FhirTool.Configuration;
+using FhirTool.Core;
 using FhirTool.Extensions;
 using FhirTool.Model;
 using FhirTool.Model.FlatFile;
+using FhirTool.Operations;
 using FileHelpers.MasterDetail;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
@@ -27,7 +29,6 @@ namespace FhirTool
     {
         private static readonly string ProxyBaseUrl = "https://skjemakatalog-test-fhir-apimgmt.azure-api.net/api/v1/";
 
-        private static string FileNameReservedCharacters = "<>:\"/\\|?*";
         private static FhirToolArguments _arguments = null;
         private static TextWriter _out = null;
 
@@ -45,7 +46,7 @@ namespace FhirTool
         // fhir-tool.exe upload --format xml --questionnaire HVIIFJ-nb-NO-0.1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         // fhir-tool.exe upload --format xml --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml --environment dev
-        
+
         // fhir-tool.exe verify-validation --questionnaire Ehelse_AlleKonstruksjoner-nb-NO-0.1.xml
 
         // fhir-tool.exe upload-definitions --format xml --source C:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url --credentials user:password
@@ -59,10 +60,13 @@ namespace FhirTool
         // fhir-tool.exe upload-definitions --format xml --source F:\dev\src\fhir-sdf\resources\StructureDefinition --fhir-base-url https://stu3.simplifier.net/Digitaleskjema --credentials <username>:<password>
 
         // fhir-tool.exe split-bundle --format xml --source F:\patient-observations.xml --format xml
+        // fhir-tool.exe convert --source F:\patient-observations.xml --convert-from r3 --convert-to r4
 
         // Unsure if we should handle kith and messaging in this tool
         // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
+
+
 
         // fhir-tool.exe transfer-data --environment-source test --environment-destination qa --resourcetype Questionnaire --searchcount 1000
         static void Main(string[] args)
@@ -88,6 +92,7 @@ namespace FhirTool
                     goto exit;
                 }
 
+                IOperation operation;
                 switch(_arguments.Operation)
                 {
                     case OperationEnum.Generate:
@@ -126,6 +131,10 @@ namespace FhirTool
                         break;
                     case OperationEnum.VerifyValidation:
                         Console.WriteLine($"VerifyItemValidation: {VerifyItemValidation(_arguments)}");
+                        break;
+                    case OperationEnum.Convert:
+                        operation = new ConvertOperation();
+                        operation.Execute(_arguments);
                         break;
                     default:
                         throw new NotSupportedOperationException(_arguments.Operation);
@@ -182,19 +191,19 @@ namespace FhirTool
                 return false;
             }
 
-            IEnumerable<MissingValidationIssue> issues = VerifyItemValidation(questionnaire);
+            IEnumerable<Issue> issues = VerifyItemValidation(questionnaire);
 
-            foreach (MissingValidationIssue issue in issues)
+            foreach (Issue issue in issues)
             {
                 switch (issue.Severity)
                 {
-                    case MissingValidationSeverityEnum.Error:
+                    case IssueSeverityEnum.Error:
                         Logger.ErrorWriteLineToOutput($"LinkId: {issue.LinkId}, Severity: {issue.Severity}, Details: {issue.Details}");
                         break;
-                    case MissingValidationSeverityEnum.Warning:
+                    case IssueSeverityEnum.Warning:
                         Logger.WarnWriteLineToOutput($"LinkId: {issue.LinkId}, Severity: {issue.Severity}, Details: {issue.Details}");
                         break;
-                    case MissingValidationSeverityEnum.Information:
+                    case IssueSeverityEnum.Information:
                         Logger.InfoWriteLineToOutput($"LinkId: {issue.LinkId}, Severity: {issue.Severity}, Details: {issue.Details}");
                         break;
                     default:
@@ -203,12 +212,12 @@ namespace FhirTool
                 }
             }
 
-            return !issues.Any(i => i.Severity == MissingValidationSeverityEnum.Error);
+            return !issues.Any(i => i.Severity == IssueSeverityEnum.Error);
         }
 
-        private static IEnumerable<MissingValidationIssue> VerifyItemValidation(Questionnaire questionnaire)
+        private static IEnumerable<Issue> VerifyItemValidation(Questionnaire questionnaire)
         {
-            var issues = new List<MissingValidationIssue>();
+            var issues = new List<Issue>();
             foreach(Questionnaire.ItemComponent item in questionnaire.Item)
             {
                 issues.AddRange(questionnaire.VerifyItemValidation(item));
@@ -389,14 +398,14 @@ namespace FhirTool
             if (arguments.MimeType == "xml")
             {
                 string path = $"{filename}.xml";
-                filename = GenerateLegalFilename(path);
+                filename = IOHelpers.GenerateLegalFilename(path);
                 Logger.WriteLineToOutput($"Writing Questionnaire in xml format to local disk: {filename}");
                 questionnaire.SerializeResourceToDiskAsXml(filename);
             }
             else if (arguments.MimeType == "json")
             {
                 string path = $"{filename}.json";
-                filename = GenerateLegalFilename(path);
+                filename = IOHelpers.GenerateLegalFilename(path);
                 Logger.WriteLineToOutput($"Writing Questionnaire in json format to local disk: {filename}");
                 questionnaire.SerializeResourceToDiskAsJson(filename);
             }
@@ -632,17 +641,6 @@ namespace FhirTool
             return languageCode;
         }
         
-        static string GenerateLegalFilename(string path)
-        {
-            string legalFilename = path;
-            foreach(char c in FileNameReservedCharacters)
-            {
-                legalFilename = legalFilename.Replace(c, '_');
-            }
-
-            return legalFilename;
-        }
-
         private static IList<Questionnaire> GetQuestionnairesFromFlatFileFormatV2(string path)
         {
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
@@ -1149,7 +1147,7 @@ namespace FhirTool
         private static Questionnaire.ItemComponent CreateItemComponentV1(QuestionnaireItem item)
         {
             Questionnaire.QuestionnaireItemType? itemType = EnumUtility.ParseLiteral<Questionnaire.QuestionnaireItemType>(item.Type);
-            if (!itemType.HasValue) throw new Exception(string.Format("QuestionnaireItemType at question with linkId: {} is not conforming to any valid literals. QuestionnaireItemType: {1}", item.LinkId, item.Type));
+            if (!itemType.HasValue) throw new Exception($"QuestionnaireItemType at question with linkId: {item.LinkId} is not conforming to any valid literals. QuestionnaireItemType: {item.Type}");
 
             Questionnaire.ItemComponent itemComponent = new Questionnaire.ItemComponent
             {
@@ -1483,7 +1481,7 @@ namespace FhirTool
 
             foreach (Questionnaire questionnaire in questionnaires)
             {
-                questionnaire.SerializeResourceToDiskAsXml(GenerateLegalFilename($"Questionnaire-{questionnaire.Name}.xml"));
+                questionnaire.SerializeResourceToDiskAsXml(IOHelpers.GenerateLegalFilename($"Questionnaire-{questionnaire.Name}.xml"));
 
                 bundleOfQuestionnaires.Entry.Add(new Bundle.EntryComponent
                 {
@@ -1512,7 +1510,7 @@ namespace FhirTool
 
             foreach (ValueSet valueSet in valueSets)
             {
-                valueSet.SerializeResourceToDiskAsXml(GenerateLegalFilename($"ValueSet-{valueSet.Name}.xml"));
+                valueSet.SerializeResourceToDiskAsXml(IOHelpers.GenerateLegalFilename($"ValueSet-{valueSet.Name}.xml"));
 
                 bundleOfValueSets.Entry.Add(new Bundle.EntryComponent
                 {

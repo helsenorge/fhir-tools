@@ -95,29 +95,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\EnvironmentSection.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Exceptions\DuplicateLinkIdException.cs" />
-    <Compile Include="Exceptions\MissingRequirementException.cs" />
-    <Compile Include="Exceptions\MultipleOperationException.cs" />
-    <Compile Include="Exceptions\NotSupportedMimeTypeException.cs" />
-    <Compile Include="Exceptions\NotSupportedOperationException.cs" />
-    <Compile Include="Exceptions\RequiredArgumentException.cs" />
-    <Compile Include="Exceptions\RequiredAttributeException.cs" />
-    <Compile Include="Exceptions\UnknownEnvironmentNameException.cs" />
-    <Compile Include="Extensions\BundleExtensions.cs" />
     <Compile Include="Extensions\FhirToolArgumentsExtensions.cs" />
-    <Compile Include="Extensions\QuestionnaireExtensions.cs" />
-    <Compile Include="Extensions\KeyExtensions.cs" />
-    <Compile Include="Extensions\ResourceExtensions.cs" />
-    <Compile Include="Extensions\UriExtensions.cs" />
-    <Compile Include="Extensions\ValueSetExtensions.cs" />
+    <Compile Include="Configuration\EnvironmentSection.cs" />
     <Compile Include="FhirLoader.cs" />
     <Compile Include="FhirToolArguments.cs" />
-    <Compile Include="IOHelpers.cs" />
-    <Compile Include="Key.cs" />
+    <Compile Include="FhirVersion.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="MissingValidationIssue.cs" />
     <Compile Include="Model\CodeableConceptElement.cs" />
     <Compile Include="Model\CodingElement.cs" />
     <Compile Include="Model\DataTypeEnum.cs" />
@@ -128,9 +111,10 @@
     <Compile Include="Model\QuantityElement.cs" />
     <Compile Include="Model\ReferenceElement.cs" />
     <Compile Include="Model\UsageContextElement.cs" />
+    <Compile Include="Operations\ConvertOperation.cs" />
+    <Compile Include="Operations\IOperation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -141,6 +125,12 @@
     <None Include="upload.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\fhir-tool-core\fhir-tool-core.csproj">
+      <Project>{98888b69-210f-4205-952c-e49fb5eb4015}</Project>
+      <Name>fhir-tool-core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

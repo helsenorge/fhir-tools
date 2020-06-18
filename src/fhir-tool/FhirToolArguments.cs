@@ -4,21 +4,10 @@ using System.Configuration;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Utility;
 using EnsureThat;
+using FhirTool.Core;
 
 namespace FhirTool
 {
-    public enum OperationEnum
-    {
-        None = 0,
-        Generate = 1,
-        Upload = 2,
-        UploadDefinitions = 3,
-        Bundle = 4,
-        SplitBundle = 5,
-        TransferData = 6,
-        VerifyValidation = 7
-    }
-
     public sealed class FhirToolArguments
     {
         public static readonly string[] SUPPORTED_MIMETYPES = { "xml", "json" };
@@ -30,6 +19,7 @@ namespace FhirTool
         public const string SPLIT_BUNDLE_OP = "split-bundle";
         public const string TRANSFER_DATA_OP = "transfer-data";
         public const string VERIFY_VALIDATION_OP = "verify-validation";
+        public const string CONVERT_OP = "convert";
 
         public const string QUESTIONNAIRE_ARG = "--questionnaire";
         public const string QUESTIONNAIRE_SHORT_ARG = "-q";
@@ -53,6 +43,10 @@ namespace FhirTool
         public const string CREDENTIALS_SHORT_ARG = "-c";
         public const string ENVIRONMENT_ARG = "--environment";
         public const string ENVIRONMENT_SHORT_ARG = "-e";
+        public const string CONVERT_FROM_ARG = "--convert-from";
+        public const string CONVERT_FROM_SHORT_ARG = "-cf";
+        public const string CONVERT_TO_ARG = "--convert-to";
+        public const string CONVERT_TO_SHORT_ARG = "-ct";
 
         public const string ENVIRONMENT_SOURCE_ARG = "--environment-source";
         public const string ENVIRONMENT_SOURCE_SHORT_ARG = "-es";
@@ -85,6 +79,8 @@ namespace FhirTool
         public ResourceType? ResourceType { get; set; }
         public int SearchCount { get; set; }
         public bool SkipValidation { get; set; }
+        public string FromFhirVersion { get; set; }
+        public string ToFhirVersion { get; set; }
 
         public static FhirToolArguments Create(string[] args)
         {
@@ -124,6 +120,10 @@ namespace FhirTool
                     case VERIFY_VALIDATION_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.VerifyValidation;
+                        break;
+                    case CONVERT_OP:
+                        if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
+                        arguments.Operation = OperationEnum.Convert;
                         break;
                     case QUESTIONNAIRE_ARG:
                     case QUESTIONNAIRE_SHORT_ARG:
@@ -197,6 +197,14 @@ namespace FhirTool
                     case SKIP_VALIDATION_ARG:
                     case SKIP_VALIDATION_SHORT_ARG:
                         arguments.SkipValidation = true;
+                        break;
+                    case CONVERT_FROM_ARG:
+                    case CONVERT_FROM_SHORT_ARG:
+                        arguments.FromFhirVersion = FhirVersion.ConvertToFhirVersion(args[i + 1]);
+                        break;
+                    case CONVERT_TO_ARG:
+                    case CONVERT_TO_SHORT_ARG:
+                        arguments.ToFhirVersion = FhirVersion.ConvertToFhirVersion(args[i + 1]);
                         break;
                     default:
                         break;
