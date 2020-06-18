@@ -29,7 +29,6 @@
         public const string CalculatedExpressionUri = "http://ehelse.no/fhir/StructureDefinition/sdf-calculatedExpression";
         public const string GeneratePdfUri = "http://ehelse.no/fhir/StructureDefinition/sdf-generatepdf";
         public const string GenerateNarrativeUri = "http://ehelse.no/fhir/StructureDefinition/sdf-generatenarrative";
-        public const string SaveToDocumentUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-save-to-document-archive";
 
         public const string PresentationButtonsUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-presentationbuttons";
         public const string GuidanceActionUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-guidanceaction";

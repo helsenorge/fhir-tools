@@ -65,8 +65,8 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string PresentationButtons;
         [FieldOptional]
-        [FieldConverter(ConverterKind.Boolean, "true", "false")]
-        public bool? SaveToDocumentArchive;
+        [FieldQuoted]
+        public string Code;
         [FieldOptional]
         public string Reservered0;
         [FieldOptional]

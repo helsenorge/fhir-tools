@@ -770,10 +770,9 @@ namespace FhirTool
                     questionnaire.SetExtension(Constants.PresentationButtonsUri, new Coding(Constants.PresentationButtonsSystem, "sticky"));
                 }
 
-                if(masterDetail.Master.SaveToDocumentArchive.HasValue && masterDetail.Master.SaveToDocumentArchive.Value != false)
+                if(!string.IsNullOrEmpty(masterDetail.Master.Code))
                 {
-                    // Only set if it is true, it defaults to false.
-                    questionnaire.SetBoolExtension(Constants.SaveToDocumentUri, true);
+                    questionnaire.Code = ParseArrayOfCoding(masterDetail.Master.Code);
                 }
 
                 IList<string> linkIds = new List<string>();
