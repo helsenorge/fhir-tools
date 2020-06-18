@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fhir-tool-conversion-tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fhir-tool-core", "src\fhir-tool-core\fhir-tool-core.csproj", "{98888B69-210F-4205-952C-E49FB5EB4015}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fhir-tool-core-tests", "tests\fhir-tool-core-tests\fhir-tool-core-tests.csproj", "{3BDC3E02-7F24-4BA1-B72C-370E0415C24B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{98888B69-210F-4205-952C-E49FB5EB4015}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98888B69-210F-4205-952C-E49FB5EB4015}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98888B69-210F-4205-952C-E49FB5EB4015}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BDC3E02-7F24-4BA1-B72C-370E0415C24B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BDC3E02-7F24-4BA1-B72C-370E0415C24B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BDC3E02-7F24-4BA1-B72C-370E0415C24B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BDC3E02-7F24-4BA1-B72C-370E0415C24B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>FhirTool.Conversion.Tests</RootNamespace>
+    <AssemblyName>FhirTool.Conversion.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="QuestionnaireR4ToR3ConversionTests.cs">
+    <Compile Update="Covid19PandemiRegisterTests.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>
@@ -116,7 +117,19 @@
     <None Update="TestData\Generelt blodtrykk\questionnaire-Blodtrykk-R4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\questionnaire-305-R3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\questionnaire-305-R4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\questionnaire-Bloodpressure-R4.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\questionnaire-example-R3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\questionnaire-example-R4.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TestData\ValueSet-blood-pressure-v2-cuffsize-R4.xml">

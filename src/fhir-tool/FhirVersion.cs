@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FhirTool
 {
-    internal static class FhirVersion
+    internal static class FhirVersionInternal
     {
         private const string R2_MONIKER = "R2";
         private const string R3_MONIKER = "R3";

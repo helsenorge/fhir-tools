@@ -8,79 +8,9 @@ using FhirTool.Core;
 
 namespace FhirTool
 {
-    public sealed class FhirToolArguments
+    public sealed class HandleFhirToolArguments
     {
         public static readonly string[] SUPPORTED_MIMETYPES = { "xml", "json" };
-
-        public const string GENERATE_OP = "generate";
-        public const string UPLOAD_OP = "upload";
-        public const string UPLOAD_DEFINITIONS_OP = "upload-definitions";
-        public const string BUNDLE_OP = "bundle";
-        public const string SPLIT_BUNDLE_OP = "split-bundle";
-        public const string TRANSFER_DATA_OP = "transfer-data";
-        public const string VERIFY_VALIDATION_OP = "verify-validation";
-        public const string CONVERT_OP = "convert";
-
-        public const string QUESTIONNAIRE_ARG = "--questionnaire";
-        public const string QUESTIONNAIRE_SHORT_ARG = "-q";
-        public const string VALUESET_ARG = "--valueset";
-        public const string VALUESET_SHORT_ARG = "-s";
-        public const string FHIRBASEURL_ARG = "--fhir-base-url";
-        public const string FHIRBASEURL_SHORT_ARG = "-u";
-        public const string VERSION_ARG = "--version";
-        public const string VERSION_SHORT_ARG = "-v";
-        public const string RESOLVEURL_ARG = "--resolve-url";
-        public const string RESOLVEURL_SHORT_ARG = "-r";
-        public const string VERBOSE_ARG = "--verbose";
-        public const string VERBOSE_SHORT_ARG = "-V";
-        public const string MIMETYPE_ARG = "--format";
-        public const string MIMETYPE_SHORT_ARG = "-f";
-        public const string SOURCE_ARG = "--source";
-        public const string SOURCE_SHORT_ARG = "-S";
-        public const string OUT_ARG = "--out";
-        public const string OUT_SHORT_ARG = "-o";
-        public const string CREDENTIALS_ARG = "--credentials";
-        public const string CREDENTIALS_SHORT_ARG = "-c";
-        public const string ENVIRONMENT_ARG = "--environment";
-        public const string ENVIRONMENT_SHORT_ARG = "-e";
-        public const string CONVERT_FROM_ARG = "--convert-from";
-        public const string CONVERT_FROM_SHORT_ARG = "-cf";
-        public const string CONVERT_TO_ARG = "--convert-to";
-        public const string CONVERT_TO_SHORT_ARG = "-ct";
-
-        public const string ENVIRONMENT_SOURCE_ARG = "--environment-source";
-        public const string ENVIRONMENT_SOURCE_SHORT_ARG = "-es";
-        public const string ENVIRONMENT_DESTINATION_ARG = "--environment-destination";
-        public const string ENVIRONMENT_DESTINATION_SHORT_ARG = "-ed";
-        public const string RESOURCETYPE_ARG = "--resourcetype";
-        public const string RESOURCETYPE_SHORT_ARG = "-R";
-
-        public const string SKIP_VALIDATION_ARG = "--skip-validation";
-        public const string SKIP_VALIDATION_SHORT_ARG = "-sv";
-
-        public const string SEARCHCOUNT_ARG = "--searchcount";
-        public const string SEARCHCOUNT_SHORT_ARG = "-sc";
-
-        public OperationEnum Operation { get; internal set; }
-        public string QuestionnairePath { get; internal set; }
-        public string ValueSetPath { get; internal set; }
-        public string FhirBaseUrl { get; internal set; }
-        public string ProxyBaseUrl { get; internal set; }
-        public bool ResolveUrl { get; internal set; }
-        public string Version { get; internal set; }
-        public bool Verbose { get; internal set; }
-        public string MimeType { get; internal set; }
-        public string SourcePath { get; internal set; }
-        public string OutPath { get; internal set; }
-        public string Credentials { get; internal set; }
-        public string Environment { get; set; }
-        public string SourceEnvironment { get; set; }
-        public string DestinationEnvironment { get; set; }
-        public ResourceType? ResourceType { get; set; }
-        public int SearchCount { get; set; }
-        public bool SkipValidation { get; set; }
-        public string FromFhirVersion { get; set; }
-        public string ToFhirVersion { get; set; }
 
         public static FhirToolArguments Create(string[] args)
         {
@@ -93,118 +23,118 @@ namespace FhirTool
                 string arg = args[i];
                 switch(arg)
                 {
-                    case GENERATE_OP:
+                    case FhirToolArguments.GENERATE_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.Generate;
                         break;
-                    case UPLOAD_OP:
+                    case FhirToolArguments.UPLOAD_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.Upload;
                         break;
-                    case UPLOAD_DEFINITIONS_OP:
+                    case FhirToolArguments.UPLOAD_DEFINITIONS_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.UploadDefinitions;
                         break;
-                    case BUNDLE_OP:
+                    case FhirToolArguments.BUNDLE_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.Bundle;
                         break;
-                    case SPLIT_BUNDLE_OP:
+                    case FhirToolArguments.SPLIT_BUNDLE_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.SplitBundle;
                         break;
-                    case TRANSFER_DATA_OP:
+                    case FhirToolArguments.TRANSFER_DATA_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.TransferData;
                         break;
-                    case VERIFY_VALIDATION_OP:
+                    case FhirToolArguments.VERIFY_VALIDATION_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.VerifyValidation;
                         break;
-                    case CONVERT_OP:
+                    case FhirToolArguments.CONVERT_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.Convert;
                         break;
-                    case QUESTIONNAIRE_ARG:
-                    case QUESTIONNAIRE_SHORT_ARG:
+                    case FhirToolArguments.QUESTIONNAIRE_ARG:
+                    case FhirToolArguments.QUESTIONNAIRE_SHORT_ARG:
                         arguments.QuestionnairePath = args[i + 1];
                         break;
-                    case VALUESET_ARG:
-                    case VALUESET_SHORT_ARG:
+                    case FhirToolArguments.VALUESET_ARG:
+                    case FhirToolArguments.VALUESET_SHORT_ARG:
                         arguments.ValueSetPath = args[i + 1];
                         break;
-                    case FHIRBASEURL_ARG:
-                    case FHIRBASEURL_SHORT_ARG:
+                    case FhirToolArguments.FHIRBASEURL_ARG:
+                    case FhirToolArguments.FHIRBASEURL_SHORT_ARG:
                         arguments.FhirBaseUrl = args[i + 1];
                         break;
-                    case VERSION_ARG:
-                    case VERSION_SHORT_ARG:
+                    case FhirToolArguments.VERSION_ARG:
+                    case FhirToolArguments.VERSION_SHORT_ARG:
                         arguments.Version = args[i + 1];
                         break;
-                    case RESOLVEURL_ARG:
-                    case RESOLVEURL_SHORT_ARG:
+                    case FhirToolArguments.RESOLVEURL_ARG:
+                    case FhirToolArguments.RESOLVEURL_SHORT_ARG:
                         arguments.ResolveUrl = true;
                         break;
-                    case VERBOSE_ARG:
-                    case VERBOSE_SHORT_ARG:
+                    case FhirToolArguments.VERBOSE_ARG:
+                    case FhirToolArguments.VERBOSE_SHORT_ARG:
                         arguments.Verbose = true;
                         break;
-                    case MIMETYPE_ARG:
-                    case MIMETYPE_SHORT_ARG:
+                    case FhirToolArguments.MIMETYPE_ARG:
+                    case FhirToolArguments.MIMETYPE_SHORT_ARG:
                         string mimeType = args[i + 1].ToLowerInvariant();
                         if (!SUPPORTED_MIMETYPES.Contains(mimeType)) throw new NotSupportedMimeTypeException(mimeType);
                         arguments.MimeType = mimeType;
                         break;
-                    case SOURCE_ARG:
-                    case SOURCE_SHORT_ARG:
+                    case FhirToolArguments.SOURCE_ARG:
+                    case FhirToolArguments.SOURCE_SHORT_ARG:
                         arguments.SourcePath = args[i + 1];
                         break;
-                    case OUT_ARG:
-                    case OUT_SHORT_ARG:
+                    case FhirToolArguments.OUT_ARG:
+                    case FhirToolArguments.OUT_SHORT_ARG:
                         arguments.OutPath = args[i + 1];
                         break;
-                    case CREDENTIALS_ARG:
-                    case CREDENTIALS_SHORT_ARG:
+                    case FhirToolArguments.CREDENTIALS_ARG:
+                    case FhirToolArguments.CREDENTIALS_SHORT_ARG:
                         arguments.Credentials = args[i + 1];
                         break;
-                    case ENVIRONMENT_ARG:
-                    case ENVIRONMENT_SHORT_ARG:
+                    case FhirToolArguments.ENVIRONMENT_ARG:
+                    case FhirToolArguments.ENVIRONMENT_SHORT_ARG:
                         arguments.Environment = args[i + 1];
                         EnvironmentSection environmentSection = (EnvironmentSection)ConfigurationManager.GetSection($"environmentSection");
                         EnvironmentElement environment = (EnvironmentElement)environmentSection.Items[arguments.Environment];
                         arguments.FhirBaseUrl = environment.FhirBaseUrl;
                         arguments.ProxyBaseUrl = environment.ProxyBaseUrl;
                         break;
-                    case ENVIRONMENT_SOURCE_ARG:
-                    case ENVIRONMENT_SOURCE_SHORT_ARG:
+                    case FhirToolArguments.ENVIRONMENT_SOURCE_ARG:
+                    case FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG:
                         arguments.SourceEnvironment = args[i + 1];
                         break;
-                    case ENVIRONMENT_DESTINATION_ARG:
-                    case ENVIRONMENT_DESTINATION_SHORT_ARG:
+                    case FhirToolArguments.ENVIRONMENT_DESTINATION_ARG:
+                    case FhirToolArguments.ENVIRONMENT_DESTINATION_SHORT_ARG:
                         arguments.DestinationEnvironment = args[i + 1];
                         break;
-                    case RESOURCETYPE_ARG:
-                    case RESOURCETYPE_SHORT_ARG:
+                    case FhirToolArguments.RESOURCETYPE_ARG:
+                    case FhirToolArguments.RESOURCETYPE_SHORT_ARG:
                         arguments.ResourceType = EnumUtility.ParseLiteral<ResourceType>(args[i + 1]);
                         break;
-                    case SEARCHCOUNT_ARG:
-                    case SEARCHCOUNT_SHORT_ARG:
+                    case FhirToolArguments.SEARCHCOUNT_ARG:
+                    case FhirToolArguments.SEARCHCOUNT_SHORT_ARG:
                         int searchCount;
                         if (!int.TryParse(args[i + 1], out searchCount))
-                            throw new RequiredArgumentException($"{SEARCHCOUNT_ARG}|{SEARCHCOUNT_SHORT_ARG}");
+                            throw new RequiredArgumentException($"{FhirToolArguments.SEARCHCOUNT_ARG}|{FhirToolArguments.SEARCHCOUNT_SHORT_ARG}");
                         arguments.SearchCount = searchCount;
                         break;
-                    case SKIP_VALIDATION_ARG:
-                    case SKIP_VALIDATION_SHORT_ARG:
+                    case FhirToolArguments.SKIP_VALIDATION_ARG:
+                    case FhirToolArguments.SKIP_VALIDATION_SHORT_ARG:
                         arguments.SkipValidation = true;
                         break;
-                    case CONVERT_FROM_ARG:
-                    case CONVERT_FROM_SHORT_ARG:
-                        arguments.FromFhirVersion = FhirVersion.ConvertToFhirVersion(args[i + 1]);
+                    case FhirToolArguments.CONVERT_FROM_ARG:
+                    case FhirToolArguments.CONVERT_FROM_SHORT_ARG:
+                        arguments.FromFhirVersion = FhirVersionInternal.ConvertToFhirVersion(args[i + 1]);
                         break;
-                    case CONVERT_TO_ARG:
-                    case CONVERT_TO_SHORT_ARG:
-                        arguments.ToFhirVersion = FhirVersion.ConvertToFhirVersion(args[i + 1]);
+                    case FhirToolArguments.CONVERT_TO_ARG:
+                    case FhirToolArguments.CONVERT_TO_SHORT_ARG:
+                        arguments.ToFhirVersion = FhirVersionInternal.ConvertToFhirVersion(args[i + 1]);
                         break;
                     default:
                         break;

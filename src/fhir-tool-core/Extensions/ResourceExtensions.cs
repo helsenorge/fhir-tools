@@ -15,7 +15,7 @@ namespace FhirTool.Core
         {
             Bundle bundle = new Bundle
             {
-                Id = $"urn:uuid:{Guid.NewGuid().ToString("N")}",
+                Id = $"urn:uuid:{Guid.NewGuid():N}",
                 Type = type
             };
             foreach (Resource resource in resources)

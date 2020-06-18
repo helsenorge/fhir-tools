@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 
-namespace FhirTool.Extensions
+namespace FhirTool
 {
     internal static class FhirToolArgumentsExtensions
     {

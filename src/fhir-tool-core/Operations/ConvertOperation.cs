@@ -1,18 +1,14 @@
-﻿using FhirTool.Core;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace FhirTool.Operations
+namespace FhirTool.Core.Operations
 {
-    internal class ConvertOperation : IOperation
+    public class ConvertOperation : IOperation<object>
     {
         private readonly IList<Issue> _issues = new List<Issue>();
-        public ConvertOperation()
-        {
-        }
 
         public IEnumerable<Issue> Issues => _issues;
 
-        public void Execute(FhirToolArguments arguments)
+        public Result<object> Execute(FhirToolArguments arguments)
         {
             if (string.IsNullOrEmpty(arguments.SourcePath))
             {
@@ -21,7 +17,7 @@ namespace FhirTool.Operations
                     Details = $"Operation '{arguments.Operation}' requires argument '{FhirToolArguments.SOURCE_ARG}' or '{FhirToolArguments.SOURCE_SHORT_ARG}'.",
                     Severity = IssueSeverityEnum.Error
                 });
-                return;
+                return null;
             }
             if (string.IsNullOrEmpty(arguments.FromFhirVersion))
             {
@@ -30,7 +26,7 @@ namespace FhirTool.Operations
                     Details = $"Operation '{arguments.Operation}' requires argument '{FhirToolArguments.CONVERT_FROM_ARG}' or '{FhirToolArguments.CONVERT_FROM_SHORT_ARG}'.",
                     Severity = IssueSeverityEnum.Error
                 });
-                return;
+                return null;
             }
             if (string.IsNullOrEmpty(arguments.ToFhirVersion))
             {
@@ -39,10 +35,10 @@ namespace FhirTool.Operations
                     Details = $"Operation '{arguments.Operation}' requires argument '{FhirToolArguments.CONVERT_TO_ARG}' or '{FhirToolArguments.CONVERT_TO_SHORT_ARG}'.",
                     Severity = IssueSeverityEnum.Error
                 });
-                return;
+                return null;
             }
 
-            
+            return null;
         }
     }
 }

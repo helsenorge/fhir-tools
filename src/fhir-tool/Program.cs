@@ -1,9 +1,8 @@
 ﻿using FhirTool.Configuration;
 using FhirTool.Core;
-using FhirTool.Extensions;
 using FhirTool.Model;
 using FhirTool.Model.FlatFile;
-using FhirTool.Operations;
+using FhirTool.Core.Operations;
 using FileHelpers.MasterDetail;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
@@ -27,7 +26,7 @@ namespace FhirTool
 {
     partial class Program
     {
-        private static readonly string ProxyBaseUrl = "https://skjemakatalog-test-fhir-apimgmt.azure-api.net/api/v1/";
+        private const string ProxyBaseUrl = "https://skjemakatalog-test-fhir-apimgmt.azure-api.net/api/v1/";
 
         private static FhirToolArguments _arguments = null;
         private static TextWriter _out = null;
@@ -74,7 +73,7 @@ namespace FhirTool
             try
             {
                 _out = Console.Out;
-                _arguments = FhirToolArguments.Create(args);
+                _arguments = HandleFhirToolArguments.Create(args);
                 if (string.IsNullOrWhiteSpace(_arguments.ProxyBaseUrl))
                     _arguments.ProxyBaseUrl = ProxyBaseUrl;
 
@@ -92,7 +91,6 @@ namespace FhirTool
                     goto exit;
                 }
 
-                IOperation operation;
                 switch(_arguments.Operation)
                 {
                     case OperationEnum.Generate:
@@ -133,7 +131,7 @@ namespace FhirTool
                         Console.WriteLine($"VerifyItemValidation: {VerifyItemValidation(_arguments)}");
                         break;
                     case OperationEnum.Convert:
-                        operation = new ConvertOperation();
+                        var operation = new ConvertOperation();
                         operation.Execute(_arguments);
                         break;
                     default:
@@ -164,7 +162,7 @@ namespace FhirTool
                 // Remove the '.' in front of the extension
                 if (!string.IsNullOrEmpty(extension)) extension = extension.Substring(1);
                 // Is supported MimeType?
-                if(!FhirToolArguments.SUPPORTED_MIMETYPES.Contains(extension))
+                if(!HandleFhirToolArguments.SUPPORTED_MIMETYPES.Contains(extension))
                 {
                     Logger.ErrorWriteLineToOutput($"Operation '{arguments.Operation}' requires argument '{FhirToolArguments.MIMETYPE_ARG}' or '{FhirToolArguments.MIMETYPE_SHORT_ARG}'.");
                 }
@@ -230,18 +228,20 @@ namespace FhirTool
         {
             if (string.IsNullOrWhiteSpace(arguments.SourceEnvironment)) throw new RequiredArgumentException($"{FhirToolArguments.ENVIRONMENT_SOURCE_ARG}|{FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG}");
             if (string.IsNullOrWhiteSpace(arguments.DestinationEnvironment)) throw new RequiredArgumentException($"{FhirToolArguments.ENVIRONMENT_DESTINATION_ARG}|{FhirToolArguments.ENVIRONMENT_DESTINATION_SHORT_ARG}");
-            if (!FhirToolArguments.IsKnownEnvironment(arguments.SourceEnvironment)) throw new UnknownEnvironmentNameException($"Argument {FhirToolArguments.ENVIRONMENT_SOURCE_ARG}|{FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG} with value '{arguments.SourceEnvironment}'  is not known.", arguments.SourceEnvironment);
-            if (!FhirToolArguments.IsKnownEnvironment(arguments.DestinationEnvironment)) throw new UnknownEnvironmentNameException($"Argument {FhirToolArguments.ENVIRONMENT_SOURCE_ARG}|{FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG} with value '{arguments.DestinationEnvironment}' is not known.", arguments.DestinationEnvironment);
+            if (!HandleFhirToolArguments.IsKnownEnvironment(arguments.SourceEnvironment)) throw new UnknownEnvironmentNameException($"Argument {FhirToolArguments.ENVIRONMENT_SOURCE_ARG}|{FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG} with value '{arguments.SourceEnvironment}'  is not known.", arguments.SourceEnvironment);
+            if (!HandleFhirToolArguments.IsKnownEnvironment(arguments.DestinationEnvironment)) throw new UnknownEnvironmentNameException($"Argument {FhirToolArguments.ENVIRONMENT_SOURCE_ARG}|{FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG} with value '{arguments.DestinationEnvironment}' is not known.", arguments.DestinationEnvironment);
             if (!arguments.ResourceType.HasValue) throw new RequiredArgumentException($"{FhirToolArguments.RESOURCETYPE_ARG}|{FhirToolArguments.RESOURCETYPE_SHORT_ARG}");
 
-            EnvironmentElement sourceEnvironment = FhirToolArguments.GetEnvironmentElement(arguments.SourceEnvironment);
-            EnvironmentElement destinationEnvironment = FhirToolArguments.GetEnvironmentElement(arguments.DestinationEnvironment);
+            EnvironmentElement sourceEnvironment = HandleFhirToolArguments.GetEnvironmentElement(arguments.SourceEnvironment);
+            EnvironmentElement destinationEnvironment = HandleFhirToolArguments.GetEnvironmentElement(arguments.DestinationEnvironment);
 
             FhirJsonSerializer serializer = new FhirJsonSerializer();
-            FhirClient sourceClient = new FhirClient(sourceEnvironment.FhirBaseUrl);
-            sourceClient.ParserSettings = new ParserSettings
+            FhirClient sourceClient = new FhirClient(sourceEnvironment.FhirBaseUrl)
             {
-                PermissiveParsing = true
+                ParserSettings = new ParserSettings
+                {
+                    PermissiveParsing = true
+                }
             };
             HttpClient client = new HttpClient
             {
@@ -256,9 +256,8 @@ namespace FhirTool
                 Resource resource = entry.Resource;
                 string resourceType = resource.ResourceType.GetLiteral();
 
-                if(resource is Questionnaire)
+                if(resource is Questionnaire questionnaire)
                 {
-                    Questionnaire questionnaire = (Questionnaire)resource;
                     // This part gets rid of some legacy
                     // TODO: Remove when we have gotten rid of the legacy
                     if (questionnaire.ApprovalDate == string.Empty) questionnaire.ApprovalDate = null;
@@ -273,9 +272,8 @@ namespace FhirTool
                     IEnumerable<Extension> extensions = questionnaire.GetExtensions(Constants.EndPointUri);
                     foreach(Extension extension in extensions)
                     {
-                        if(extension.Value is ResourceReference)
+                        if(extension.Value is ResourceReference v)
                         {
-                            ResourceReference v = (ResourceReference)extension.Value;
                             v.Reference = v.Reference.Replace(sourceEnvironment.ProxyBaseUrl, string.Empty);
                             v.Reference = v.Reference.Replace(sourceEnvironment.FhirBaseUrl, string.Empty);
                         }
@@ -284,9 +282,8 @@ namespace FhirTool
                     extensions = questionnaire.GetExtensions(Constants.OptionReferenceUri);
                     foreach (Extension extension in extensions)
                     {
-                        if (extension.Value is ResourceReference)
+                        if (extension.Value is ResourceReference v)
                         {
-                            ResourceReference v = (ResourceReference)extension.Value;
                             v.Reference = v.Reference.Replace(sourceEnvironment.ProxyBaseUrl, string.Empty);
                             v.Reference = v.Reference.Replace(sourceEnvironment.FhirBaseUrl, string.Empty);
                         }
@@ -362,7 +359,7 @@ namespace FhirTool
                 valueSets = GetValueSetsFromFlatFileFormat(arguments.ValueSetPath, false);
             }
             
-            Questionnaire questionnaire = null;
+            Questionnaire questionnaire;
             Logger.WriteLineToOutput($"Loading Questionnaire from file: {arguments.QuestionnairePath}");
             if (arguments.Version == "1")
             {
@@ -533,7 +530,7 @@ namespace FhirTool
                 return;
             }
 
-            Bundle bundle = null;
+            Bundle bundle;
             Uri uri = new Uri(arguments.SourcePath);
             if (uri.IsHttpScheme())
             {
@@ -657,19 +654,20 @@ namespace FhirTool
             {
                 Logger.DebugWriteLineToOutput($"Questionnaire: {masterDetail.Master.Name} - {masterDetail.Master.Title}");
 
-                Questionnaire questionnaire = new Questionnaire();
-
-                questionnaire.Meta = new Meta
+                Questionnaire questionnaire = new Questionnaire
                 {
-                    Profile = new string[] { Constants.QuestionnaireProfileUri }
-                };
+                    Meta = new Meta
+                    {
+                        Profile = new string[] { Constants.QuestionnaireProfileUri }
+                    },
 
-                questionnaire.Id = string.IsNullOrEmpty(masterDetail.Master.Id) ? null : masterDetail.Master.Id;
-                questionnaire.Url = string.IsNullOrEmpty(masterDetail.Master.Url) ? null : masterDetail.Master.Url;
-                questionnaire.Version = string.IsNullOrEmpty(masterDetail.Master.Version) ? null : masterDetail.Master.Version;
-                questionnaire.Name = string.IsNullOrEmpty(masterDetail.Master.Name) ? null : masterDetail.Master.Name;
-                questionnaire.Title = string.IsNullOrEmpty(masterDetail.Master.Title) ? null : masterDetail.Master.Title;
-                questionnaire.Status = string.IsNullOrEmpty(masterDetail.Master.Status) ? null : EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status);
+                    Id = string.IsNullOrEmpty(masterDetail.Master.Id) ? null : masterDetail.Master.Id,
+                    Url = string.IsNullOrEmpty(masterDetail.Master.Url) ? null : masterDetail.Master.Url,
+                    Version = string.IsNullOrEmpty(masterDetail.Master.Version) ? null : masterDetail.Master.Version,
+                    Name = string.IsNullOrEmpty(masterDetail.Master.Name) ? null : masterDetail.Master.Name,
+                    Title = string.IsNullOrEmpty(masterDetail.Master.Title) ? null : masterDetail.Master.Title,
+                    Status = string.IsNullOrEmpty(masterDetail.Master.Status) ? null : EnumUtility.ParseLiteral<PublicationStatus>(masterDetail.Master.Status)
+                };
                 if (!string.IsNullOrEmpty(masterDetail.Master.Date))
                 {
                     if (!IsValidFhirDateTime(masterDetail.Master.Date)) throw new Exception($"The date {masterDetail.Master.Date} is not conforming to the expected format: 'yyyy-MM-dd'");
@@ -768,6 +766,11 @@ namespace FhirTool
                     questionnaire.SetExtension(Constants.PresentationButtonsUri, new Coding(Constants.PresentationButtonsSystem, "sticky"));
                 }
 
+                if(!string.IsNullOrEmpty(masterDetail.Master.Code))
+                {
+                    questionnaire.Code = ParseArrayOfCoding(masterDetail.Master.Code);
+                }
+
                 IList<string> linkIds = new List<string>();
                 Questionnaire.ItemComponent item = null;
                 for (int i = 0; i < masterDetail.Details.Length; i++)
@@ -781,6 +784,9 @@ namespace FhirTool
                     int level = questionnaireItem.LinkId.Split('.').Length - 1;
                     if (level > 0)
                     {
+                        // item could be null if a line in the .txt-file is empty or blank
+                        if (item == null) continue;
+
                         i = DiveV2(i, level, item.Item, masterDetail.Details);
                     }
                     else

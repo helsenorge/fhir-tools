@@ -3,14 +3,21 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FhirTool.Conversion</RootNamespace>
-    <AssemblyName>fhir-tool-conversion</AssemblyName>
+    <AssemblyName>FhirTool.Conversion</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ensure.That" Version="9.2.0" />
     <PackageReference Include="Hl7.Fhir.R4" Version="1.6.0" />
     <PackageReference Include="Hl7.Fhir.Specification.R4" Version="1.6.0" />
     <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="1.6.0" />
     <PackageReference Include="Hl7.Fhir.STU3" Version="1.6.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="NuGet.Versioning" Version="5.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\fhir-tool-core\fhir-tool-core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

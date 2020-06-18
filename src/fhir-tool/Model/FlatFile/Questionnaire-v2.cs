@@ -65,6 +65,9 @@ namespace FhirTool.Model.FlatFile
         [FieldOptional]
         public string PresentationButtons;
         [FieldOptional]
+        [FieldQuoted]
+        public string Code;
+        [FieldOptional]
         public string Reservered0;
         [FieldOptional]
         public string Reservered1;
@@ -84,8 +87,6 @@ namespace FhirTool.Model.FlatFile
         public string Reservered8;
         [FieldOptional]
         public string Reservered9;
-        [FieldOptional]
-        public string Reservered10;
     }
 
     [DelimitedRecord("\t")]
