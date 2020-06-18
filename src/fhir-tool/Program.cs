@@ -789,6 +789,9 @@ namespace FhirTool
                     int level = questionnaireItem.LinkId.Split('.').Length - 1;
                     if (level > 0)
                     {
+                        // item could be null if a line in the .txt-file is empty or blank
+                        if (item == null) continue;
+
                         i = DiveV2(i, level, item.Item, masterDetail.Details);
                     }
                     else
