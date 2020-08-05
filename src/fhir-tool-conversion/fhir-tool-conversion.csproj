@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FhirTool.Conversion</RootNamespace>
     <AssemblyName>FhirTool.Conversion</AssemblyName>
+    <Version>0.5-beta02</Version>
   </PropertyGroup>
 
   <ItemGroup>
