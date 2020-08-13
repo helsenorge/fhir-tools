@@ -34,6 +34,7 @@ namespace FhirTool.Conversion.Converters
             Map.Add<TargetModel.ParameterDefinition, SourceModel.ParameterDefinition>(ConvertParameterDefinition);
             Map.Add<TargetModel.Signature, SourceModel.Signature>(ConvertSignature);
             Map.Add<TargetModel.Range, SourceModel.Range>(ConvertRange);
+            Map.Add<TargetModel.Dosage, SourceModel.Dosage>(ConvertDosage);
         }
 
         private static void ConvertQuestionnaireResponse(FhirConverter converter, TargetModel.QuestionnaireResponse to, SourceModel.QuestionnaireResponse from)
@@ -185,6 +186,18 @@ namespace FhirTool.Conversion.Converters
         {
             to.High = ConvertQuantityToSimpleQuantity(from.High, converter);
             to.Low = ConvertQuantityToSimpleQuantity(from.Low, converter);
+        }
+
+        private static void ConvertDosage(FhirConverter converter, TargetModel.Dosage to, SourceModel.Dosage from)
+        {
+            if (from.Dose != null)
+            {
+                to.DoseAndRate.Add(new TargetModel.Dosage.DoseAndRateComponent { Dose = converter.Convert<TargetModel.Element, SourceModel.Element>(from.Dose) });
+            }
+            if (from.Rate != null)
+            {
+                to.DoseAndRate.Add(new TargetModel.Dosage.DoseAndRateComponent { Rate = converter.Convert<TargetModel.Element, SourceModel.Element>(from.Rate) });
+            }
         }
 
         // Helpers

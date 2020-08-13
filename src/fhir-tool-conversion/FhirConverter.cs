@@ -178,10 +178,8 @@ namespace FhirTool.Conversion
             }
             else
             {
-                Console.WriteLine(targetProperty.Name + " is unknwon: " + sourcePropertyType.GetGenericTypeDefinition().ToString());
+                throw new UnknownFhirTypeException(sourcePropertyType);
             }
-
-            return null;
         }
 
         private object ConvertGenericNullableProperty(PropertyInfo targetProperty, PropertyInfo sourceProperty, object sourceValue)
