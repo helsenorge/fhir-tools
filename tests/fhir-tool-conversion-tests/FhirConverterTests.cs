@@ -15,36 +15,36 @@ namespace FhirTool.Conversion.Tests
         [Fact]
         public void CanConvertQuestionnaireExampleFromR3ToR4()
         {
-            FhirConverter convertor = new FhirConverter();
+            FhirConverter convertor = new FhirConverter(FhirVersion.R4, FhirVersion.R3);
             R3Model.Questionnaire r3Questionnaire = ReadR3Resource(Path.Combine("TestData", "questionnaire-example-R3.json")) as R3Model.Questionnaire;
-            R4Model.Questionnaire r4Questionnaire = convertor.ConvertResource<R4Model.Questionnaire, R3Model.Questionnaire>(r3Questionnaire);
+            R4Model.Questionnaire r4Questionnaire = convertor.Convert<R4Model.Questionnaire, R3Model.Questionnaire>(r3Questionnaire);
             SerializeR4ResourceToDiskAsJson(r4Questionnaire, "questionnaire-example-R4.json");
         }
 
         [Fact]
         public void CanConvertQuestionnaire305FromR3ToR4()
         {
-            FhirConverter convertor = new FhirConverter();
+            FhirConverter convertor = new FhirConverter(FhirVersion.R4, FhirVersion.R3);
             R3Model.Questionnaire r3Questionnaire = ReadR3Resource(Path.Combine("TestData", "questionnaire-305-R3.json")) as R3Model.Questionnaire;
-            var resource = convertor.ConvertResource<R4Model.Questionnaire, R3Model.Questionnaire>(r3Questionnaire);
+            var resource = convertor.Convert<R4Model.Questionnaire, R3Model.Questionnaire>(r3Questionnaire);
             SerializeR4ResourceToDiskAsJson(resource, "questionnaire-305-R4.json");
         }
 
         [Fact]
         public void CanConvertQuestionnaireExampleFromR4ToR3()
         {
-            FhirConverter convertor = new FhirConverter();
+            FhirConverter convertor = new FhirConverter(FhirVersion.R3, FhirVersion.R4);
             R4Model.Questionnaire r4Questionnaire = ReadR4Resource(Path.Combine("TestData", "questionnaire-example-R4.json")) as R4Model.Questionnaire;
-            R3Model.Questionnaire r3Questionnaire = convertor.ConvertResource<R3Model.Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
+            R3Model.Questionnaire r3Questionnaire = convertor.Convert<R3Model.Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
             SerializeR3ResourceToDiskAsJson(r3Questionnaire, "questionnaire-example-R3.json");
         }
 
         [Fact]
         public void CanConvertQuestionnaire305FromR4ToR3()
         {
-            FhirConverter convertor = new FhirConverter();
+            FhirConverter convertor = new FhirConverter(FhirVersion.R3, FhirVersion.R4);
             R4Model.Questionnaire r4Questionnaire = ReadR4Resource(Path.Combine("TestData", "questionnaire-305-R4.json")) as R4Model.Questionnaire;
-            R3Model.Questionnaire r3Questionnaire = convertor.ConvertResource<R3Model.Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
+            R3Model.Questionnaire r3Questionnaire = convertor.Convert<R3Model.Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
             SerializeR3ResourceToDiskAsJson(r3Questionnaire, "questionnaire-305-R3.json");
         }
 
@@ -57,8 +57,7 @@ namespace FhirTool.Conversion.Tests
         [InlineData(FhirVersion.R5, FhirVersion.R4)]
         public void CanConvertBetweenFhirVersionWithOneHop(FhirVersion from, FhirVersion to)
         {
-            FhirConverter converter = new FhirConverter();
-            Assert.True(converter.CanConvertBetweenVersions(from, to));
+            Assert.True(FhirConverter.CanConvertBetweenVersions(from, to));
         }
 
         [Theory]
@@ -68,8 +67,7 @@ namespace FhirTool.Conversion.Tests
         [InlineData(FhirVersion.R5, FhirVersion.R3)]
         public void CannotConvertBetweenFhirVersionWithMoreThanOneHop(FhirVersion from, FhirVersion to)
         {
-            FhirConverter converter = new FhirConverter();
-            Assert.False(converter.CanConvertBetweenVersions(from, to));
+            Assert.False(FhirConverter.CanConvertBetweenVersions(from, to));
         }
 
         [Theory]
@@ -81,8 +79,7 @@ namespace FhirTool.Conversion.Tests
         [InlineData(FhirVersion.R3, typeof(R3Model.ValueSet))]
         public void FhirVersionMatchesVersionOfFhirType(FhirVersion expected, Type fhirType)
         {
-            FhirConverter converter = new FhirConverter();
-            Assert.Equal(expected, converter.GetFhirVersion(fhirType));
+            Assert.Equal(expected, FhirConverter.GetFhirVersion(fhirType));
         }
 
         [Theory]
@@ -90,8 +87,7 @@ namespace FhirTool.Conversion.Tests
         [InlineData(FhirVersion.R4)]
         public void FhirVersionSupported(FhirVersion version)
         {
-            FhirConverter converter = new FhirConverter();
-            Assert.True(converter.IsVersionSupported(version));
+            Assert.True(FhirConverter.IsVersionSupported(version));
         }
 
         [Theory]
@@ -99,8 +95,7 @@ namespace FhirTool.Conversion.Tests
         [InlineData(FhirVersion.R5)]
         public void FhirVersionNotSupported(FhirVersion version)
         {
-            FhirConverter converter = new FhirConverter();
-            Assert.False(converter.IsVersionSupported(version));
+            Assert.False(FhirConverter.IsVersionSupported(version));
         }
     }
 }

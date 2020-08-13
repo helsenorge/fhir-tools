@@ -26,8 +26,8 @@ namespace FhirTool.Conversion.Tests
                 xml = reader.ReadToEnd();
             R4Model.Questionnaire r4Questionnaire = _r4XmlParser.Parse<R4Model.Questionnaire>(xml);
 
-            FhirConverter converter = new FhirConverter();
-            Questionnaire questionnaire = converter.ConvertResource<Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
+            FhirConverter converter = new FhirConverter(FhirVersion.R3, FhirVersion.R4);
+            Questionnaire questionnaire = converter.Convert<Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
 
             ValueSet valueSet = ConvertValueSetFromR4ToR3(Path.Combine(".", "TestData", "covid-19-pandemiregister", "ValueSet-report-v1-_testname_en_-R4.xml"));
             valueSet = RemoveDesignation(valueSet);
@@ -157,8 +157,8 @@ namespace FhirTool.Conversion.Tests
                 xml = reader.ReadToEnd();
             R4Model.Questionnaire r4Questionnaire = _r4XmlParser.Parse<R4Model.Questionnaire>(xml);
 
-            FhirConverter converter = new FhirConverter();
-            Questionnaire questionnaire = converter.ConvertResource<Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
+            FhirConverter converter = new FhirConverter(FhirVersion.R3, FhirVersion.R4);
+            Questionnaire questionnaire = converter.Convert<Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
 
             // ValueSet-blood-pressure-v2-cuffsize-R4.xml
             ValueSet valueSet = ConvertValueSetFromR4ToR3(Path.Combine(".", "TestData", "ValueSet-blood-pressure-v2-cuffsize-R4.xml"));
@@ -199,8 +199,8 @@ namespace FhirTool.Conversion.Tests
                 xml = reader.ReadToEnd();
             R4Model.Questionnaire r4Questionnaire = _r4XmlParser.Parse<R4Model.Questionnaire>(xml);
             
-            FhirConverter converter = new FhirConverter();
-            Questionnaire questionnaire = converter.ConvertResource<Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
+            FhirConverter converter = new FhirConverter(FhirVersion.R3, FhirVersion.R4);
+            Questionnaire questionnaire = converter.Convert<Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
 
             questionnaire.SerializeResourceToDiskAsXml("questionnaire-Blodtrykk-R3.xml");
             questionnaire.SerializeResourceToDiskAsJson("questionnaire-Blodtrykk-R3.json");
@@ -287,8 +287,8 @@ namespace FhirTool.Conversion.Tests
 
             if (valueSet == null) return null;
 
-            FhirConverter converter = new FhirConverter();
-            return converter.ConvertResource<ValueSet, R4Model.ValueSet>(valueSet);
+            FhirConverter converter = new FhirConverter(FhirVersion.R3, FhirVersion.R4);
+            return converter.Convert<ValueSet, R4Model.ValueSet>(valueSet);
         }
     }
 
