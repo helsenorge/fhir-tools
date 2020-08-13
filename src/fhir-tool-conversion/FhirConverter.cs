@@ -1,20 +1,15 @@
-﻿extern alias R3;
-extern alias R4;
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using EnsureThat;
+using FhirTool.Conversion.Converters;
 using FhirTool.Core;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Utility;
 using NuGet.Versioning;
-using R3Introspection = R3::Hl7.Fhir.Introspection;
-using R3Model = R3::Hl7.Fhir.Model;
-using R4Introspection = R4::Hl7.Fhir.Introspection;
-using R4Model = R4::Hl7.Fhir.Model;
 
 namespace FhirTool.Conversion
 {
@@ -23,8 +18,34 @@ namespace FhirTool.Conversion
         private static readonly FhirVersion[] SUPPORTED_VERSIONS = new[] { FhirVersion.R3, FhirVersion.R4 };
         // Only one version hop forward or backward is allowed on every run.
         private const int MAX_VERSION_HOPS = 1;
+        private FhirVersion FromVersion { get; set; }
+        private FhirVersion ToVersion { get; set; }
+        private BaseConverter Converter { get; }
 
-        internal FhirVersion GetFhirVersion(Type fhirType)
+        public FhirConverter(FhirVersion to, FhirVersion from)
+        {
+            ToVersion = to;
+            FromVersion = from;
+
+            if (!IsVersionSupported(FromVersion)) throw new FhirVersionNotSupportedException(FromVersion);
+            if (!IsVersionSupported(ToVersion)) throw new FhirVersionNotSupportedException(ToVersion);
+            if (!CanConvertBetweenVersions(FromVersion, ToVersion))
+            {
+                throw new FhirConversionException($"Cannot convert between FHIR version '{FromVersion}' and '{ToVersion}'. Maximum allowed version hops in one iteration is '{MAX_VERSION_HOPS}'.");
+            }
+
+
+            if (ToVersion == FhirVersion.R3 && FromVersion == FhirVersion.R4)
+            {
+                Converter = new FhirR4ToR3ConversionRoutines();
+            }
+            else if(ToVersion == FhirVersion.R4 && FromVersion == FhirVersion.R3)
+            {
+                Converter = new FhirR3ToR4ConversionRoutines();
+            }
+        }
+
+        internal static FhirVersion GetFhirVersion(Type fhirType)
         {
             var modelInfoType = fhirType.Assembly.GetTypes()
                 .Where(t => t.Name.Equals("ModelInfo"))
@@ -42,7 +63,7 @@ namespace FhirTool.Conversion
             return fhirVersion ?? FhirVersion.None;
         }
 
-        internal string GetMajorVersion(string version)
+        internal static string GetMajorVersion(string version)
         {
             if (version == null) return string.Empty;
 
@@ -50,154 +71,219 @@ namespace FhirTool.Conversion
             return index == -1 ? string.Empty : version.Substring(0, index);
         }
 
-        public IEnumerable<FhirVersion> SupportedVersions { get { return SUPPORTED_VERSIONS; } }
+        public static IEnumerable<FhirVersion> SupportedVersions { get { return SUPPORTED_VERSIONS; } }
 
-        public bool IsVersionSupported(FhirVersion version)
+        public static bool IsVersionSupported(FhirVersion version)
         {
             return SupportedVersions.Contains(version);
         }
 
-        public bool CanConvertBetweenVersions(FhirVersion from, FhirVersion to)
+        public static bool CanConvertBetweenVersions(FhirVersion from, FhirVersion to)
         {
             int versionHops = Math.Abs(to - from);
             return MAX_VERSION_HOPS == versionHops;
         }
 
-        public TTo ConvertResource<TTo, TFrom>(TFrom from)
-            where TTo : Base, new()
+        public TTo Convert<TTo, TFrom>(TFrom fromObject)
             where TFrom : Base
+            where TTo : Base
         {
-            EnsureArg.IsNotNull(from, nameof(from));
-
-            FhirConversionInfo conversionInfo = new FhirConversionInfo
-            {
-                FromVersion = GetFhirVersion(typeof(TFrom)),
-                ToVersion = GetFhirVersion(typeof(TTo)),
-            };
-            if(!IsVersionSupported(conversionInfo.FromVersion)) throw new FhirVersionNotSupportedException(conversionInfo.FromVersion);
-            if (!IsVersionSupported(conversionInfo.ToVersion)) throw new FhirVersionNotSupportedException(conversionInfo.ToVersion);
-            if (!CanConvertBetweenVersions(conversionInfo.FromVersion, conversionInfo.ToVersion))
-            {
-                throw new FhirConversionException($"Cannot convert between FHIR version '{conversionInfo.FromVersion}' and '{conversionInfo.ToVersion}'. Maximum allowed version hops in one iteration is '{MAX_VERSION_HOPS}'.");
-            }
-
+            /*
             string typeNameFrom = typeof(TFrom).Name;
             var targetType = typeof(TTo);
             string typeNameTo = targetType.Name;
             if (typeNameFrom != typeNameTo) throw new ArgumentException($"Cannot convert from type '{typeNameFrom}' to  '{typeNameTo}'.");
 
-            return ConvertResource(from, targetType, conversionInfo) as TTo;
+             */
+            return Convert(typeof(TTo), typeof(TFrom), fromObject) as TTo;
         }
 
-        internal dynamic ConvertResource(Base from, Type targetType, FhirConversionInfo conversionInfo)
+        public IEnumerable<TTo> Convert<TTo, TFrom>(IEnumerable<TFrom> fromList)
+            where TFrom : Base
+            where TTo : Base
         {
-            dynamic conversionRoutines;
-            var to = Activator.CreateInstance(targetType);
-            Type codeType;
-            Type resourceTargetType;
-            Type fhirElementAttributeType;
-            Func<string, Type> getTypeForFhirType;
-            // FromVersion == R3 and ToVersion == R4
-            if (conversionInfo.FromVersion == FhirVersion.R3)
+            EnsureArg.IsNotNull(fromList, nameof(fromList));
+
+            return fromList.Select(it => Convert<TTo, TFrom>(it));
+        }
+
+        private Base Convert(Type targetType, Type sourceType, Base sourceObject)
+        {
+            if (sourceObject == null) return default;
+
+            if (targetType.IsAbstract)
             {
-                conversionRoutines = new FhirR3ToR4ConversionRoutines();
-                codeType = typeof(R4Model.Code<>);
-                resourceTargetType = typeof(R4Model.Resource);
-                fhirElementAttributeType = typeof(R3Introspection.FhirElementAttribute);
-                getTypeForFhirType = R4Model.ModelInfo.GetTypeForFhirType;
+                var actualSourceType = sourceObject.GetType();
+                var actualTargetType = Converter.GetTargetFhirType(actualSourceType);
+
+                sourceType = actualSourceType;
+                targetType = actualTargetType;
             }
-            // FromVersion == R4 and ToVersion == R3
+
+            var targetObject = Activator.CreateInstance(targetType) as Base;
+
+            var handledProperties = ConvertTypesWithChanges(targetObject, sourceObject);
+            var targetProperties = targetObject.GetType().GetProperties()
+                .Where(prop => Attribute.IsDefined(prop, typeof(System.Runtime.Serialization.DataMemberAttribute)));
+
+            foreach (var targetProperty in targetProperties)
+            {
+                if (handledProperties.Contains(targetProperty.Name)) continue;
+
+                var sourceProperty = sourceType.GetProperty(targetProperty.Name);
+                if (sourceProperty == null) continue;
+
+                var value = ConvertProperty(targetProperty, sourceProperty, targetObject, sourceObject);
+                if (value != null)
+                {
+                    targetProperty.SetValue(targetObject, value);
+                }
+            }
+
+            return targetObject;
+        }
+
+        private ISet<string> ConvertTypesWithChanges(Base targetObject, Base sourceObject)
+        {
+            var handledProperties = new HashSet<string>();
+            PropertyChangedEventHandler propertyListener = delegate (object o, PropertyChangedEventArgs e)
+            {
+                handledProperties.Add(e.PropertyName);
+            };
+
+            targetObject.PropertyChanged += propertyListener;
+            Converter.Convert(this, targetObject, sourceObject);
+            targetObject.PropertyChanged -= propertyListener;
+
+            return handledProperties;
+        }
+
+        private object ConvertGenericProperty(PropertyInfo targetProperty, PropertyInfo sourceProperty, Base targetObject, Base sourceObject, object sourceValue)
+        {
+            var sourcePropertyType = sourceProperty.PropertyType;
+
+            // NOTE: Currently only allowing one generic argument
+            var sourceGenericDefinition = sourcePropertyType.GetGenericTypeDefinition();
+            if (sourceGenericDefinition == typeof(List<>))
+            {
+                return ConvertGenericListProperty(targetProperty, sourceProperty, sourceValue);
+            }
+            else if (sourceGenericDefinition == Converter.GetSourceCodeType())
+            {
+                return ConvertGenericCodeProperty(targetProperty, sourceProperty, sourceValue);
+            }
+            else if (sourceGenericDefinition == typeof(Nullable<>))
+            {
+                return ConvertGenericNullableProperty(targetProperty, sourceProperty, sourceValue);
+            }
             else
             {
-                conversionRoutines = new FhirR4ToR3ConversionRoutines();
-                codeType = typeof(R3Model.Code<>);
-                resourceTargetType = typeof(R3Model.Resource);
-                fhirElementAttributeType = typeof(R4Introspection.FhirElementAttribute);
-                getTypeForFhirType = R3Model.ModelInfo.GetTypeForFhirType;
+                Console.WriteLine(targetProperty.Name + " is unknwon: " + sourcePropertyType.GetGenericTypeDefinition().ToString());
             }
 
-            var properties = from.GetType()
-            .GetProperties()
-            .Where(prop => Attribute.IsDefined(prop, fhirElementAttributeType));
-            foreach (var property in properties)
+            return null;
+        }
+
+        private object ConvertGenericNullableProperty(PropertyInfo targetProperty, PropertyInfo sourceProperty, object sourceValue)
+        {
+            var sourcePropertyType = sourceProperty.PropertyType;
+            if (Nullable.GetUnderlyingType(sourcePropertyType)?.IsEnum ?? false)
             {
-                var sourcePropType = property.PropertyType;
-                if (sourcePropType.IsGenericType)
+                var converted = Converter.ConvertEnum(sourceValue as Enum, Nullable.GetUnderlyingType(targetProperty.PropertyType));
+                return converted;
+            }
+
+            return sourceValue;
+        }
+
+        private object ConvertGenericCodeProperty(PropertyInfo targetProperty, PropertyInfo sourceProperty, object sourceValue)
+        {
+            var actualSourceType = sourceProperty.PropertyType;
+
+            var enumType = targetProperty.PropertyType.GetGenericArguments().FirstOrDefault();
+            var actualTargetType = Converter.GetTargetCodeType().MakeGenericType(enumType);
+            var convertedValue = Convert(actualTargetType, actualSourceType, sourceValue as Base);
+            return convertedValue;
+        }
+
+        private object ConvertGenericListProperty(PropertyInfo targetProperty, PropertyInfo sourceProperty, object sourceValue)
+        {
+            // Retrieve the IEnumerable and iterate over it
+            var sourceValueList = sourceValue as IList;
+            if (sourceValueList.Count == 0) return null;
+
+            var targetPropertyOuterGenericArg = targetProperty.PropertyType.GetGenericArguments().First();
+            var sourcePropertyOuterGenericArg = sourceProperty.PropertyType.GetGenericArguments().First();
+
+            // Create a generic list type and then instantiate it
+            var targetListType = (typeof(List<>)).MakeGenericType(targetPropertyOuterGenericArg);
+            IList targetList = Activator.CreateInstance(targetListType) as IList;
+
+            // If outer generic argument is generic type, then retrieve the inner generic argument.
+            Type targetInnerGenericArg = null;
+            if (targetPropertyOuterGenericArg.IsGenericType && targetPropertyOuterGenericArg.GetGenericTypeDefinition() == Converter.GetTargetCodeType())
+            {
+                // NOTE: Also only allowing one generic argument for the inner generic argument
+                targetInnerGenericArg = targetPropertyOuterGenericArg.GetGenericArguments().First();
+            }
+
+            foreach (var value in sourceValueList)
+            {
+                // TODO: Consider branching the if-else differently, the else-part is the one that will be hit most of the time
+                if (targetInnerGenericArg != null)
                 {
-                    if (sourcePropType.GetGenericTypeDefinition() == typeof(List<>))
-                    {
-                        var targetProp = targetType.GetProperty(property.Name);
-                        if (targetProp == null) continue;
+                    // Types of Code<T>, where T is an Enum type
+                    var actualTargetType = Converter.GetTargetCodeType().MakeGenericType(targetInnerGenericArg);
+                    var convertedValue = Convert(actualTargetType, value.GetType(), value as Base);
 
-                        var targetPropType = targetProp.PropertyType;
-                        // NOTE: Currently only allowing one generic argument
-                        var targetOuterGenericArg = targetPropType.GetGenericArguments().First();
-                        // If outer generic argument is generic type, then retrieve the inner generic argument.
-                        Type targetInnerGenericArg = null;
-
-                        if (targetOuterGenericArg.IsGenericType && targetOuterGenericArg.GetGenericTypeDefinition() == codeType)
-                        {
-                            // NOTE: Also only allowing one generic argument for the inner generic argument
-                            targetInnerGenericArg = targetOuterGenericArg.GetGenericArguments().First();
-                        }
-
-                        // Retrieve the IEnumerable and iterate over it
-                        IList values = property.GetValue(from) as IList;
-                        if (values.Count == 0) continue;
-                        // Create a generic list type and then instantiate it
-                        var targetListType = (typeof(List<>)).MakeGenericType(targetOuterGenericArg);
-                        IList targetList = Activator.CreateInstance(targetListType) as IList;
-                        foreach (var value in values)
-                        {
-                            // TODO: Consider branching the if-else differently, the else-part is the one that will be hit most of the time
-
-                            // Hitting a contained resource in a List<T>
-                            if(targetOuterGenericArg == resourceTargetType)
-                            {
-                                var targetValue = ConvertResource(value as Base, getTypeForFhirType(value.GetType().Name), conversionInfo);
-                                targetList.Add(targetValue);
-                            }
-                            // Types of Code<T>, where T is an Enum type
-                            else if (targetInnerGenericArg != null)
-                            {
-                                var targetValue = conversionRoutines.ConvertPrimitive(value as Base, targetInnerGenericArg);
-                                targetList.Add(targetValue);
-                            }
-                            // Ordinary elements part of List<T>
-                            else
-                            {
-                                // Convert element in list R3 -> R4 and add it to the target list.
-                                var targetValue = conversionRoutines.ConvertElement(value as Base);
-                                targetList.Add(targetValue);
-                            }
-                        }
-                        if (targetList.Count == 0) continue;
-                        if (targetProp == null) continue;
-                        targetProp.SetValue(to, targetList);
-                    }
-                    else if (sourcePropType.GetGenericTypeDefinition() == codeType)
-                    {
-                        var targetProp = targetType.GetProperty(property.Name);
-                        if (targetProp == null) continue;
-
-                        var value = property.GetValue(from);
-                        var targetValue = conversionRoutines.ConvertPrimitive(value as Base, targetProp.PropertyType.GetGenericArguments().FirstOrDefault());
-                        if (targetValue == null) continue;
-                        targetProp.SetValue(to, targetValue);
-                    }
+                    targetList.Add(convertedValue);
                 }
                 else
                 {
-                    var value = property.GetValue(from) as Base;
-                    var targetValue = conversionRoutines.ConvertElement(value);
-                    if (targetValue == null) continue;
-                    var targetProp = targetType.GetProperty(property.Name);
-                    if (targetProp == null) continue;
-                    targetProp.SetValue(to, targetValue);
+                    // Ordinary elements part of List<T>
+                    if (sourcePropertyOuterGenericArg.IsAbstract)
+                    {
+                        var actualSourceType = value.GetType();
+                        var actualTargetType = Converter.GetTargetFhirType(actualSourceType);
+                        var converted = Convert(actualTargetType, actualSourceType, value as Base);
+                        targetList.Add(converted);
+                    }
+                    else
+                    {
+                        var converted = Convert(targetPropertyOuterGenericArg, sourcePropertyOuterGenericArg, value as Base);
+                        targetList.Add(converted);
+                    }
                 }
             }
+            return targetList;
+        }
 
-            return to;
+        private object ConvertNonGenericProperty(PropertyInfo targetProperty, PropertyInfo sourceProperty, Base targetObject, Base sourceObject, object sourceValue)
+        {
+            var actualSourceType = sourceValue.GetType();
+            if (Converter.IsTargetFhirType(actualSourceType))
+            {
+                var actualTargetType = Converter.GetTargetFhirType(actualSourceType);
+                return Convert(actualTargetType, actualSourceType, sourceValue as Base);
+            }
+
+            return sourceValue;
+        }
+
+        private object ConvertProperty(PropertyInfo targetProperty, PropertyInfo sourceProperty, Base targetObject, Base sourceObject)
+        {
+            var sourceValue = sourceProperty.GetValue(sourceObject);
+            if (sourceValue == null) return null;
+
+            var sourcePropertyType = sourceProperty.PropertyType;
+            if (sourcePropertyType.IsGenericType)
+            {
+                return ConvertGenericProperty(targetProperty, sourceProperty, targetObject, sourceObject, sourceValue);
+            }
+            else
+            {
+                return ConvertNonGenericProperty(targetProperty, sourceProperty, targetObject, sourceObject, sourceValue);
+            }
         }
     }
 }
