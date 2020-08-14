@@ -7,6 +7,9 @@ using FhirTool.Conversion.Converters.Support.TypeMaps;
 using TargetModel = R3::Hl7.Fhir.Model;
 using SourceModel = R4::Hl7.Fhir.Model;
 
+using TargetIntrospection = R3::Hl7.Fhir.Introspection;
+using SourceIntrospection = R4::Hl7.Fhir.Introspection;
+
 namespace FhirTool.Conversion.Converters
 {
     internal partial class FhirR4ToR3ConversionRoutines : BaseConverter
@@ -25,6 +28,16 @@ namespace FhirTool.Conversion.Converters
         public override Type GetSourceCodeType()
         {
             return typeof(SourceModel.Code<>);
+        }
+
+        public override Type GetTargetFhirElementAttribute()
+        {
+            return typeof(TargetIntrospection.FhirElementAttribute);
+        }
+
+        public override Type GetSourceFhirElementAttribute()
+        {
+            return typeof(SourceIntrospection.FhirElementAttribute);
         }
 
         protected override string GetFhirTypeNameForTargetType(Type targetType)

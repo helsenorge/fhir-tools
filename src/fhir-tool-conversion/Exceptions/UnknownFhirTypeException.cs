@@ -18,6 +18,12 @@ namespace FhirTool.Conversion
             Type = type;
         }
 
+        public UnknownFhirTypeException(Type type, FhirPath path) 
+            : base($"The FHIR type {type.FullName} is unknown. Found at {path.GetFullPath()}")
+        {
+            Type = type;
+        }
+
         public Type Type { get; }
     }
 }

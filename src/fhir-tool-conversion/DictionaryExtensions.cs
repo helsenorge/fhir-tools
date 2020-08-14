@@ -6,7 +6,7 @@ namespace FhirTool.Conversion
 {
     public static class DictionaryExtensions
     {
-        public static void Add<TTo, TFrom>(this Dictionary<(Type, Type), Delegate> me, Action<FhirConverter, TTo, TFrom> func)
+        public static void Add<TTo, TFrom>(this Dictionary<(Type, Type), Delegate> me, Action<TTo, TFrom, FhirConverter> func)
         {
             me.Add((typeof(TTo), typeof(TFrom)), func);
         }

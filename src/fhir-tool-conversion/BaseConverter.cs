@@ -20,8 +20,10 @@ namespace FhirTool.Conversion
         protected abstract void InitComponentTypeMap();
 
         public abstract Type GetTargetCodeType();
-
         public abstract Type GetSourceCodeType();
+        public abstract Type GetTargetFhirElementAttribute();
+        public abstract Type GetSourceFhirElementAttribute();
+
         protected abstract string GetFhirTypeNameForTargetType(Type targetType);
 
         protected abstract Type GetTargetTypeForFhirTypeName(string targetTypeName);
@@ -72,14 +74,14 @@ namespace FhirTool.Conversion
             return GetSourceFhirType(type) != null;
         }
 
-        public void Convert(FhirConverter converter, Base to, Base from)
+        public void Convert(Base to, Base from, FhirConverter converter)
         {
             var toType = to.GetType();
             var fromType = from.GetType();
             var key = (toType, fromType);
             if (Map.TryGetValue(key, out var convert))
             {
-                convert.DynamicInvoke(converter, to, from);
+                convert.DynamicInvoke(to, from, converter);
             }
         }
 

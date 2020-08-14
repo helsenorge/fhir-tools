@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using EnsureThat;
@@ -21,6 +22,7 @@ namespace FhirTool.Conversion
         private FhirVersion FromVersion { get; set; }
         private FhirVersion ToVersion { get; set; }
         private BaseConverter Converter { get; }
+        private FhirPath Path { get; set; }
 
         public FhirConverter(FhirVersion to, FhirVersion from)
         {
@@ -88,17 +90,26 @@ namespace FhirTool.Conversion
             where TFrom : Base
             where TTo : Base
         {
-            /*
-            string typeNameFrom = typeof(TFrom).Name;
-            var targetType = typeof(TTo);
-            string typeNameTo = targetType.Name;
-            if (typeNameFrom != typeNameTo) throw new ArgumentException($"Cannot convert from type '{typeNameFrom}' to  '{typeNameTo}'.");
+            try
+            {
+                Path = new FhirPath();
+                Path.Push(fromObject.GetType().Name);
+                return ConvertObject<TTo, TFrom>(fromObject);
+            }
+            finally
+            {
+                Path = null;
+            }
+        }
 
-             */
+        internal TTo ConvertObject<TTo,TFrom>(TFrom fromObject)
+            where TFrom : Base
+            where TTo : Base
+        {
             return Convert(typeof(TTo), typeof(TFrom), fromObject) as TTo;
         }
 
-        public IEnumerable<TTo> Convert<TTo, TFrom>(IEnumerable<TFrom> fromList)
+        internal IEnumerable<TTo> ConvertList<TTo, TFrom>(IEnumerable<TFrom> fromList)
             where TFrom : Base
             where TTo : Base
         {
@@ -124,20 +135,23 @@ namespace FhirTool.Conversion
 
             var handledProperties = ConvertTypesWithChanges(targetObject, sourceObject);
             var targetProperties = targetObject.GetType().GetProperties()
-                .Where(prop => Attribute.IsDefined(prop, typeof(System.Runtime.Serialization.DataMemberAttribute)));
+                .Where(prop => Attribute.IsDefined(prop, Converter.GetTargetFhirElementAttribute()));
 
             foreach (var targetProperty in targetProperties)
             {
-                if (handledProperties.Contains(targetProperty.Name)) continue;
+                dynamic elementAttribute = targetProperty.GetCustomAttribute(Converter.GetTargetFhirElementAttribute());
+                Path.Push(elementAttribute?.Name ?? targetProperty.Name);
 
+                if (handledProperties.Contains(targetProperty.Name)) { Path.Pop(); continue; }
                 var sourceProperty = sourceType.GetProperty(targetProperty.Name);
-                if (sourceProperty == null) continue;
+                if (sourceProperty == null) { Path.Pop(); continue; }
 
                 var value = ConvertProperty(targetProperty, sourceProperty, targetObject, sourceObject);
                 if (value != null)
                 {
                     targetProperty.SetValue(targetObject, value);
                 }
+                Path.Pop();
             }
 
             return targetObject;
@@ -152,7 +166,7 @@ namespace FhirTool.Conversion
             };
 
             targetObject.PropertyChanged += propertyListener;
-            Converter.Convert(this, targetObject, sourceObject);
+            Converter.Convert(targetObject, sourceObject, this);
             targetObject.PropertyChanged -= propertyListener;
 
             return handledProperties;
@@ -178,7 +192,7 @@ namespace FhirTool.Conversion
             }
             else
             {
-                throw new UnknownFhirTypeException(sourcePropertyType);
+                throw new UnknownFhirTypeException(sourcePropertyType, Path);
             }
         }
 
