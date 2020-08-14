@@ -24,5 +24,10 @@ namespace FhirTool.Conversion
         {
             Path.Pop();
         }
+
+        public override string ToString()
+        {
+            return GetFullPath();
+        }
     }
 }

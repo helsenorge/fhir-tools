@@ -41,7 +41,7 @@ namespace FhirTool.Conversion.Converters
 
         private static void ConvertQuestionnaireItemComponent(TargetModel.Questionnaire.ItemComponent to, SourceModel.Questionnaire.ItemComponent from, FhirConverter converter)
         {
-            to.Initial = converter.ConvertObject<TargetModel.Element, SourceModel.Element>(from.Initial.FirstOrDefault()?.Value);
+            to.Initial = converter.ConvertElement<TargetModel.Element, SourceModel.Element>(from.Initial.FirstOrDefault()?.Value);
             to.Options = ConvertCanonicalToResourceReference(from.AnswerValueSetElement, converter);
         }
 
@@ -142,8 +142,8 @@ namespace FhirTool.Conversion.Converters
             var fromDose = from.DoseAndRate.FirstOrDefault(it => it.Dose != null);
             var fromRate = from.DoseAndRate.FirstOrDefault(it => it.Rate != null);
 
-            to.Dose = fromDose == null ? to.Dose : converter.ConvertObject<TargetModel.Element, SourceModel.Element>(fromDose);
-            to.Rate = fromRate == null ? to.Rate : converter.ConvertObject<TargetModel.Element, SourceModel.Element>(fromRate);
+            to.Dose = fromDose == null ? to.Dose : converter.ConvertElement<TargetModel.Element, SourceModel.Element>(fromDose);
+            to.Rate = fromRate == null ? to.Rate : converter.ConvertElement<TargetModel.Element, SourceModel.Element>(fromRate);
         }
 
         // Helpers

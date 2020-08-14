@@ -66,7 +66,7 @@ namespace FhirTool.Conversion.Converters
             if (from != null)
             {
                 to.CurrencyElement = ConvertCodeToCodeMoney(from.CodeElement, converter);
-                to.ValueElement = converter.ConvertObject<TargetModel.FhirDecimal, SourceModel.FhirDecimal>(from.ValueElement);
+                to.ValueElement = converter.ConvertElement<TargetModel.FhirDecimal, SourceModel.FhirDecimal>(from.ValueElement);
             }
         }
 
@@ -161,7 +161,7 @@ namespace FhirTool.Conversion.Converters
             {
                 if (from.Who is SourceModel.ResourceReference fromResourceReference)
                 {
-                    to.Who = converter.ConvertObject<TargetModel.ResourceReference, SourceModel.ResourceReference>(fromResourceReference);
+                    to.Who = converter.ConvertElement<TargetModel.ResourceReference, SourceModel.ResourceReference>(fromResourceReference);
                 }
                 else if (from.Who is SourceModel.FhirUri fromFhirUri)
                 {
@@ -173,7 +173,7 @@ namespace FhirTool.Conversion.Converters
             {
                 if (from.OnBehalfOf is SourceModel.ResourceReference fromResourceReference)
                 {
-                    to.OnBehalfOf = converter.ConvertObject<TargetModel.ResourceReference, SourceModel.ResourceReference>(fromResourceReference);
+                    to.OnBehalfOf = converter.ConvertElement<TargetModel.ResourceReference, SourceModel.ResourceReference>(fromResourceReference);
                 }
                 else if (from.OnBehalfOf is SourceModel.FhirUri fromFhirUri)
                 {
@@ -192,11 +192,11 @@ namespace FhirTool.Conversion.Converters
         {
             if (from.Dose != null)
             {
-                to.DoseAndRate.Add(new TargetModel.Dosage.DoseAndRateComponent { Dose = converter.ConvertObject<TargetModel.Element, SourceModel.Element>(from.Dose) });
+                to.DoseAndRate.Add(new TargetModel.Dosage.DoseAndRateComponent { Dose = converter.ConvertElement<TargetModel.Element, SourceModel.Element>(from.Dose) });
             }
             if (from.Rate != null)
             {
-                to.DoseAndRate.Add(new TargetModel.Dosage.DoseAndRateComponent { Rate = converter.ConvertObject<TargetModel.Element, SourceModel.Element>(from.Rate) });
+                to.DoseAndRate.Add(new TargetModel.Dosage.DoseAndRateComponent { Rate = converter.ConvertElement<TargetModel.Element, SourceModel.Element>(from.Rate) });
             }
         }
 
@@ -227,7 +227,7 @@ namespace FhirTool.Conversion.Converters
         {
             return new TargetModel.Questionnaire.InitialComponent
             {
-                Value = converter.ConvertObject<TargetModel.Element, SourceModel.Element>(from),
+                Value = converter.ConvertElement<TargetModel.Element, SourceModel.Element>(from),
             };
         }
 

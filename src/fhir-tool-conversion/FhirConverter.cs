@@ -94,7 +94,7 @@ namespace FhirTool.Conversion
             {
                 Path = new FhirPath();
                 Path.Push(fromObject.GetType().Name);
-                return ConvertObject<TTo, TFrom>(fromObject);
+                return ConvertElement<TTo, TFrom>(fromObject);
             }
             finally
             {
@@ -102,7 +102,7 @@ namespace FhirTool.Conversion
             }
         }
 
-        internal TTo ConvertObject<TTo,TFrom>(TFrom fromObject)
+        internal TTo ConvertElement<TTo,TFrom>(TFrom fromObject)
             where TFrom : Base
             where TTo : Base
         {
@@ -135,11 +135,11 @@ namespace FhirTool.Conversion
 
             var handledProperties = ConvertTypesWithChanges(targetObject, sourceObject);
             var targetProperties = targetObject.GetType().GetProperties()
-                .Where(prop => Attribute.IsDefined(prop, Converter.GetTargetFhirElementAttribute()));
+                .Where(prop => Attribute.IsDefined(prop, Converter.GetTargetFhirElementAttributeType()));
 
             foreach (var targetProperty in targetProperties)
             {
-                dynamic elementAttribute = targetProperty.GetCustomAttribute(Converter.GetTargetFhirElementAttribute());
+                dynamic elementAttribute = targetProperty.GetCustomAttribute(Converter.GetTargetFhirElementAttributeType());
                 Path.Push(elementAttribute?.Name ?? targetProperty.Name);
 
                 if (handledProperties.Contains(targetProperty.Name)) { Path.Pop(); continue; }

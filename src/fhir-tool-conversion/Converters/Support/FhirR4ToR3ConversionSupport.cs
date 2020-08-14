@@ -30,12 +30,12 @@ namespace FhirTool.Conversion.Converters
             return typeof(SourceModel.Code<>);
         }
 
-        public override Type GetTargetFhirElementAttribute()
+        public override Type GetTargetFhirElementAttributeType()
         {
             return typeof(TargetIntrospection.FhirElementAttribute);
         }
 
-        public override Type GetSourceFhirElementAttribute()
+        public override Type GetSourceFhirElementAttributeType()
         {
             return typeof(SourceIntrospection.FhirElementAttribute);
         }

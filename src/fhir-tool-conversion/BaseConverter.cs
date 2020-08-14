@@ -21,8 +21,8 @@ namespace FhirTool.Conversion
 
         public abstract Type GetTargetCodeType();
         public abstract Type GetSourceCodeType();
-        public abstract Type GetTargetFhirElementAttribute();
-        public abstract Type GetSourceFhirElementAttribute();
+        public abstract Type GetTargetFhirElementAttributeType();
+        public abstract Type GetSourceFhirElementAttributeType();
 
         protected abstract string GetFhirTypeNameForTargetType(Type targetType);
 
