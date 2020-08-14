@@ -5,6 +5,8 @@
     <RootNamespace>FhirTool.Conversion</RootNamespace>
     <AssemblyName>FhirTool.Conversion</AssemblyName>
     <Version>0.5-beta02</Version>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
