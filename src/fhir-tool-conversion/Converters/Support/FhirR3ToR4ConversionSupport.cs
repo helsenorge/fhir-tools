@@ -4,8 +4,11 @@ extern alias R4;
 using System;
 using FhirTool.Conversion.Converters.Support.TypeMaps;
 
-using SourceModel = R3::Hl7.Fhir.Model;
 using TargetModel = R4::Hl7.Fhir.Model;
+using SourceModel = R3::Hl7.Fhir.Model;
+
+using TargetIntrospection = R4::Hl7.Fhir.Introspection;
+using SourceIntrospection = R3::Hl7.Fhir.Introspection;
 
 namespace FhirTool.Conversion.Converters
 {
@@ -25,6 +28,16 @@ namespace FhirTool.Conversion.Converters
         public override Type GetSourceCodeType()
         {
             return typeof(SourceModel.Code<>);
+        }
+
+        public override Type GetTargetFhirElementAttributeType()
+        {
+            return typeof(TargetIntrospection.FhirElementAttribute);
+        }
+
+        public override Type GetSourceFhirElementAttributeType()
+        {
+            return typeof(SourceIntrospection.FhirElementAttribute);
         }
 
         protected override string GetFhirTypeNameForTargetType(Type targetType)
