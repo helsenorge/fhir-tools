@@ -154,12 +154,8 @@ $RECYCLE.BIN/
 # Mac desktop service store files
 .DS_Store
 /FhirApi.userprefs
-/src/EwoutFhirNetApi.snk
 *.nupkg
 /packages/repositories.config
-src/Hl7.Fhir.Api/EwoutFhirNetApi.snk
-src/Hl7.Fhir.Model/EwoutFhirNetApi.snk
-*.snk
 sonar-project.properties
 src/.vs/
 build/runbuild.txt
