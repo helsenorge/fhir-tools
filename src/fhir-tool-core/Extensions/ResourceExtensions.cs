@@ -51,26 +51,37 @@ namespace FhirTool.Core
             return key;
         }
 
+        public static void SerializeResourceToDisk(this Resource resource, string path, string mimeType, bool pretty = true)
+        {
+            switch(mimeType.ToLowerInvariant())
+            {
+                case "xml":
+                    resource.SerializeResourceToDiskAsXml(path);
+                    break;
+                case "json":
+                    resource.SerializeResourceToDiskAsJson(path);
+                    break;
+                default:
+                    throw new UnknownMimeTypeException(mimeType);
+            }
+        }
+
         public static void SerializeResourceToDiskAsXml(this Resource resource, string path, bool pretty = true)
         {
             EnsureArg.IsNotNullOrWhiteSpace(path, nameof(path));
 
-            using (XmlWriter writer = new XmlTextWriter(new StreamWriter(path)))
-            {
-                var serializer = new FhirXmlSerializer(new SerializerSettings { Pretty = pretty });
-                serializer.Serialize(resource, writer);
-            }
+            using XmlWriter writer = new XmlTextWriter(new StreamWriter(path));
+            var serializer = new FhirXmlSerializer(new SerializerSettings { Pretty = pretty });
+            serializer.Serialize(resource, writer);
         }
 
         public static void SerializeResourceToDiskAsJson(this Resource resource, string path, bool pretty = true)
         {
             EnsureArg.IsNotNullOrWhiteSpace(path, nameof(path));
 
-            using (JsonWriter writer = new JsonTextWriter(new StreamWriter(path)))
-            {
-                var serializer = new FhirJsonSerializer(new SerializerSettings { Pretty = pretty });
-                serializer.Serialize(resource, writer);
-            }
+            using JsonWriter writer = new JsonTextWriter(new StreamWriter(path));
+            var serializer = new FhirJsonSerializer(new SerializerSettings { Pretty = pretty });
+            serializer.Serialize(resource, writer);
         }
     }
 }

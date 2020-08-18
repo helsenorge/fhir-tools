@@ -1,4 +1,5 @@
-﻿using Hl7.Fhir.Utility;
+﻿using FhirTool.Core.Operations;
+using Hl7.Fhir.Utility;
 using System;
 using System.Diagnostics.CodeAnalysis;
 

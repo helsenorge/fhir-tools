@@ -5,6 +5,7 @@
 *.suo
 *.user
 *.sln.docstates
+src/fhir-tool/Properties/launchSettings.json
 
 # Build results
 [Dd]ebug/

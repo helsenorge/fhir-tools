@@ -207,7 +207,7 @@ namespace FhirTool.Conversion.Converters
 
             return new TargetModel.Code<TargetModel.Money.Currencies>
             {
-                Value = string.IsNullOrEmpty(from.Value) ? null : EnumUtility.ParseLiteral<TargetModel.Money.Currencies>(from.Value),
+                Value = string.IsNullOrWhiteSpace(from.Value) ? null : EnumUtility.ParseLiteral<TargetModel.Money.Currencies>(from.Value),
                 Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
             };
         }

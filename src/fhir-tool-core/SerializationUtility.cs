@@ -1,5 +1,4 @@
 ﻿using EnsureThat;
-using FhirTool.Core;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Utility;
@@ -10,11 +9,51 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Xml.Linq;
+using Tasks = System.Threading.Tasks;
 
-namespace FhirTool
+namespace FhirTool.Core
 {
-    internal static class FhirLoader
+    internal static class SerializationUtility
     {
+        public static async Tasks.Task<T> DeserializeResource<T>(string path)
+            where T : Base
+        {
+            T resource = default;
+            using StreamReader reader = new StreamReader(path);
+            string data = await reader.ReadToEndAsync();
+            if (SerializationUtil.ProbeIsJson(data))
+            {
+                resource = DeserializeJsonResource<T>(data);
+            }
+            else if(SerializationUtil.ProbeIsXml(data))
+            {
+                resource = DeserializeXmlResource<T>(data);
+            }
+            return resource;
+        }
+
+        public static bool ProbeIsJsonOrXml(string path)
+        {
+            using StreamReader reader = new StreamReader(path);
+            string data = reader.ReadToEnd();
+            return SerializationUtil.ProbeIsJson(data) 
+                || SerializationUtil.ProbeIsXml(data);
+        }
+
+        private static T DeserializeJsonResource<T>(string data)
+            where T : Base
+        {
+            FhirJsonParser parser = new FhirJsonParser(new ParserSettings { PermissiveParsing = false });
+            return parser.Parse<T>(data);
+        }
+
+        private static T DeserializeXmlResource<T>(string data)
+            where T : Base
+        {
+            FhirXmlParser parser = new FhirXmlParser(new ParserSettings { PermissiveParsing = false });
+            return parser.Parse<T>(data);
+        }
+
         public static bool IsKnownResourceType(string data)
         {
             EnsureArg.IsNotNull(data, nameof(data));
@@ -24,10 +63,10 @@ namespace FhirTool
                 JObject resource = JObject.Parse(data);
                 return resource != null
                     && resource.ContainsKey("resourceType")
-                    && !string.IsNullOrEmpty(resource["resourceType"].ToString())
+                    && !string.IsNullOrWhiteSpace(resource["resourceType"].ToString())
                     && ModelInfo.IsKnownResource(resource["resourceType"].ToString());
             }
-            else if(SerializationUtil.ProbeIsXml(data))
+            else if (SerializationUtil.ProbeIsXml(data))
             {
                 XDocument resource = XDocument.Parse(data);
                 return resource != null
@@ -71,7 +110,19 @@ namespace FhirTool
                 return new Resource[] { resource };
             }
         }
-        
+
+        public static IEnumerable<Resource> ImportPath(string path)
+        {
+            if (IOUtility.IsDirectory(path))
+            {
+                return ImportFolder(path);
+            }
+            else
+            {
+                return ImportFile(path);
+            }
+        }
+
         public static IEnumerable<Resource> ImportFolder(string path)
         {
             List<Resource> resources = new List<Resource>();
@@ -79,7 +130,7 @@ namespace FhirTool
             IEnumerable<string> paths = Directory.EnumerateFileSystemEntries(path);
             foreach (string p in paths)
             {
-                resources.AddRange(IOHelpers.IsDirectory(p) ? ImportFolder(p) : ImportFile(p));
+                resources.AddRange(IOUtility.IsDirectory(p) ? ImportFolder(p) : ImportFile(p));
             }
 
             return resources;
@@ -118,6 +169,5 @@ namespace FhirTool
 
             return File.ReadAllBytes(filename).ExtractZipEntries().SelectMany(ImportData); ;
         }
-
     }
 }

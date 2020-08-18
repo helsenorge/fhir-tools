@@ -5,13 +5,12 @@ using Hl7.Fhir.Model;
 using Hl7.Fhir.Utility;
 using EnsureThat;
 using FhirTool.Core;
+using FhirTool.Core.Operations;
 
 namespace FhirTool
 {
     public sealed class HandleFhirToolArguments
     {
-        public static readonly string[] SUPPORTED_MIMETYPES = { "xml", "json" };
-
         public static FhirToolArguments Create(string[] args)
         {
             EnsureArg.IsNotNull(args, nameof(args));
@@ -25,19 +24,19 @@ namespace FhirTool
                 {
                     case FhirToolArguments.GENERATE_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
-                        arguments.Operation = OperationEnum.Generate;
+                        arguments.Operation = OperationEnum.GenerateResource;
                         break;
                     case FhirToolArguments.UPLOAD_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
-                        arguments.Operation = OperationEnum.Upload;
+                        arguments.Operation = OperationEnum.UploadResource;
                         break;
                     case FhirToolArguments.UPLOAD_DEFINITIONS_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
-                        arguments.Operation = OperationEnum.UploadDefinitions;
+                        arguments.Operation = OperationEnum.UploadFhirDefinitions;
                         break;
                     case FhirToolArguments.BUNDLE_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
-                        arguments.Operation = OperationEnum.Bundle;
+                        arguments.Operation = OperationEnum.BundleResources;
                         break;
                     case FhirToolArguments.SPLIT_BUNDLE_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
@@ -82,7 +81,7 @@ namespace FhirTool
                     case FhirToolArguments.MIMETYPE_ARG:
                     case FhirToolArguments.MIMETYPE_SHORT_ARG:
                         string mimeType = args[i + 1].ToLowerInvariant();
-                        if (!SUPPORTED_MIMETYPES.Contains(mimeType)) throw new NotSupportedMimeTypeException(mimeType);
+                        if (!Constants.SUPPORTED_MIMETYPES.Contains(mimeType)) throw new NotSupportedMimeTypeException(mimeType);
                         arguments.MimeType = mimeType;
                         break;
                     case FhirToolArguments.SOURCE_ARG:
@@ -100,18 +99,28 @@ namespace FhirTool
                     case FhirToolArguments.ENVIRONMENT_ARG:
                     case FhirToolArguments.ENVIRONMENT_SHORT_ARG:
                         arguments.Environment = args[i + 1];
-                        EnvironmentSection environmentSection = (EnvironmentSection)ConfigurationManager.GetSection($"environmentSection");
-                        EnvironmentElement environment = (EnvironmentElement)environmentSection.Items[arguments.Environment];
+                        if (!IsKnownEnvironment(arguments.Environment)) throw new UnknownEnvironmentNameException(arguments.Environment);
+                        EnvironmentElement environment = GetEnvironmentElement(arguments.Environment);
                         arguments.FhirBaseUrl = environment.FhirBaseUrl;
                         arguments.ProxyBaseUrl = environment.ProxyBaseUrl;
                         break;
                     case FhirToolArguments.ENVIRONMENT_SOURCE_ARG:
                     case FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG:
                         arguments.SourceEnvironment = args[i + 1];
+                        if (!IsKnownEnvironment(arguments.SourceEnvironment)) throw new UnknownEnvironmentNameException(arguments.SourceEnvironment);
+
+                        EnvironmentElement srcEnv = GetEnvironmentElement(arguments.Environment);
+                        arguments.SourceFhirBaseUrl = srcEnv.FhirBaseUrl;
+                        arguments.SourceProxyBaseUrl = srcEnv.ProxyBaseUrl;
                         break;
                     case FhirToolArguments.ENVIRONMENT_DESTINATION_ARG:
                     case FhirToolArguments.ENVIRONMENT_DESTINATION_SHORT_ARG:
                         arguments.DestinationEnvironment = args[i + 1];
+                        if (!IsKnownEnvironment(arguments.DestinationEnvironment)) throw new UnknownEnvironmentNameException(arguments.DestinationEnvironment);
+
+                        EnvironmentElement destEnv = GetEnvironmentElement(arguments.Environment);
+                        arguments.DestinationFhirBaseUrl = destEnv.FhirBaseUrl;
+                        arguments.DestinationProxyBaseUrl = destEnv.ProxyBaseUrl;
                         break;
                     case FhirToolArguments.RESOURCETYPE_ARG:
                     case FhirToolArguments.RESOURCETYPE_SHORT_ARG:
