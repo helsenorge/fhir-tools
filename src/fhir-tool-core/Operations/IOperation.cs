@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FhirTool.Core.Operations
 {
-    public interface IOperation<T>
+    public interface IOperation
     {
-        new Result<T> Execute(FhirToolArguments arguments);
+        Task<OperationResultEnum> Execute();
 
         IEnumerable<Issue> Issues { get; }
     }

@@ -1,4 +1,5 @@
-﻿using Hl7.Fhir.Model;
+﻿using FhirTool.Core.Operations;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Core
 {
@@ -59,6 +60,10 @@ namespace FhirTool.Core
         public string ValueSetPath { get; set; }
         public string FhirBaseUrl { get; set; }
         public string ProxyBaseUrl { get; set; }
+        public string SourceFhirBaseUrl { get; set; }
+        public string SourceProxyBaseUrl { get; set; }
+        public string DestinationFhirBaseUrl { get; set; }
+        public string DestinationProxyBaseUrl { get; set; }
         public bool ResolveUrl { get; set; }
         public string Version { get; set; }
         public bool Verbose { get; set; }

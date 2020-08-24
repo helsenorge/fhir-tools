@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace FhirTool.Core
 {
-    public static class QuestionnaireExtensions
+    internal static class QuestionnaireExtensions
     {
         public static bool IsItemControlOfType(this Questionnaire.ItemComponent item, params string[] itemControlType)
         {

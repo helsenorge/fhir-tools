@@ -2,6 +2,9 @@
 {
     public static class Constants
     {
+        public const string DEFAULT_MIMETYPE = "json";
+        public static readonly string[] SUPPORTED_MIMETYPES = { "xml", "json" };
+
         public const string QuestionnaireProfileUri = "http://ehelse.no/fhir/StructureDefinition/sdf-Questionnaire";
 
         public const string EntryFormatUri = "http://hl7.org/fhir/StructureDefinition/entryFormat";

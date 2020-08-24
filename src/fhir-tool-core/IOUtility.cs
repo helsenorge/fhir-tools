@@ -3,7 +3,7 @@ using System.IO;
 
 namespace FhirTool.Core
 {
-    public static class IOHelpers
+    public static class IOUtility
     {
         private static string FileNameReservedCharacters = "<>:\"/\\|?*";
 

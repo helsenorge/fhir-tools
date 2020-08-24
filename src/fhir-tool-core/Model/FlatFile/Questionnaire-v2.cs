@@ -1,7 +1,7 @@
 ﻿using FileHelpers;
 using System;
 
-namespace FhirTool.Model.FlatFile
+namespace FhirTool.Core.Model.FlatFile
 {
     [DelimitedRecord("\t")]
     public class QuestionnaireHeader2

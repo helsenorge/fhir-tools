@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FhirTool.Model
+namespace FhirTool.Core.Model
 {
     public class CodeableConceptElement
     {

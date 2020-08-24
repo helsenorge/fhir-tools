@@ -1,4 +1,4 @@
-﻿namespace FhirTool.Model
+﻿namespace FhirTool.Core.Model
 {
     public enum DataTypeEnum
     {
