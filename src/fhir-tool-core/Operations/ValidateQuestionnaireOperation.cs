@@ -1,4 +1,6 @@
-﻿using Hl7.Fhir.Model;
+﻿extern alias R3;
+
+using R3::Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;

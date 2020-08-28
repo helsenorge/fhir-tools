@@ -32,6 +32,11 @@ namespace FhirTool.Core.Operations
                         logger: _loggerFactory.CreateLogger<GenerateQuestionnaireOperation>(),
                         operationFactory: this
                     ),
+                OperationEnum.DownloadResources =>
+                    new DownloadResourcesOperation(
+                        arguments: arguments,
+                        logger: _loggerFactory.CreateLogger(typeof(DownloadResourcesOperation))
+                    ),
                 OperationEnum.UploadResource => 
                     new UploadResourceOperation(
                         arguments: arguments,

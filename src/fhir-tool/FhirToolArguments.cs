@@ -1,11 +1,14 @@
-﻿using FhirTool.Configuration;
+﻿extern alias R3;
+
+using FhirTool.Configuration;
 using System.Linq;
 using System.Configuration;
-using Hl7.Fhir.Model;
+using R3::Hl7.Fhir.Model;
 using Hl7.Fhir.Utility;
 using EnsureThat;
 using FhirTool.Core;
 using FhirTool.Core.Operations;
+using FhirTool.Core.Utils;
 
 namespace FhirTool
 {
@@ -25,6 +28,10 @@ namespace FhirTool
                     case FhirToolArguments.GENERATE_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
                         arguments.Operation = OperationEnum.GenerateResource;
+                        break;
+                    case FhirToolArguments.DOWNLOAD_OP:
+                        if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
+                        arguments.Operation = OperationEnum.DownloadResources;
                         break;
                     case FhirToolArguments.UPLOAD_OP:
                         if (arguments.Operation != OperationEnum.None) throw new MultipleOperationException(arguments.Operation);
@@ -144,6 +151,15 @@ namespace FhirTool
                     case FhirToolArguments.CONVERT_TO_ARG:
                     case FhirToolArguments.CONVERT_TO_SHORT_ARG:
                         arguments.ToFhirVersion = FhirVersionInternal.ConvertToFhirVersion(args[i + 1]);
+                        break;
+                    case FhirToolArguments.DOWNLOAD_RESOURCES_ARG:
+                        arguments.Resources = args[i + 1].Split(",").ToList();
+                        break;
+                    case FhirToolArguments.FHIR_VERSION:
+                        arguments.FhirVersion = FhirVersionUtils.MapStringToFhirVersion(args[i + 1]);
+                        break;
+                    case FhirToolArguments.KEEP_SERVER_URL:
+                        arguments.KeepServerUrl = true;
                         break;
                     default:
                         break;

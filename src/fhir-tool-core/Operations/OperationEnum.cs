@@ -10,6 +10,7 @@
         SplitBundle = 5,
         TransferData = 6,
         VerifyValidation = 7,
-        Convert = 8
+        Convert = 8,
+        DownloadResources = 9,
     }
 }

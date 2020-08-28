@@ -1,4 +1,6 @@
-﻿using Hl7.Fhir.Model;
+﻿extern alias R3;
+
+using R3::Hl7.Fhir.Model;
 using System.Text;
 
 namespace FhirTool.Core

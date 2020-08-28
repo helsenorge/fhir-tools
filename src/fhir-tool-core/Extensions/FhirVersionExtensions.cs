@@ -1,4 +1,6 @@
-﻿namespace FhirTool.Core
+﻿using System.Linq;
+
+namespace FhirTool.Core
 {
     public static class FhirVersionExtensions
     {
