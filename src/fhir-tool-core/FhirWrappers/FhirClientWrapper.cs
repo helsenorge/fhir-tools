@@ -3,6 +3,7 @@ extern alias R4;
 
 using FhirTool.Core.Utils;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using R3Rest = R3::Hl7.Fhir.Rest;
 using R4Rest = R4::Hl7.Fhir.Rest;
 
@@ -50,29 +51,29 @@ namespace FhirTool.Core.FhirWrappers
             _logger.LogInformation($"{e.RawRequest.Method} {e.RawRequest.Address}");
         }
 
-        internal BundleWrapper Search(string resource)
+        internal async Task<BundleWrapper> SearchAsync(string resource)
         {
             switch (FhirVersion) {
                 case FhirVersion.R3:
-                    var resultR3 = R3Client.Search(resource);
+                    var resultR3 = await R3Client.SearchAsync(resource);
                     return resultR3 != null ? new BundleWrapper(resultR3) : null;
                 case FhirVersion.R4:
-                    var resultR4 = R4Client.Search(resource);
+                    var resultR4 = await R4Client.SearchAsync(resource);
                     return resultR4 != null ? new BundleWrapper(resultR4) : null;
                 default:
                     return default;
             }
         }
 
-        internal BundleWrapper Continue(BundleWrapper bundleWrapper)
+        internal async Task<BundleWrapper> ContinueAsync(BundleWrapper bundleWrapper)
         {
             switch(FhirVersion)
             {
                 case FhirVersion.R3:
-                    var resultR3 = R3Client.Continue(bundleWrapper.R3Bundle);
+                    var resultR3 = await R3Client.ContinueAsync(bundleWrapper.R3Bundle);
                     return resultR3 != null ? new BundleWrapper(resultR3) : null;
                 case FhirVersion.R4:
-                    var resultR4 = R4Client.Continue(bundleWrapper.R4Bundle);
+                    var resultR4 = await R4Client.ContinueAsync(bundleWrapper.R4Bundle);
                     return resultR4 != null ? new BundleWrapper(resultR4) : null;
                 default:
                     return default;

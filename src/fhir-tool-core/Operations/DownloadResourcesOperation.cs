@@ -27,7 +27,7 @@ namespace FhirTool.Core.Operations
             
             var baseDir = CreateBaseDirectory(new Uri(_arguments.FhirBaseUrl), client.FhirVersion);
             _logger.LogInformation($"Created local storage at {MakeRelativeToCurrentDirectory(baseDir.FullName)}");
-            DownloadAndStore(client, baseDir);
+            await DownloadAndStore(client, baseDir);
 
             return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
                 ? OperationResultEnum.Failed
@@ -40,26 +40,26 @@ namespace FhirTool.Core.Operations
             return Directory.CreateDirectory(path); 
         }
 
-        private void DownloadAndStore(FhirClientWrapper client, DirectoryInfo baseDir)
+        private async Task DownloadAndStore(FhirClientWrapper client, DirectoryInfo baseDir)
         {
             foreach (var resourceType in _arguments.Resources)
             {
                 _logger.LogInformation($"Starting to download resources of type {resourceType}");
-                DownloadAndStoreResource(resourceType, client, baseDir);
+                await DownloadAndStoreResource(resourceType, client, baseDir);
                 _logger.LogInformation($"Done downloading resources of type {resourceType}");
             }
         }
 
-        private void DownloadAndStoreResource(string resourceType, FhirClientWrapper client, DirectoryInfo baseDir)
+        private async Task DownloadAndStoreResource(string resourceType, FhirClientWrapper client, DirectoryInfo baseDir)
         {
             var resourceTypeDir = Directory.CreateDirectory(SafeDirectoryName(Path.Combine(baseDir.FullName, resourceType)));
-            var result = client.Search(resourceType);
+            var result = await client.SearchAsync(resourceType);
             result = _arguments.KeepServerUrl && result != null ? UpdateBundleServerUrl(result) : result;
             SerializeAndStore(result, resourceTypeDir);
 
             while(result != null)
             {
-                result = client.Continue(result);
+                result = await client.ContinueAsync(result);
                 result = _arguments.KeepServerUrl && result != null ? UpdateBundleServerUrl(result) : result;
                 SerializeAndStore(result, resourceTypeDir);
             }
