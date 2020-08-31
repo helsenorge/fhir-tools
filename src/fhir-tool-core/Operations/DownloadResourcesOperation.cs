@@ -4,28 +4,59 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FhirTool.Core.FhirWrappers;
+using CommandLine;
+using System.Collections.Generic;
+using FhirTool.Core.ArgumentHelpers;
 
 namespace FhirTool.Core.Operations
 {
-    internal class DownloadResourcesOperation : Operation
+    [Verb("download", HelpText = "Downloads resources from fhir server")]
+    public class DownloadResourcesOperationOptions
     {
-        private readonly FhirToolArguments _arguments;
-        private readonly ILogger _logger;
+        [Option('u', "fhir-base-url", Group = "url", HelpText = "url to Fhir server")]
+        public WithFhirBaseUrl FhirBaseUrl { get; set; } = new WithFhirBaseUrl();
 
-        public DownloadResourcesOperation(FhirToolArguments arguments, ILogger logger)
+        [Option('e', "environment", Group = "url", HelpText = "environment")]
+        public WithEnvironment Environment { get; set; }
+
+        [Option('r', "resolve-url", HelpText = "resolve url")]
+        public bool ResolveUrl { get; set; }
+        
+        [Option('c', "credentials", HelpText = "credentials")]
+        public string Credentials { get; set; }
+
+        [Option("resources", Required = true, HelpText = "comma separated list of Fhir resource type names to download", Separator = ',')]
+        public IEnumerable<string> Resources { get; set; }
+
+        [Option("fhir-version", Required = false, HelpText = "which fhir version to assume")]
+        public FhirVersion FhirVersion { get; set; }
+
+        [Option("keep-server-url", Required = false, HelpText = "...")]
+        public bool KeepServerUrl { get; set; }
+    }
+
+    public class DownloadResourcesOperation : Operation
+    {
+        private readonly DownloadResourcesOperationOptions _arguments;
+        private readonly ILogger<DownloadResourcesOperation> _logger;
+        private readonly ILoggerFactory _loggerFactory;
+
+        public DownloadResourcesOperation(DownloadResourcesOperationOptions arguments, ILoggerFactory loggerFactory)
         {
+            _loggerFactory = loggerFactory;
             _arguments = arguments;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<DownloadResourcesOperation>();
+
+            arguments.FhirBaseUrl.Uri ??= arguments.Environment?.FhirBaseUrl;
+
+            Validate(arguments);
         }
 
         public override async Task<OperationResultEnum> Execute()
         {
-            ValidateArguments(_arguments);
-            if (_issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)) return OperationResultEnum.Failed;
-
-            var client = new FhirClientWrapper(_arguments.FhirBaseUrl, _logger, _arguments.FhirVersion);
+            var client = new FhirClientWrapper(_arguments.FhirBaseUrl.Uri, _logger, _arguments.FhirVersion);
             
-            var baseDir = CreateBaseDirectory(new Uri(_arguments.FhirBaseUrl), client.FhirVersion);
+            var baseDir = CreateBaseDirectory(new Uri(_arguments.FhirBaseUrl.Uri), client.FhirVersion);
             _logger.LogInformation($"Created local storage at {MakeRelativeToCurrentDirectory(baseDir.FullName)}");
             await DownloadAndStore(client, baseDir);
 
@@ -55,22 +86,22 @@ namespace FhirTool.Core.Operations
             var resourceTypeDir = Directory.CreateDirectory(SafeDirectoryName(Path.Combine(baseDir.FullName, resourceType)));
             var result = await client.SearchAsync(resourceType);
             result = _arguments.KeepServerUrl && result != null ? UpdateBundleServerUrl(result) : result;
-            SerializeAndStore(result, resourceTypeDir);
+            await SerializeAndStore(result, resourceTypeDir);
 
             while(result != null)
             {
                 result = await client.ContinueAsync(result);
                 result = _arguments.KeepServerUrl && result != null ? UpdateBundleServerUrl(result) : result;
-                SerializeAndStore(result, resourceTypeDir);
+                await SerializeAndStore(result, resourceTypeDir);
             }
         }
 
         private BundleWrapper UpdateBundleServerUrl(BundleWrapper bundle)
         {
-            return bundle.UpdateLinks(new Uri(_arguments.FhirBaseUrl));
+            return bundle.UpdateLinks(new Uri(_arguments.FhirBaseUrl.Uri));
         }
 
-        private void SerializeAndStore(BundleWrapper result, DirectoryInfo baseDir)
+        private async Task SerializeAndStore(BundleWrapper result, DirectoryInfo baseDir)
         {
             if (result == null) return;
             var resources = result.GetResources();
@@ -78,16 +109,16 @@ namespace FhirTool.Core.Operations
             foreach (var resource in resources)
             {
                 string serialized = resource.Serialize();
-                Store(resource.Id, serialized, baseDir);
+                await Store(resource.Id, serialized, baseDir);
             }
         }
 
-        private void Store(string id, string serialized, DirectoryInfo baseDir)
+        private async Task Store(string id, string serialized, DirectoryInfo baseDir)
         {
             var filename = SafeFilename(string.Join(".", id, "json"));
             var path = Path.Combine(baseDir.FullName, filename);
             _logger.LogInformation($"    Storing resource {id} at {MakeRelativeToCurrentDirectory(path)}");
-            File.WriteAllText(path, serialized);
+            await File.WriteAllTextAsync(path, serialized);
         }
 
         private string MakeRelativeToCurrentDirectory(string absolutePath)
@@ -117,24 +148,10 @@ namespace FhirTool.Core.Operations
             return fileName;
         }
 
-        private void ValidateArguments(FhirToolArguments arguments)
+        private void Validate(DownloadResourcesOperationOptions arguments)
         {
-            if (string.IsNullOrWhiteSpace(arguments.FhirBaseUrl))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.DOWNLOAD_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}' or '{FhirToolArguments.ENVIRONMENT_ARG}'.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
-            if (arguments.Resources == null || !arguments.Resources.Any())
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.DOWNLOAD_OP}' requires argument '{FhirToolArguments.DOWNLOAD_RESOURCES_ARG}'.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
+            arguments.Environment?.Validate(nameof(arguments.Environment));
+            arguments.FhirBaseUrl?.Validate(nameof(arguments.FhirBaseUrl), arguments.ResolveUrl, arguments.Credentials);
         }
     }
 }

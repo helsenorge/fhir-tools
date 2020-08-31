@@ -15,18 +15,21 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using FhirTool.Core.Operations;
 
 namespace FhirTool.Core
 {
     internal class QuestionnaireGenerator
     {
         private readonly string _proxyBaseUrl;
-        private readonly ILogger<QuestionnaireGenerator> _logger;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger _logger;
 
-        public QuestionnaireGenerator(string proxyBaseUrl, ILogger<QuestionnaireGenerator> logger)
+        public QuestionnaireGenerator(string proxyBaseUrl, ILoggerFactory loggerFactory)
         {
             _proxyBaseUrl = proxyBaseUrl;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<QuestionnaireGenerator>();
         }
 
         private static RecordAction RecordSelector(string record)
@@ -42,24 +45,24 @@ namespace FhirTool.Core
             }
         }
 
-        public Questionnaire GenerateQuestionnaireFromFlatFile(FhirToolArguments arguments)
+        public Questionnaire GenerateQuestionnaireFromFlatFile(GenerateQuestionnaireOperationOptions arguments)
         {
             Questionnaire questionnaire = null;
-            _logger.LogInformation($"Loading Questionnaire from file: {arguments.QuestionnairePath}");
-            if (arguments.Version == "1")
+            _logger.LogInformation($"Loading Questionnaire from file: {arguments.Questionnaire}");
+            if (arguments.ExcelSheetVersion == ExcelSheetVersion.v1)
             {
-                questionnaire = GetQuestionnairesFromFlatFileFormatV1(arguments.QuestionnairePath).FirstOrDefault();
+                questionnaire = GetQuestionnairesFromFlatFileFormatV1(arguments.Questionnaire.Path).FirstOrDefault();
             }
-            else if (arguments.Version == "2")
+            else if (arguments.ExcelSheetVersion == ExcelSheetVersion.v2)
             {
-                questionnaire = GetQuestionnairesFromFlatFileFormatV2(arguments.QuestionnairePath).FirstOrDefault();
+                questionnaire = GetQuestionnairesFromFlatFileFormatV2(arguments.Questionnaire.Path).FirstOrDefault();
             }
 
             IList<ValueSet> valueSets = null;
-            if (!string.IsNullOrWhiteSpace(arguments.ValueSetPath))
+            if (!string.IsNullOrWhiteSpace(arguments.ValueSet.Path))
             {
-                _logger.LogInformation($"Loading ValueSet(s) from file: '{arguments.ValueSetPath}'.");
-                valueSets = GetValueSetsFromFlatFileFormat(arguments.ValueSetPath, false);
+                _logger.LogInformation($"Loading ValueSet(s) from file: '{arguments.ValueSet}'.");
+                valueSets = GetValueSetsFromFlatFileFormat(arguments.ValueSet.Path, false);
             }
             if (valueSets != null && valueSets.Count > 0)
             {

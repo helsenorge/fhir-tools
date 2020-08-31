@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 
 namespace FhirTool.Configuration
@@ -40,6 +41,17 @@ namespace FhirTool.Configuration
             get
             {
                 return BaseGet(key);
+            }
+        }
+
+        public IEnumerable<EnvironmentElement> Items
+        {
+            get
+            {
+                for(var i=0; i < this.Count; i++)
+                {
+                    yield return (EnvironmentElement)this[i];
+                }
             }
         }
 

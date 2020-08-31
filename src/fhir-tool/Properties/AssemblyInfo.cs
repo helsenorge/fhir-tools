@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Fhir Tool")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Norwegian Directorate of eHealth")]
+[assembly: AssemblyCompany("Norsk Helsenett SF")]
 [assembly: AssemblyProduct("Fhir Tool")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright ©  2018 Norsk Helsenett SF")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

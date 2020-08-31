@@ -1,22 +1,16 @@
-﻿using FhirTool.Core;
+﻿using CommandLine;
+using FhirTool.Core.ArgumentHelpers;
 using FhirTool.Core.Operations;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Tasks = System.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace FhirTool
 {
     partial class Program
     {
         //private const string ProxyBaseUrl = "https://skjemakatalog-test-fhir-apimgmt.azure-api.net/api/v1/";
-
-        private static FhirToolArguments _arguments = null;
-        private static TextWriter _out = null;
-        private static ILoggerFactory _loggerFactory = null;
-        private static ILogger<Program> _logger = null;
 
         // First example
         // fhir-tool.exe --version 1 --questionnaire HELFO_E106_NB.txt --valueset HELFO_E106_NB_Kodeverk.txt --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
@@ -55,50 +49,53 @@ namespace FhirTool
 
 
         // fhir-tool.exe transfer-data --environment-source test --environment-destination qa --resourcetype Questionnaire --searchcount 1000
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            MainAsync(args).GetAwaiter().GetResult();
-        }
+            // Hack until tool api is moved from fhir-tool-core to FhirTool
+            DefinedEnvironments.Environments = EnvironmentHelper.LoadEnvironments();
 
-        static async Tasks.Task MainAsync(string[] args)
-        {
-            try
+            using (var loggerFactory = LoggerFactory.Create(builder => builder
+                 .AddConsole(options => options.IncludeScopes = false)
+                 .SetMinimumLevel(LogLevel.Information)
+             ))
             {
+                var logger = loggerFactory.CreateLogger<Program>();
 
-                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
-                Console.WriteLine($"{versionInfo.ProductName} [Version {Assembly.GetEntryAssembly().GetName().Version}]");
-                Console.WriteLine($"(c) 2018 {versionInfo.CompanyName}. All rights reserved.");
-                Console.WriteLine();
-
-                _arguments = HandleFhirToolArguments.Create(args);
-
-                _loggerFactory = LoggerFactory.Create(builder => builder
-                    .AddConsole(options => options.IncludeScopes = false)
-                    .SetMinimumLevel(_arguments.Verbose ? LogLevel.Debug : LogLevel.Information)
-                 );
-
-                _logger = _loggerFactory.CreateLogger<Program>();
-                FhirToolArgumentsExtensions.Logger = _loggerFactory.CreateLogger(typeof(FhirToolArgumentsExtensions));
-
-
-
-                _logger.LogDebug("Validating command line arguments.");
-                if (!_arguments.Validate())
+                try
                 {
-                    _logger.LogError("One or more arguments did not validate. Please verify your arguments according to output.");
-                    goto exit;
+                    var result = await Parser.Default
+                        .ParseArguments<DownloadResourcesOperationOptions,
+                                      GenerateQuestionnaireOperationOptions,
+                                      UploadResourceOperationOptions,
+                                      UploadDefinitionsOperation,
+                                      BundleResourcesOperationOptions,
+                                      SplitBundleOperationOptions,
+                                      TransferDataOperationOptions,
+                                      VerifyValidationItemsOptions,
+                                      ConvertOperationOptions>(args)
+                      .MapResult(
+                          (DownloadResourcesOperationOptions opts) => new DownloadResourcesOperation(opts, loggerFactory).Execute(),
+                          (GenerateQuestionnaireOperationOptions opts) => new GenerateQuestionnaireOperation(opts, loggerFactory).Execute(),
+                          (UploadResourceOperationOptions opts) => new UploadResourceOperation(opts, loggerFactory).Execute(),
+                          (UploadDefinitionOperationOptions opts) => new UploadDefinitionsOperation(opts, loggerFactory).Execute(),
+                          (BundleResourcesOperationOptions opts) => new BundleResourcesOperation(opts, loggerFactory).Execute(),
+                          (SplitBundleOperationOptions opts) => new SplitBundleOperation(opts, loggerFactory).Execute(),
+                          (TransferDataOperationOptions opts) => new TransferDataOperation(opts, loggerFactory).Execute(),
+                          (VerifyValidationItemsOptions opts) => new VerifyValidationItems(opts, loggerFactory).Execute(),
+                          (ConvertOperationOptions opts) => new ConvertOperation(opts, loggerFactory).Execute(),
+                          errs => Task.FromResult(OperationResultEnum.Failed));
                 }
-                OperationFactory operationFactory = new OperationFactory(_arguments, _loggerFactory);
-                IOperation operation = operationFactory.Create(_arguments.Operation);
-                OperationResultEnum operationResult = await operation.Execute();
-                
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
+                catch (SemanticArgumentException e)
+                {
+                    Console.Error.WriteLine($"Parameter {e.Parameter}: {e.Message}");
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e.Message);
+                    throw;
+                }
             }
 
-        exit:
             if (!Debugger.IsAttached)
             {
                 Console.WriteLine("\nPress any key to exit. . .");

@@ -11,27 +11,48 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Tasks = System.Threading.Tasks;
+using CommandLine;
+using ParserSettings = R3::Hl7.Fhir.Serialization.ParserSettings;
+using FhirTool.Core.ArgumentHelpers;
 
 namespace FhirTool.Core.Operations
 {
-    internal class TransferDataOperation : Operation
+    [Verb("transfer-data", HelpText = "transfer")]
+    public class TransferDataOperationOptions
     {
-        private FhirToolArguments _arguments;
+        [Option("environment-source", Required = true, HelpText = "source environment")]
+        public WithEnvironment SourceEnvironment { get; set; }
+
+        [Option("environment-destination", Required = true, HelpText = "destination environment")]
+        public WithEnvironment DestinationEnvironment { get; set; }
+
+        [Option('R', "resourcetype", Required = true, HelpText = "Resource type")]
+        public ResourceType ResourceType { get; set; }
+
+        [Option("searchcount", HelpText ="search count")]
+        public int SearchCount { get; set; }
+    }
+
+    public class TransferDataOperation : Operation
+    {
+        private TransferDataOperationOptions _arguments;
+        private ILoggerFactory _loggerFactory;
         private ILogger<TransferDataOperation> _logger;
 
-        public TransferDataOperation(FhirToolArguments arguments, ILogger<TransferDataOperation> logger)
+        public TransferDataOperation(TransferDataOperationOptions arguments, ILoggerFactory loggerFactory)
         {
-            this._arguments = arguments;
-            _logger = logger;
+            _arguments = arguments;
+            _loggerFactory = loggerFactory;
+
+            _logger = loggerFactory.CreateLogger<TransferDataOperation>();
+
+            Validate(arguments);
         }
 
         public override async Tasks.Task<OperationResultEnum> Execute()
         {
-            ValidateArguments(_arguments);
-            if (_issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)) return OperationResultEnum.Failed;
-
             FhirJsonSerializer serializer = new FhirJsonSerializer();
-            FhirClient sourceClient = new FhirClient(_arguments.SourceFhirBaseUrl)
+            FhirClient sourceClient = new FhirClient(_arguments.SourceEnvironment.FhirBaseUrl)
             {
                 ParserSettings = new ParserSettings
                 {
@@ -40,7 +61,7 @@ namespace FhirTool.Core.Operations
             };
             HttpClient destClient = new HttpClient()
             {
-                BaseAddress = new Uri(_arguments.DestinationFhirBaseUrl),
+                BaseAddress = new Uri(_arguments.DestinationEnvironment.FhirBaseUrl),
             };
 
             string relativeUrl = $"{_arguments.ResourceType.GetLiteral()}";
@@ -63,16 +84,16 @@ namespace FhirTool.Core.Operations
 
                     // Update known properties and extensions with urls that points to the old source instance.
                     // TODO: The lines referring FhirBaseUrl is legacy and can be removed in a future version.
-                    questionnaire.Url = questionnaire.Url.Replace(_arguments.SourceProxyBaseUrl, string.Empty);
-                    questionnaire.Url = questionnaire.Url.Replace(_arguments.SourceFhirBaseUrl, string.Empty);
+                    questionnaire.Url = questionnaire.Url.Replace(_arguments.SourceEnvironment.ProxyBaseUrl, string.Empty);
+                    questionnaire.Url = questionnaire.Url.Replace(_arguments.SourceEnvironment.FhirBaseUrl, string.Empty);
 
                     IEnumerable<Extension> extensions = questionnaire.GetExtensions(Constants.EndPointUri);
                     foreach (Extension extension in extensions)
                     {
                         if (extension.Value is ResourceReference v)
                         {
-                            v.Reference = v.Reference.Replace(_arguments.SourceProxyBaseUrl, string.Empty);
-                            v.Reference = v.Reference.Replace(_arguments.SourceFhirBaseUrl, string.Empty);
+                            v.Reference = v.Reference.Replace(_arguments.SourceEnvironment.ProxyBaseUrl, string.Empty);
+                            v.Reference = v.Reference.Replace(_arguments.SourceEnvironment.FhirBaseUrl, string.Empty);
                         }
                     }
 
@@ -81,13 +102,13 @@ namespace FhirTool.Core.Operations
                     {
                         if (extension.Value is ResourceReference v)
                         {
-                            v.Reference = v.Reference.Replace(_arguments.SourceProxyBaseUrl, string.Empty);
-                            v.Reference = v.Reference.Replace(_arguments.SourceFhirBaseUrl, string.Empty);
+                            v.Reference = v.Reference.Replace(_arguments.SourceEnvironment.ProxyBaseUrl, string.Empty);
+                            v.Reference = v.Reference.Replace(_arguments.SourceEnvironment.FhirBaseUrl, string.Empty);
                         }
                     }
                 }
 
-                _logger.LogInformation($"Preparing to write resource of type '{resourceType}' to '{_arguments.DestinationFhirBaseUrl}'");
+                _logger.LogInformation($"Preparing to write resource of type '{resourceType}' to '{_arguments.DestinationEnvironment.FhirBaseUrl}'");
                 HttpContent content = new StringContent(serializer.SerializeToString(resource));
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/fhir+json");
                 HttpResponseMessage response;
@@ -104,33 +125,10 @@ namespace FhirTool.Core.Operations
             : OperationResultEnum.Succeeded;
         }
 
-        private void ValidateArguments(FhirToolArguments arguments)
+        private void Validate(TransferDataOperationOptions arguments)
         {
-            if (string.IsNullOrWhiteSpace(arguments.SourceEnvironment))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' requires argument '{FhirToolArguments.ENVIRONMENT_SOURCE_ARG}' or '{FhirToolArguments.ENVIRONMENT_SOURCE_SHORT_ARG}'",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
-            if (string.IsNullOrWhiteSpace(arguments.DestinationEnvironment))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' requires argument '{FhirToolArguments.ENVIRONMENT_DESTINATION_ARG}' or '{FhirToolArguments.ENVIRONMENT_DESTINATION_SHORT_ARG}'",
-                    Severity = IssueSeverityEnum.Error,
-                });
-
-            }
-            if (!arguments.ResourceType.HasValue)
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' requires argument '{FhirToolArguments.RESOURCETYPE_ARG}' or '{FhirToolArguments.RESOURCETYPE_SHORT_ARG}'",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
+            arguments.SourceEnvironment.Validate(nameof(arguments.SourceEnvironment));
+            arguments.DestinationEnvironment.Validate(nameof(arguments.DestinationEnvironment));
         }
     }
 }
