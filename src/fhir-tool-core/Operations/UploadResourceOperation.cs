@@ -92,8 +92,8 @@ namespace FhirTool.Core.Operations
 
         private void Validate(UploadResourceOperationOptions arguments)
         {
-            arguments.Environment.Validate(nameof(arguments.Environment));
-            arguments.FhirBaseUrl.Validate(nameof(arguments.FhirBaseUrl), arguments.ResolveUrl, arguments.Credentials);
+            arguments.Environment?.Validate(nameof(arguments.Environment));
+            arguments.FhirBaseUrl?.Validate(nameof(arguments.FhirBaseUrl), arguments.ResolveUrl, arguments.Credentials);
         }
 
     }

@@ -49,12 +49,6 @@ namespace FhirTool.Core.Operations
             Validate(arguments);
         }
 
-        private void Validate(TransferDataOperationOptions arguments)
-        {
-            arguments.SourceEnvironment.Validate(nameof(arguments.SourceEnvironment));
-            arguments.DestinationEnvironment.Validate(nameof(arguments.DestinationEnvironment));
-        }
-
         public override async Tasks.Task<OperationResultEnum> Execute()
         {
             FhirJsonSerializer serializer = new FhirJsonSerializer();
@@ -129,6 +123,12 @@ namespace FhirTool.Core.Operations
             return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
             ? OperationResultEnum.Failed
             : OperationResultEnum.Succeeded;
+        }
+
+        private void Validate(TransferDataOperationOptions arguments)
+        {
+            arguments.SourceEnvironment.Validate(nameof(arguments.SourceEnvironment));
+            arguments.DestinationEnvironment.Validate(nameof(arguments.DestinationEnvironment));
         }
     }
 }

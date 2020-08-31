@@ -87,7 +87,7 @@ namespace FhirTool.Core.Operations
 
         private void ValidateInputArguments(GenerateQuestionnaireOperationOptions arguments)
         {
-            arguments.Environment.Validate(nameof(arguments.Environment));
+            arguments.Environment?.Validate(nameof(arguments.Environment));
             arguments.Questionnaire.Validate(nameof(arguments.Questionnaire));
             arguments.ValueSet.Validate(nameof(arguments.ValueSet));
         }
