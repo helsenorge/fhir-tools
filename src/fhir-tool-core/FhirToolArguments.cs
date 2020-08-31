@@ -1,11 +1,15 @@
-﻿using FhirTool.Core.Operations;
-using Hl7.Fhir.Model;
+﻿extern alias R3;
+
+using FhirTool.Core.Operations;
+using R3::Hl7.Fhir.Model;
+using System.Collections.Generic;
 
 namespace FhirTool.Core
 {
     public sealed class FhirToolArguments
     {
         public const string GENERATE_OP = "generate";
+        public const string DOWNLOAD_OP = "download";
         public const string UPLOAD_OP = "upload";
         public const string UPLOAD_DEFINITIONS_OP = "upload-definitions";
         public const string BUNDLE_OP = "bundle";
@@ -40,6 +44,9 @@ namespace FhirTool.Core
         public const string CONVERT_FROM_SHORT_ARG = "-cf";
         public const string CONVERT_TO_ARG = "--convert-to";
         public const string CONVERT_TO_SHORT_ARG = "-ct";
+        public const string DOWNLOAD_RESOURCES_ARG = "--resources";
+        public const string FHIR_VERSION = "--fhir-version";
+        public const string KEEP_SERVER_URL = "--keep-server-url";
 
         public const string ENVIRONMENT_SOURCE_ARG = "--environment-source";
         public const string ENVIRONMENT_SOURCE_SHORT_ARG = "-es";
@@ -79,5 +86,8 @@ namespace FhirTool.Core
         public bool SkipValidation { get; set; }
         public string FromFhirVersion { get; set; }
         public string ToFhirVersion { get; set; }
+        public List<string> Resources { get; set; }
+        public FhirVersion? FhirVersion { get; set; }
+        public bool KeepServerUrl { get; set; }
     }
 }

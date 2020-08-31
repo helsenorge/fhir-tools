@@ -1,6 +1,8 @@
-﻿using EnsureThat;
-using Hl7.Fhir.Model;
-using Hl7.Fhir.Serialization;
+﻿extern alias R3;
+
+using EnsureThat;
+using R3::Hl7.Fhir.Model;
+using R3::Hl7.Fhir.Serialization;
 using Hl7.Fhir.Utility;
 using Newtonsoft.Json.Linq;
 using System;
@@ -10,6 +12,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Xml.Linq;
 using Tasks = System.Threading.Tasks;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Core
 {

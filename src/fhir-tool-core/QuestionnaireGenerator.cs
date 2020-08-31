@@ -1,8 +1,10 @@
-﻿using FhirTool.Core.Model;
+﻿extern alias R3;
+
+using FhirTool.Core.Model;
 using FhirTool.Core.Model.FlatFile;
 using FileHelpers.MasterDetail;
-using Hl7.Fhir.Model;
-using Hl7.Fhir.Serialization;
+using R3::Hl7.Fhir.Model;
+using R3::Hl7.Fhir.Serialization;
 using Hl7.Fhir.Utility;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

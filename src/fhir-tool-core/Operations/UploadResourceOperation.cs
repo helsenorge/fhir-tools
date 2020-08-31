@@ -1,5 +1,7 @@
-﻿using Hl7.Fhir.Model;
-using Hl7.Fhir.Rest;
+﻿extern alias R3;
+
+using R3::Hl7.Fhir.Model;
+using R3::Hl7.Fhir.Rest;
 using Hl7.Fhir.Utility;
 using Microsoft.Extensions.Logging;
 using System.Linq;
