@@ -46,7 +46,7 @@ namespace FhirTool.Core.FhirWrappers
             switch(FhirVersion)
             {
                 case FhirVersion.R3:
-                    UådateLinksR3(baseUrl);
+                    UpdateLinksR3(baseUrl);
                     break;
                 case FhirVersion.R4:
                     UpdateLinksR4(baseUrl);
@@ -56,7 +56,7 @@ namespace FhirTool.Core.FhirWrappers
             return this;
         }
 
-        private void UådateLinksR3(Uri baseUrl)
+        private void UpdateLinksR3(Uri baseUrl)
         {
             foreach(var link in R3Bundle.Link)
             {
