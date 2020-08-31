@@ -6,34 +6,51 @@ using System;
 using System.IO;
 using System.Linq;
 using Tasks = System.Threading.Tasks;
+using CommandLine;
+using FhirTool.Core.ArgumentHelpers;
 
 namespace FhirTool.Core.Operations
 {
-    internal class BundleResourcesOperation : Operation
+    [Verb("bundle", HelpText = "bundle resources")]
+    public class BundleResourcesOperationOptions
     {
-        private FhirToolArguments _arguments;
+        [Option('S', "source", Required = true, HelpText = "source path")]
+        public WithDirectory Source { get; set; }
+
+        [Option('f', "format", Default = Constants.DEFAULT_MIMETYPE, HelpText = "mime type")]
+        public string MimeType { get; set; }
+
+        [Option('o', "out", HelpText = "output path")]
+        public string OutPath { get; set; }
+    }
+
+    public class BundleResourcesOperation : Operation
+    {
+        private BundleResourcesOperationOptions _arguments;
+        private ILoggerFactory _loggerFactory;
         private ILogger<BundleResourcesOperation> _logger;
 
-        public BundleResourcesOperation(FhirToolArguments arguments, ILogger<BundleResourcesOperation> logger)
+        public BundleResourcesOperation(BundleResourcesOperationOptions arguments, ILoggerFactory loggerFactory)
         {
             _arguments = arguments;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+
+            _logger = loggerFactory.CreateLogger<BundleResourcesOperation>();
+
+            ValidateArguments(arguments);
         }
 
         public override async Tasks.Task<OperationResultEnum> Execute()
         {
-            ValidateArguments(_arguments);
-            if (_issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)) return OperationResultEnum.Failed;
-
             Bundle bundle;
-            Uri uri = new Uri(_arguments.SourcePath);
+            Uri uri = new Uri(_arguments.Source.Path);
             if (uri.IsHttpScheme())
             {
                 throw new NotImplementedException("argument '--source | -S' do not currently support a HTTP scheme.");
             }
             else
             {
-                bundle = SerializationUtility.ImportPath(_arguments.SourcePath).ToBundle();
+                bundle = SerializationUtility.ImportPath(_arguments.Source.Path).ToBundle();
             }
 
             var path = $"bundle-{Guid.NewGuid().ToString("N").Substring(0, 5)}.{_arguments.MimeType}";
@@ -43,31 +60,14 @@ namespace FhirTool.Core.Operations
             _logger.LogInformation($"Writing Bundle in '{_arguments.MimeType}' format to local disk: {path}");
             bundle.SerializeResourceToDisk(path, _arguments.MimeType);
 
-            return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
+            return await Tasks.Task.FromResult(_issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
                 ? OperationResultEnum.Failed
-                : OperationResultEnum.Succeeded;
+                : OperationResultEnum.Succeeded);
         }
 
-        private void ValidateArguments(FhirToolArguments arguments)
+        private void ValidateArguments(BundleResourcesOperationOptions arguments)
         {
-            if (string.IsNullOrWhiteSpace(arguments.SourcePath))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.BUNDLE_OP}' requires argument '{FhirToolArguments.SOURCE_ARG}'.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
-            else if (!(Directory.Exists(_arguments.SourcePath)))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.BUNDLE_OP}' argument '{FhirToolArguments.SOURCE_ARG}' must point to an actual directory.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
-            // Set default format/MIME type
-            if (string.IsNullOrWhiteSpace(arguments.MimeType)) arguments.MimeType = Constants.DEFAULT_MIMETYPE;
+            arguments.Source.Validate(nameof(arguments.Source));
         }
     }
 }

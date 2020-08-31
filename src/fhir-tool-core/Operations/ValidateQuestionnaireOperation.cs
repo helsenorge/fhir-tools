@@ -5,33 +5,47 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using Tasks = System.Threading.Tasks;
+using CommandLine;
+using FhirTool.Core.ArgumentHelpers;
 
 namespace FhirTool.Core.Operations
 {
-    internal class VerifyValidationItems : Operation
+    [Verb("verify-validation", HelpText = "verify validation")]
+    public class VerifyValidationItemsOptions
     {
-        private readonly FhirToolArguments _arguments;
+        [Option('q', "questionnaire", Required = true, HelpText = "questionnaire path")]
+        public WithFhirFile Questionnaire { get; set; }
+
+        [Option('f', "format", HelpText = "mime type")]
+        public string MimeType { get; set; }
+    }
+
+    public class VerifyValidationItems : Operation
+    {
+        private readonly VerifyValidationItemsOptions _arguments;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<VerifyValidationItems> _logger;
 
-        public VerifyValidationItems(FhirToolArguments arguments, ILogger<VerifyValidationItems> logger)
+        public VerifyValidationItems(VerifyValidationItemsOptions arguments, ILoggerFactory loggerFactory)
         {
             _arguments = arguments;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+
+            _logger = loggerFactory.CreateLogger<VerifyValidationItems>();
+
+            ValidateArguments(arguments);
         }
 
         public override async Tasks.Task<OperationResultEnum> Execute()
         {
-            ValidateArguments(_arguments);
-            if (_issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)) return OperationResultEnum.Failed;
-
-            _logger.LogInformation($"Deserializing Fhir resource at '{_arguments.QuestionnairePath}'.");
+            _logger.LogInformation($"Deserializing Fhir resource at '{_arguments.Questionnaire.Path}'.");
             _logger.LogInformation($"Expecting format: '{_arguments.MimeType}'.");
-            Questionnaire questionnaire = await SerializationUtility.DeserializeResource<Questionnaire>(_arguments.QuestionnairePath);
+            Questionnaire questionnaire = await SerializationUtility.DeserializeResource<Questionnaire>(_arguments.Questionnaire.Path);
             if (questionnaire == null)
             {
                 _issues.Add(new Issue
                 {
-                    Details = $"Failed to deserialize Questionnaire from file\nLocation: '{_arguments.QuestionnairePath}'.",
+                    Details = $"Failed to deserialize Questionnaire from file\nLocation: '{_arguments.Questionnaire.Path}'.",
                     Severity = IssueSeverityEnum.Error,
                 });
                 return OperationResultEnum.Failed;
@@ -44,24 +58,9 @@ namespace FhirTool.Core.Operations
                 : OperationResultEnum.Succeeded;
         }
 
-        private void ValidateArguments(FhirToolArguments arguments)
+        private void ValidateArguments(VerifyValidationItemsOptions arguments)
         {
-            if (string.IsNullOrWhiteSpace(arguments.QuestionnairePath))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{arguments.Operation}' requires argument '{FhirToolArguments.QUESTIONNAIRE_ARG}' or '{FhirToolArguments.QUESTIONNAIRE_SHORT_ARG}'.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
-            else if (!SerializationUtility.ProbeIsJsonOrXml(arguments.QuestionnairePath))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{arguments.Operation}' requires that argument '{FhirToolArguments.QUESTIONNAIRE_ARG}' or '{FhirToolArguments.QUESTIONNAIRE_SHORT_ARG}' refers to a file that contains either JSON or XML.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
+            arguments.Questionnaire.Validate(nameof(arguments.Questionnaire));
         }
 
         private static IEnumerable<Issue> VerifyItemValidation(Questionnaire questionnaire)

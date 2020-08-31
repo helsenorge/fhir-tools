@@ -8,31 +8,56 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Tasks = System.Threading.Tasks;
+using CommandLine;
+using System;
+using FhirTool.Core.ArgumentHelpers;
 
 namespace FhirTool.Core.Operations
 {
-    internal class UploadDefinitionsOperation : Operation
+    [Verb("upload-definitions", HelpText = "upload definitions")]
+    public class UploadDefinitionOperationOptions
     {
-        private readonly FhirToolArguments _arguments;
+        [Option('u', "fhir-base-url", Group = "url", Required = true, HelpText = "fhir server base url")]
+        public WithFhirBaseUrl FhirBaseUrl { get; set; } = new WithFhirBaseUrl();
+
+        [Option('u', "proxy-base-url", HelpText = "proxy server base url")]
+        public WithFhirBaseUrl ProxyBaseUrl { get; set; } = new WithFhirBaseUrl();
+
+        [Option('e', "environment", Group = "url", Required = true, HelpText = "fhir server from environment")]
+        public WithEnvironment Environment { get; set; }
+
+        [Option('r', "resolve-url", HelpText = "resolve url")]
+        public bool ResolveUrl { get; set; }
+
+        [Option('c', "credentials", HelpText = "credentials")]
+        public string Credentials { get; set; }
+    }
+
+    public class UploadDefinitionsOperation : Operation
+    {
+        private readonly UploadDefinitionOperationOptions _arguments;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<UploadDefinitionsOperation> _logger;
 
-        public UploadDefinitionsOperation(FhirToolArguments arguments, ILogger<UploadDefinitionsOperation> logger)
+        public UploadDefinitionsOperation(UploadDefinitionOperationOptions arguments, ILoggerFactory loggerFactory)
         {
             _arguments = arguments;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+
+            _logger = loggerFactory.CreateLogger<UploadDefinitionsOperation>();
+
+            arguments.FhirBaseUrl.Uri ??= arguments.Environment?.FhirBaseUrl;
+            arguments.ProxyBaseUrl.Uri ??= arguments.Environment?.ProxyBaseUrl;
+
+            Validate(arguments);
         }
 
         public override async Tasks.Task<OperationResultEnum> Execute()
         {
-            ValidateArguments(_arguments);
-            if (_issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)) return OperationResultEnum.Failed;
-
             IEnumerable<Resource> resources = null;
-            
-
             _logger.LogInformation($"Uploading resources to endpoint: '{_arguments.FhirBaseUrl}'");
 
-            FhirClient fhirClient = new FhirClient(_arguments.FhirBaseUrl);
+            FhirClient fhirClient = new FhirClient(_arguments.FhirBaseUrl.Uri);
             fhirClient.OnBeforeRequest += fhirClient_BeforeRequest;
             foreach (Resource resource in resources)
             {
@@ -59,9 +84,9 @@ namespace FhirTool.Core.Operations
 
             _logger.LogInformation($"Successfully uploaded resources to endpoint: {_arguments.FhirBaseUrl}");
 
-            return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
+            return await Tasks.Task.FromResult(_issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
                 ? OperationResultEnum.Failed
-                : OperationResultEnum.Succeeded;
+                : OperationResultEnum.Succeeded);
         }
 
         private void fhirClient_BeforeRequest(object sender, BeforeRequestEventArgs e)
@@ -72,32 +97,10 @@ namespace FhirTool.Core.Operations
             }
         }
 
-        private void ValidateArguments(FhirToolArguments arguments)
+        private void Validate(UploadDefinitionOperationOptions arguments)
         {
-            if (string.IsNullOrWhiteSpace(arguments.FhirBaseUrl))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' requires argument '{FhirToolArguments.FHIRBASEURL_ARG}' or '{FhirToolArguments.ENVIRONMENT_ARG}'.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
-            if (string.IsNullOrWhiteSpace(arguments.SourcePath))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' requires argument '{FhirToolArguments.SOURCE_ARG}'.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
-            if (!(Directory.Exists(arguments.SourcePath) || File.Exists(arguments.SourcePath)))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.UPLOAD_DEFINITIONS_OP}' argument '{FhirToolArguments.SOURCE_ARG}' must point to a existing file or directory.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
+            arguments.Environment.Validate(nameof(arguments.Environment));
+            arguments.FhirBaseUrl.Validate(nameof(arguments.FhirBaseUrl), arguments.ResolveUrl, arguments.Credentials);
         }
     }
 }

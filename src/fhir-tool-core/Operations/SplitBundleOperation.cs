@@ -6,27 +6,44 @@ using System;
 using System.IO;
 using System.Linq;
 using Tasks = System.Threading.Tasks;
+using CommandLine;
+using FhirTool.Core.ArgumentHelpers;
 
 namespace FhirTool.Core.Operations
 {
-    internal class SplitBundleOperation : Operation
+    [Verb("split-bundle", HelpText = "split bundle")]
+    public class SplitBundleOperationOptions
     {
-        private FhirToolArguments _arguments;
+        [Option('S', "source", Required = true, HelpText = "source path")]
+        public WithFile Source { get; set; }
+
+        [Option('o', "out", HelpText = "out path")]
+        public string OutPath { get; set; }
+
+        [Option('f', "format", Default = Constants.DEFAULT_MIMETYPE, HelpText = "mime type")]
+        public string MimeType { get; set; }
+    }
+
+    public class SplitBundleOperation : Operation
+    {
+        private SplitBundleOperationOptions _arguments;
+        private ILoggerFactory _loggerFactory;
         private ILogger<SplitBundleOperation> _logger;
 
-        public SplitBundleOperation(FhirToolArguments arguments, ILogger<SplitBundleOperation> logger)
+        public SplitBundleOperation(SplitBundleOperationOptions arguments, ILoggerFactory loggerFactory)
         {
             _arguments = arguments;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+
+            _logger = loggerFactory.CreateLogger<SplitBundleOperation>();
+
+            ValidateArguments(arguments);
         }
 
         public override async Tasks.Task<OperationResultEnum> Execute()
         {
-            ValidateArguments(_arguments);
-            if (_issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)) return OperationResultEnum.Failed;
-
             var outPath = !string.IsNullOrWhiteSpace(_arguments.OutPath) && Directory.Exists(_arguments.OutPath) ? _arguments.OutPath : @".\";
-            var resources = SerializationUtility.ImportFile(_arguments.SourcePath);
+            var resources = SerializationUtility.ImportFile(_arguments.Source.Path);
             foreach (Resource resource in resources)
             {
                 var path = Path.Combine(outPath, $"{resource.ResourceType.ToString().ToLower()}-{(string.IsNullOrWhiteSpace(resource.Id) ? Guid.NewGuid().ToString("N").Substring(0, 5) : resource.Id)}.{_arguments.MimeType}");
@@ -34,31 +51,14 @@ namespace FhirTool.Core.Operations
                 resource.SerializeResourceToDisk(path, _arguments.MimeType);
             }
 
-            return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
+            return await Tasks.Task.FromResult(_issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
                 ? OperationResultEnum.Failed
-                : OperationResultEnum.Succeeded;
+                : OperationResultEnum.Succeeded);
         }
 
-        private void ValidateArguments(FhirToolArguments arguments)
+        private void ValidateArguments(SplitBundleOperationOptions arguments)
         {
-            if (string.IsNullOrWhiteSpace(arguments.SourcePath))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.SPLIT_BUNDLE_OP}' requires argument '{FhirToolArguments.SOURCE_ARG}'.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
-            else if (!File.Exists(_arguments.SourcePath))
-            {
-                _issues.Add(new Issue
-                {
-                    Details = $"Operation '{FhirToolArguments.SPLIT_BUNDLE_OP}' argument '{FhirToolArguments.SOURCE_ARG}' must point to an actual file.",
-                    Severity = IssueSeverityEnum.Error,
-                });
-            }
-            // Set default format/MIME type
-            if (string.IsNullOrWhiteSpace(arguments.MimeType)) arguments.MimeType = Constants.DEFAULT_MIMETYPE;
+            arguments.Source.Validate(nameof(arguments.Source));
         }
     }
 }

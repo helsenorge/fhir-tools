@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Norwegian Directorate of eHealth")]
 [assembly: AssemblyProduct("Fhir Tool")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright ©  2018 Norwegian Directorate of eHealth")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
