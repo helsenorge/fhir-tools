@@ -89,7 +89,7 @@ namespace FhirTool.Core.Operations
         {
             arguments.Environment?.Validate(nameof(arguments.Environment));
             arguments.Questionnaire.Validate(nameof(arguments.Questionnaire));
-            arguments.ValueSet.Validate(nameof(arguments.ValueSet));
+            arguments.ValueSet?.Validate(nameof(arguments.ValueSet));
         }
     }
 }
