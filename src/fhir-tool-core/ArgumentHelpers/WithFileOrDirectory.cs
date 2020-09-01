@@ -18,8 +18,18 @@ namespace FhirTool.Core.ArgumentHelpers
         {
             if (!(Directory.Exists(Path) || File.Exists(Path)))
             {
-                throw new SemanticArgumentException($"argument must point to a existing file or directory.", paramName);
+                throw new SemanticArgumentException($"argument must point to a existing file or directory: {Path}.", paramName);
             }
+        }
+
+        public bool IsDirectory()
+        {
+            return Directory.Exists(Path);
+        }
+
+        public bool IsFile()
+        {
+            return File.Exists(Path);
         }
     }
 }
