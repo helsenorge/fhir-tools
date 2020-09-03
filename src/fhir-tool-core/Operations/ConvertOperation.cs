@@ -87,7 +87,7 @@ namespace FhirTool.Core.Operations
             var newOutPath = Path.Combine(outPath, name);
             Directory.CreateDirectory(newOutPath);
 
-            _logger.LogInformation($"=={name}== Handling directory '{directory}' --> '{newOutPath}'");
+            _logger.LogInformation($"Handling directory '{directory}' --> '{newOutPath}'");
             foreach(var fileItem in Directory.EnumerateFiles(directory))
             {
                 await ConvertFile(fileItem, newOutPath);

@@ -5,14 +5,16 @@ using R3Model = R3::Hl7.Fhir.Model;
 using R4Model = R4::Hl7.Fhir.Model;
 using R3Serialization = R3::Hl7.Fhir.Serialization;
 using R4Serialization = R4::Hl7.Fhir.Serialization;
+using System;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Core.FhirWrappers
 {
-    internal class ResourceWrapper
+    public class ResourceWrapper
     {
         public FhirVersion FhirVersion { get; }
-        private R3Model.Resource R3Resource;
-        private R4Model.Resource R4Resource;
+        public R3Model.Resource R3Resource { get; set; }
+        public R4Model.Resource R4Resource { get; set; }
 
         public ResourceWrapper(R3Model.Resource resource)
         {
@@ -28,17 +30,37 @@ namespace FhirTool.Core.FhirWrappers
 
         public string Id
         {
-            get
+            get => GetId();
+        }
+
+        public ResourceTypeWrapper ResourceType
+        {
+            get => GetResourceType();
+        }
+
+        private ResourceTypeWrapper GetResourceType()
+        {
+            switch(FhirVersion)
             {
-                switch (FhirVersion)
-                {
-                    case FhirVersion.R3:
-                        return R3Resource.Id;
-                    case FhirVersion.R4:
-                        return R4Resource.Id;
-                    default:
-                        return default;
-                }
+                case FhirVersion.R3:
+                    return R3Resource.ResourceType.Wrap();
+                case FhirVersion.R4:
+                    return R4Resource.ResourceType.Wrap();
+                default:
+                    return default;
+            }
+        }
+
+        private string GetId()
+        {
+            switch (FhirVersion)
+            {
+                case FhirVersion.R3:
+                    return R3Resource.Id;
+                case FhirVersion.R4:
+                    return R4Resource.Id;
+                default:
+                    return default;
             }
         }
 
@@ -50,6 +72,19 @@ namespace FhirTool.Core.FhirWrappers
                     return new R3Serialization.FhirJsonSerializer(new R3Serialization.SerializerSettings { Pretty = true }).SerializeToString(R3Resource);
                 case FhirVersion.R4:
                     return new R4Serialization.FhirJsonSerializer(new R4Serialization.SerializerSettings { Pretty = true }).SerializeToString(R4Resource);
+                default:
+                    return default;
+            }
+        }
+
+        public Base ToBase()
+        {
+            switch(FhirVersion)
+            {
+                case FhirVersion.R3:
+                    return R3Resource as Base;
+                case FhirVersion.R4:
+                    return R4Resource as Base;
                 default:
                     return default;
             }
