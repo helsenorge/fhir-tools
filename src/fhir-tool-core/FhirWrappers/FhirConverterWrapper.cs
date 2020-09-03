@@ -21,7 +21,7 @@ namespace FhirTool.Core.FhirWrappers
         public string Convert(string content)
         {
             var baseFromObject = FromSerializer.Parse(content);
-            var baseToObject = _converter.Convert<Base, Base>(baseFromObject);
+            var baseToObject = _converter.Convert<Base, Base>(baseFromObject.ToBase());
             return ToSerializer.Serialize(baseToObject);
         }
     }

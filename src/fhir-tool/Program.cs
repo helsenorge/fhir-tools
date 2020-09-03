@@ -72,7 +72,8 @@ namespace FhirTool
                                       SplitBundleOperationOptions,
                                       TransferDataOperationOptions,
                                       VerifyValidationItemsOptions,
-                                      ConvertOperationOptions>(args)
+                                      ConvertOperationOptions,
+                                      UploadTransactionOperationOptions>(args)
                       .MapResult(
                           (DownloadResourcesOperationOptions opts) => new DownloadResourcesOperation(opts, loggerFactory).Execute(),
                           (GenerateQuestionnaireOperationOptions opts) => new GenerateQuestionnaireOperation(opts, loggerFactory).Execute(),
@@ -83,6 +84,7 @@ namespace FhirTool
                           (TransferDataOperationOptions opts) => new TransferDataOperation(opts, loggerFactory).Execute(),
                           (VerifyValidationItemsOptions opts) => new VerifyValidationItems(opts, loggerFactory).Execute(),
                           (ConvertOperationOptions opts) => new ConvertOperation(opts, loggerFactory).Execute(),
+                          (UploadTransactionOperationOptions opts) => new UploadTransactionOperation(opts, loggerFactory).Execute(),
                           errs => Task.FromResult(OperationResultEnum.Failed));
                 }
                 catch (SemanticArgumentException e)
