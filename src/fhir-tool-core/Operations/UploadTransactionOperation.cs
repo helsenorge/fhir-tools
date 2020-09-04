@@ -145,7 +145,7 @@ namespace FhirTool.Core.Operations
 
             foreach (var dir in Directory.EnumerateDirectories(path.Path))
             {
-                var files = FindFilesInDirectory(new WithDirectory(path.Path));
+                var files = FindFilesInDirectory(new WithDirectory(dir));
                 foreach (var file in files)
                 {
                     yield return file;
