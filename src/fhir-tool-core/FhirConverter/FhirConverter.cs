@@ -115,7 +115,7 @@ namespace FhirTool.Conversion
         {
             EnsureArg.IsNotNull(fromList, nameof(fromList));
 
-            return fromList.Select(it => Convert<TTo, TFrom>(it));
+            return fromList.Select(it => ConvertElement<TTo, TFrom>(it));
         }
 
         private Base Convert(Type targetType, Type sourceType, Base sourceObject)
