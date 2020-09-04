@@ -46,7 +46,7 @@ namespace FhirTool.Core.FhirWrappers
             }
         }
 
-        public ResourceWrapper Parse(string content, FhirMimeType? type = null)
+        public ResourceWrapper Parse(string content, FhirMimeType? type = null, bool permissiveParsing = false)
         {
             if (!type.HasValue)
             {
@@ -61,13 +61,13 @@ namespace FhirTool.Core.FhirWrappers
             switch(Version)
             {
                 case FhirVersion.R3:
-                    var settingsR3 = new R3Serialization.ParserSettings { PermissiveParsing = false };
+                    var settingsR3 = new R3Serialization.ParserSettings { PermissiveParsing = permissiveParsing };
                     var resourceR3 = type == FhirMimeType.Json
                         ? new R3Serialization.FhirJsonParser(settingsR3).Parse<R3Model.Resource>(content)
                         : new R3Serialization.FhirXmlParser(settingsR3).Parse<R3Model.Resource>(content);
                     return new ResourceWrapper(resourceR3);
                 case FhirVersion.R4:
-                    var settingsR4 = new R4Serialization.ParserSettings { PermissiveParsing = false };
+                    var settingsR4 = new R4Serialization.ParserSettings { PermissiveParsing = permissiveParsing };
                     var resourceR4 = type == FhirMimeType.Json
                         ? new R4Serialization.FhirJsonParser(settingsR4).Parse<R4Model.Resource>(content)
                         : new R4Serialization.FhirXmlParser(settingsR4).Parse<R4Model.Resource>(content);

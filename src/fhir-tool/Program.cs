@@ -73,7 +73,8 @@ namespace FhirTool
                                       TransferDataOperationOptions,
                                       VerifyValidationItemsOptions,
                                       ConvertOperationOptions,
-                                      UploadTransactionOperationOptions>(args)
+                                      UploadTransactionOperationOptions,
+                                      ValidateMongoDumpOperationOptions>(args)
                       .MapResult(
                           (DownloadResourcesOperationOptions opts) => new DownloadResourcesOperation(opts, loggerFactory).Execute(),
                           (GenerateQuestionnaireOperationOptions opts) => new GenerateQuestionnaireOperation(opts, loggerFactory).Execute(),
@@ -85,6 +86,7 @@ namespace FhirTool
                           (VerifyValidationItemsOptions opts) => new VerifyValidationItems(opts, loggerFactory).Execute(),
                           (ConvertOperationOptions opts) => new ConvertOperation(opts, loggerFactory).Execute(),
                           (UploadTransactionOperationOptions opts) => new UploadTransactionOperation(opts, loggerFactory).Execute(),
+                          (ValidateMongoDumpOperationOptions opts) => new ValidateMongoDumpOperation(opts, loggerFactory).Execute(),
                           errs => Task.FromResult(OperationResultEnum.Failed));
                 }
                 catch (SemanticArgumentException e)
