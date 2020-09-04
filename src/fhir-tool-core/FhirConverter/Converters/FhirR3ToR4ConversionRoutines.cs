@@ -35,6 +35,7 @@ namespace FhirTool.Conversion.Converters
             Map.Add<TargetModel.Signature, SourceModel.Signature>(ConvertSignature);
             Map.Add<TargetModel.Range, SourceModel.Range>(ConvertRange);
             Map.Add<TargetModel.Dosage, SourceModel.Dosage>(ConvertDosage);
+            Map.Add<TargetModel.Endpoint, SourceModel.Endpoint>(ConvertEndpoint);
         }
 
         private static void ConvertQuestionnaireResponse(TargetModel.QuestionnaireResponse to, SourceModel.QuestionnaireResponse from, FhirConverter converter)
@@ -199,6 +200,12 @@ namespace FhirTool.Conversion.Converters
                 to.DoseAndRate.Add(new TargetModel.Dosage.DoseAndRateComponent { Rate = converter.ConvertElement<TargetModel.Element, SourceModel.Element>(from.Rate) });
             }
         }
+
+        private static void ConvertEndpoint(TargetModel.Endpoint to, SourceModel.Endpoint from, FhirConverter converter)
+        {
+            to.AddressElement = ConvertFhirUriToFhirUrl(from.AddressElement, converter);
+        }
+
 
         // Helpers
         private static TargetModel.Code<TargetModel.Money.Currencies> ConvertCodeToCodeMoney(SourceModel.Code from, FhirConverter converter)

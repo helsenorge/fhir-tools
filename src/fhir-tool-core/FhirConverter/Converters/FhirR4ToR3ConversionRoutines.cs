@@ -32,6 +32,7 @@ namespace FhirTool.Conversion.Converters
             Map.Add<TargetModel.Timing.RepeatComponent, SourceModel.Timing.RepeatComponent>(ConvertTimingRepeatComponent);
             Map.Add<TargetModel.ParameterDefinition, SourceModel.ParameterDefinition>(ConvertParameterDefinition);
             Map.Add<TargetModel.Dosage, SourceModel.Dosage>(ConvertDosage);
+            Map.Add<TargetModel.Endpoint, SourceModel.Endpoint>(ConvertEndpoint);
         }
 
         private static void ConvertQuestionnaireResponse(TargetModel.QuestionnaireResponse to, SourceModel.QuestionnaireResponse from, FhirConverter converter)
@@ -144,6 +145,11 @@ namespace FhirTool.Conversion.Converters
 
             to.Dose = fromDose == null ? to.Dose : converter.ConvertElement<TargetModel.Element, SourceModel.Element>(fromDose);
             to.Rate = fromRate == null ? to.Rate : converter.ConvertElement<TargetModel.Element, SourceModel.Element>(fromRate);
+        }
+
+        private static void ConvertEndpoint(TargetModel.Endpoint to, SourceModel.Endpoint from, FhirConverter converter)
+        {
+            to.AddressElement = ConvertFhirUrlToFhirUri(from.AddressElement, converter);
         }
 
         // Helpers
