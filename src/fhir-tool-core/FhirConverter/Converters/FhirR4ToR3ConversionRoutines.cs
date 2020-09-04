@@ -44,6 +44,7 @@ namespace FhirTool.Conversion.Converters
         {
             to.Initial = converter.ConvertElement<TargetModel.Element, SourceModel.Element>(from.Initial.FirstOrDefault()?.Value);
             to.Options = ConvertCanonicalToResourceReference(from.AnswerValueSetElement, converter);
+            to.Option = from.AnswerOption == null ? to.Option : converter.ConvertList<TargetModel.Questionnaire.OptionComponent, SourceModel.Questionnaire.AnswerOptionComponent>(from.AnswerOption).ToList();
         }
 
         private static void ConvertQuestionnaireEnableWhenComponent(TargetModel.Questionnaire.EnableWhenComponent to, SourceModel.Questionnaire.EnableWhenComponent from, FhirConverter converter)
