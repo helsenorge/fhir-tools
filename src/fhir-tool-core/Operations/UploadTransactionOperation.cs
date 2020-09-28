@@ -37,6 +37,9 @@ namespace FhirTool.Core.Operations
         [Option('b', "batch-size", Default = 20, MetaValue = "size", HelpText = "number of resources to upload in a transaction")]
         public int BatchSize { get; set; }
 
+        [Option("sleep", HelpText = "Sleep", Default = 0)]
+        public int Sleep { get; set; }
+
         [Value(0, MetaName = "files", MetaValue = "file or dir", HelpText = "list of files/directories to upload", Required = true)]
         public IEnumerable<WithFileOrDirectory> SourceFiles { get; set; }
     }
@@ -73,6 +76,7 @@ namespace FhirTool.Core.Operations
                 {
                     _logger.LogInformation($"Uploading batch with {batch.Count()} entries");
                     await client.TransactionAsync(bundle);
+                    System.Threading.Thread.Sleep(_arguments.Sleep);
                 }
                 catch(Exception e)
                 {

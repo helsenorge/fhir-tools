@@ -24,11 +24,16 @@ namespace FhirTool.Core.FhirWrappers
         {
             _logger = logger;
 
-            if(fhirVersion == null)
+            if(fhirVersion == FhirVersion.None)
             {
                 R3Client = new R3Rest.FhirClient(endpoint);
                 var meta = R3Client.CapabilityStatement(R3Rest.SummaryType.Text);
                 fhirVersion = FhirVersionUtils.MapStringToFhirVersion(meta.FhirVersion);
+            }
+
+            if(fhirVersion == null)
+            {
+                throw new Exception("Unable to determine FhirVersion used by server. Please specify fhir version");
             }
 
             FhirVersion = fhirVersion.Value;
