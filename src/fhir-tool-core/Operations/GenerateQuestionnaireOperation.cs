@@ -1,6 +1,6 @@
-﻿extern alias R3;
+﻿extern alias R4;
 
-using R3::Hl7.Fhir.Model;
+using R4::Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
@@ -14,19 +14,18 @@ namespace FhirTool.Core.Operations
     [Verb("generate", HelpText = "Generates questionnaire")]
     public class GenerateQuestionnaireOperationOptions
     {
-        [Option('e', "environment", Group = "url", Required = true, HelpText = "environment")]
-        public WithEnvironment Environment { get; set; }
-        [Option("proxy-base-url", Group = "url", Required = true, HelpText = "proxy-base-url")]
-        public WithFhirBaseUrl ProxyBaseUrl { get; set; } = new WithFhirBaseUrl();
-
         [Option('q', "questionnaire", HelpText = "questionnaire", Required = true)]
         public WithFile Questionnaire { get; set; }
+
         [Option('f', "format", HelpText = "mime-type", Required = true)]
         public string MimeType { get; set; }
+
         [Option("excel-sheet-version", HelpText = "excel sheet version ", Required = true)]
         public ExcelSheetVersion ExcelSheetVersion { get; set; }
+
         [Option("skip-validation", HelpText = "skips validation")]
         public bool SkipValidation { get; set; }
+
         [Option('s', "valueset", HelpText = "value set path")]
         public WithFile ValueSet { get; set; }
     }
@@ -45,11 +44,9 @@ namespace FhirTool.Core.Operations
 
             _logger = loggerFactory.CreateLogger<GenerateQuestionnaireOperation>();
 
-            arguments.ProxyBaseUrl.Uri ??= arguments.Environment?.ProxyBaseUrl;
-
             ValidateInputArguments(arguments);
 
-            _generator = new QuestionnaireGenerator(_arguments.ProxyBaseUrl.Uri, loggerFactory);
+            _generator = new QuestionnaireGenerator(loggerFactory);
         }
 
         public override async Tasks.Task<OperationResultEnum> Execute()
@@ -87,7 +84,6 @@ namespace FhirTool.Core.Operations
 
         private void ValidateInputArguments(GenerateQuestionnaireOperationOptions arguments)
         {
-            arguments.Environment?.Validate(nameof(arguments.Environment));
             arguments.Questionnaire.Validate(nameof(arguments.Questionnaire));
             arguments.ValueSet?.Validate(nameof(arguments.ValueSet));
         }

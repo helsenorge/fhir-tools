@@ -1,14 +1,13 @@
 ﻿extern alias R3;
 
-using R3::Hl7.Fhir.Model;
-using R3::Hl7.Fhir.Rest;
 using Hl7.Fhir.Utility;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using Tasks = System.Threading.Tasks;
 using CommandLine;
 using FhirTool.Core.ArgumentHelpers;
-using System;
+using FhirTool.Core.FhirWrappers;
+using System.IO;
 
 namespace FhirTool.Core.Operations
 {
@@ -30,9 +29,12 @@ namespace FhirTool.Core.Operations
         [Option('q', "questionnaire", Required = true, HelpText = "path to questionnaire")]
         public string QuestionnairePath { get; set; }
 
-        [Option('f', "format", HelpText = "mime type")]
-        public string MimeType { get; set; }
-    }
+        [Option('f', "format", MetaValue = "xml/json", HelpText = "json or xml")]
+        public FhirMimeType? MimeType { get; set; }
+
+        [Option("fhir-version", Required = false, HelpText = "which fhir version to assume")]
+        public FhirVersion FhirVersion { get; set; }
+    } 
 
     public class UploadResourceOperation : Operation
     {
@@ -56,8 +58,12 @@ namespace FhirTool.Core.Operations
         {
             _logger.LogInformation($"Deserializing Fhir resource at '{_arguments.QuestionnairePath}'.");
             _logger.LogInformation($"Expecting format: '{_arguments.MimeType}'.");
-            Questionnaire questionnaire = await SerializationUtility.DeserializeResource<Questionnaire>(_arguments.QuestionnairePath);
-            if (questionnaire == null)
+
+            var serializer = new SerializationWrapper(_arguments.FhirVersion);
+
+            var content = await File.ReadAllTextAsync(_arguments.QuestionnairePath);
+            var resource = serializer.Parse(content, _arguments.MimeType);
+            if (resource == null)
             {
                 _issues.Add(new Issue
                 {
@@ -67,27 +73,34 @@ namespace FhirTool.Core.Operations
                 return OperationResultEnum.Failed;
             }
 
-            _logger.LogInformation($"Uploading Questionnaire to endpoint: '{_arguments.FhirBaseUrl.Uri}'");
+            _logger.LogInformation($"Uploading {resource.ResourceType} to endpoint: '{_arguments.FhirBaseUrl.Uri}'");
             // Set a relative url before posting to the server
-            if (!string.IsNullOrWhiteSpace(questionnaire.Id))
-            {
-                questionnaire.Url = $"{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}";
-            }
+            SetQuestionnaireUrl(resource);
 
-            // Initialize a FhirClient and POST or PUT Questionnaire to server.
-            FhirClient fhirClient = new FhirClient(_arguments.FhirBaseUrl.Uri);
-            if (string.IsNullOrWhiteSpace(questionnaire.Id))
-                questionnaire = await fhirClient.CreateAsync(questionnaire);
-            else
-                questionnaire = await fhirClient.UpdateAsync(questionnaire);
+            var client = new FhirClientWrapper(_arguments.FhirBaseUrl.Uri, _logger, _arguments.FhirVersion);
+            resource = await UploadResource(resource, client);
 
-            _logger.LogInformation($"Successfully uploaded Questionnaire to endpoint: '{_arguments.FhirBaseUrl.Uri}'.");
-            _logger.LogInformation($"Questionnaire was assigned the Id: '{questionnaire.Id}'");
-            _logger.LogInformation($"Questionnaire can be accessed at: '{fhirClient.Endpoint.AbsoluteUri}{ResourceType.Questionnaire.GetLiteral()}/{questionnaire.Id}'");
+            _logger.LogInformation($"Successfully uploaded {resource.ResourceType.GetLiteral()} to endpoint: '{_arguments.FhirBaseUrl.Uri}'.");
+            _logger.LogInformation($"Questionnaire was assigned the Id: '{resource.Id}'");
+            _logger.LogInformation($"Questionnaire can be accessed at: '{client.Endpoint}{resource.ResourceType.GetLiteral()}/{resource.Id}'");
 
             return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
                 ? OperationResultEnum.Failed
                 : OperationResultEnum.Succeeded;
+        }
+
+        private async Tasks.Task<ResourceWrapper> UploadResource(ResourceWrapper resource, FhirClientWrapper client)
+        {
+            if (string.IsNullOrWhiteSpace(resource.Id))
+                return await client.CreateAsync(resource);
+            else
+                return await client.UpdateAsync(resource);
+        }
+
+        private void SetQuestionnaireUrl(ResourceWrapper resource)
+        {
+            if (resource.ResourceType != ResourceTypeWrapper.Questionnaire && string.IsNullOrWhiteSpace(resource.Id)) return;
+            resource.SetProperty("Url", $"Questionnaire/{resource.Id}");
         }
 
         private void Validate(UploadResourceOperationOptions arguments)
@@ -95,6 +108,5 @@ namespace FhirTool.Core.Operations
             arguments.Environment?.Validate(nameof(arguments.Environment));
             arguments.FhirBaseUrl?.Validate(nameof(arguments.FhirBaseUrl), arguments.ResolveUrl, arguments.Credentials);
         }
-
     }
 }

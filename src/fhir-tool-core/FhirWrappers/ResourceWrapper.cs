@@ -5,8 +5,8 @@ using R3Model = R3::Hl7.Fhir.Model;
 using R4Model = R4::Hl7.Fhir.Model;
 using R3Serialization = R3::Hl7.Fhir.Serialization;
 using R4Serialization = R4::Hl7.Fhir.Serialization;
-using System;
 using Hl7.Fhir.Model;
+using System.Reflection;
 
 namespace FhirTool.Core.FhirWrappers
 {
@@ -87,6 +87,19 @@ namespace FhirTool.Core.FhirWrappers
                     return R4Resource as Base;
                 default:
                     return default;
+            }
+        }
+
+        public void SetProperty(string name, object value)
+        {
+            switch (FhirVersion)
+            {
+                case FhirVersion.R3:
+                    R3Resource.GetType().InvokeMember(name, BindingFlags.SetProperty, null, R3Resource, new[] { value });
+                    break;
+                case FhirVersion.R4:
+                    R4Resource.GetType().InvokeMember(name, BindingFlags.SetProperty, null, R4Resource, new[] { value });
+                    break;
             }
         }
     }

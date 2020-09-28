@@ -68,8 +68,6 @@ namespace FhirTool
                                       GenerateQuestionnaireOperationOptions,
                                       UploadResourceOperationOptions,
                                       UploadDefinitionsOperation,
-                                      BundleResourcesOperationOptions,
-                                      SplitBundleOperationOptions,
                                       TransferDataOperationOptions,
                                       VerifyValidationItemsOptions,
                                       ConvertOperationOptions,
@@ -80,8 +78,6 @@ namespace FhirTool
                           (GenerateQuestionnaireOperationOptions opts) => new GenerateQuestionnaireOperation(opts, loggerFactory).Execute(),
                           (UploadResourceOperationOptions opts) => new UploadResourceOperation(opts, loggerFactory).Execute(),
                           (UploadDefinitionOperationOptions opts) => new UploadDefinitionsOperation(opts, loggerFactory).Execute(),
-                          (BundleResourcesOperationOptions opts) => new BundleResourcesOperation(opts, loggerFactory).Execute(),
-                          (SplitBundleOperationOptions opts) => new SplitBundleOperation(opts, loggerFactory).Execute(),
                           (TransferDataOperationOptions opts) => new TransferDataOperation(opts, loggerFactory).Execute(),
                           (VerifyValidationItemsOptions opts) => new VerifyValidationItems(opts, loggerFactory).Execute(),
                           (ConvertOperationOptions opts) => new ConvertOperation(opts, loggerFactory).Execute(),
@@ -100,11 +96,11 @@ namespace FhirTool
                 }
             }
 
-            if (!Debugger.IsAttached)
-            {
+            //if (!Debugger.IsAttached)
+            //{
                 Console.WriteLine("\nPress any key to exit. . .");
                 Console.ReadKey(true);
-            }
+            //}
         }
     }
 }

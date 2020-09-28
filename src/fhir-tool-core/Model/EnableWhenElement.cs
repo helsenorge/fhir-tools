@@ -15,5 +15,24 @@
         public ReferenceElement AnswerReference { get; set; }
         public CodingElement AnswerCoding { get; set; }
         public QuantityElement AnswerQuantity { get; set; }
+
+        public object Answer
+        {
+            get
+            {
+                if (AnswerBoolean.HasValue) return AnswerBoolean.Value;
+                if (AnswerDecimal.HasValue) return AnswerDecimal.Value;
+                if (AnswerInteger.HasValue) return AnswerInteger.Value;
+                if (!string.IsNullOrWhiteSpace(AnswerDate)) return AnswerDate;
+                if (!string.IsNullOrWhiteSpace(AnswerDateTime)) return AnswerDateTime;
+                if (!string.IsNullOrWhiteSpace(AnswerTime)) return AnswerTime;
+                if (!string.IsNullOrWhiteSpace(AnswerUri)) return AnswerUri;
+                if (AnswerReference == null) return AnswerReference;
+                if (AnswerCoding == null) return AnswerCoding;
+                if (AnswerQuantity == null) return AnswerQuantity;
+
+                return null;
+            }
+        }
     }
 }
