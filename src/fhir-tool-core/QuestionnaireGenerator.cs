@@ -1,10 +1,10 @@
-﻿extern alias R3;
+﻿extern alias R4;
 
 using FhirTool.Core.Model;
 using FhirTool.Core.Model.FlatFile;
 using FileHelpers.MasterDetail;
-using R3::Hl7.Fhir.Model;
-using R3::Hl7.Fhir.Serialization;
+using R4::Hl7.Fhir.Model;
+using R4::Hl7.Fhir.Serialization;
 using Hl7.Fhir.Utility;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -21,13 +21,11 @@ namespace FhirTool.Core
 {
     internal class QuestionnaireGenerator
     {
-        private readonly string _proxyBaseUrl;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
 
-        public QuestionnaireGenerator(string proxyBaseUrl, ILoggerFactory loggerFactory)
+        public QuestionnaireGenerator(ILoggerFactory loggerFactory)
         {
-            _proxyBaseUrl = proxyBaseUrl;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<QuestionnaireGenerator>();
         }
@@ -154,7 +152,7 @@ namespace FhirTool.Core
 
                 if (!string.IsNullOrWhiteSpace(masterDetail.Master.Endpoint))
                 {
-                    questionnaire.SetExtension(Constants.EndPointUri, new ResourceReference($"{_proxyBaseUrl}{masterDetail.Master.Endpoint}"));
+                    questionnaire.SetExtension(Constants.EndPointUri, new ResourceReference(masterDetail.Master.Endpoint));
                 }
 
                 if (!string.IsNullOrWhiteSpace(masterDetail.Master.AuthenticationRequirement))
@@ -284,13 +282,19 @@ namespace FhirTool.Core
             itemComponent.LinkId = string.IsNullOrWhiteSpace(item.LinkId) ? null : item.LinkId;
             itemComponent.Prefix = string.IsNullOrWhiteSpace(item.Prefix) ? null : item.Prefix;
             itemComponent.Text = string.IsNullOrWhiteSpace(item.Text) ? null : item.Text;
-            itemComponent.EnableWhen = string.IsNullOrWhiteSpace(item.EnableWhen) ? null : ParseEnableWhen(item.EnableWhen).ToList();
-
+            if (!string.IsNullOrWhiteSpace(item.EnableWhen))
+            {
+                itemComponent.EnableWhen = ParseEnableWhen(item.EnableWhen).ToList();
+                // TODO: Defaults to 'any' in the first iteration of "migrate to R4".
+                itemComponent.EnableBehavior = Questionnaire.EnableWhenBehavior.Any;
+            }
             if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
             {
                 itemComponent.Required = item.Required.HasValue ? item.Required : null;
                 itemComponent.ReadOnly = item.ReadOnly;
-                itemComponent.Initial = string.IsNullOrWhiteSpace(item.Initial) ? null : GetElement(itemType.Value, item.Initial);
+                itemComponent.Initial = string.IsNullOrEmpty(item.Initial)
+                    ? null
+                    : new List<Questionnaire.InitialComponent> { new Questionnaire.InitialComponent { Value = GetElement(itemType.Value, item.Initial) } };
                 itemComponent.MaxLength = item.MaxLength.HasValue ? item.MaxLength : null;
             }
 
@@ -303,7 +307,7 @@ namespace FhirTool.Core
                 itemComponent.SetStringExtension(Constants.ValidationTextUri, item.ValidationText);
 
             if (!string.IsNullOrWhiteSpace(item.Options) && item.Options.IndexOf('#') == 0)
-                itemComponent.Options = new ResourceReference($"#{item.Options.Substring(1)}");
+                itemComponent.AnswerValueSetElement = new Canonical($"#{item.Options.Substring(1)}");
 
             if (!string.IsNullOrWhiteSpace(item.EntryFormat))
                 itemComponent.SetStringExtension(Constants.EntryFormatUri, item.EntryFormat);
@@ -314,14 +318,14 @@ namespace FhirTool.Core
                 itemComponent.SetIntegerExtension(Constants.MinValueUri, item.MinValueInteger.Value);
 
             if (item.MaxValueDate.HasValue)
-                itemComponent.SetExtension(Constants.MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(Constants.MaxValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
             if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(Constants.MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(Constants.MinValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
 
             if (item.MaxValueDate.HasValue)
-                itemComponent.SetExtension(Constants.MaxValueUri, new FhirDateTime(item.MaxValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(Constants.MaxValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
             if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(Constants.MinValueUri, new FhirDateTime(item.MinValueDate.Value.ToUniversalTime()));
+                itemComponent.SetExtension(Constants.MinValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
 
             if (item.MinLength.HasValue)
                 itemComponent.SetIntegerExtension(Constants.MinLenghtUri, item.MinLength.Value);
@@ -382,7 +386,7 @@ namespace FhirTool.Core
                     }
                     else
                     {
-                        itemComponent.Option.Add(new Questionnaire.OptionComponent { Value = element });
+                        itemComponent.AnswerOption.Add(new Questionnaire.AnswerOptionComponent { Value = element });
                     }
                 }
             }
@@ -549,13 +553,20 @@ namespace FhirTool.Core
             itemComponent.LinkId = string.IsNullOrWhiteSpace(item.LinkId) ? null : item.LinkId;
             itemComponent.Prefix = string.IsNullOrWhiteSpace(item.Prefix) ? null : item.Prefix;
             itemComponent.Text = string.IsNullOrWhiteSpace(item.Text) ? null : item.Text;
-            itemComponent.EnableWhen = string.IsNullOrWhiteSpace(item.EnableWhen) ? null : ParseEnableWhen(item.EnableWhen).ToList();
+            if (!string.IsNullOrWhiteSpace(item.EnableWhen))
+            {
+                itemComponent.EnableWhen = ParseEnableWhen(item.EnableWhen).ToList();
+                // TODO: Defaults to 'any' in the first iteration of "migrate to R4".
+                itemComponent.EnableBehavior = Questionnaire.EnableWhenBehavior.Any;
+            }
 
             if (itemType != Questionnaire.QuestionnaireItemType.Group && itemType != Questionnaire.QuestionnaireItemType.Display)
             {
                 itemComponent.Required = item.Required.HasValue ? item.Required : null;
                 itemComponent.ReadOnly = item.ReadOnly;
-                itemComponent.Initial = string.IsNullOrWhiteSpace(item.Initial) ? null : GetElement(itemType.Value, item.Initial);
+                itemComponent.Initial = string.IsNullOrEmpty(item.Initial)
+                    ? null
+                    : new List<Questionnaire.InitialComponent> { new Questionnaire.InitialComponent { Value = GetElement(itemType.Value, item.Initial) } };
             }
 
             if (itemType != Questionnaire.QuestionnaireItemType.Display)
@@ -566,7 +577,7 @@ namespace FhirTool.Core
             if (!string.IsNullOrWhiteSpace(item.ValidationText))
                 itemComponent.SetStringExtension(Constants.ValidationTextUri, item.ValidationText);
             if (!string.IsNullOrWhiteSpace(item.ReferenceValue) && item.ReferenceValue.IndexOf('#') == 0)
-                itemComponent.Options = new ResourceReference($"#{item.ReferenceValue.Substring(1)}");
+                itemComponent.AnswerValueSetElement = new Canonical($"#{item.ReferenceValue.Substring(1)}");
             if (!string.IsNullOrWhiteSpace(item.EntryFormat))
                 itemComponent.SetStringExtension(Constants.EntryFormatUri, item.EntryFormat);
             if (item.MaxValue.HasValue)
@@ -713,9 +724,17 @@ namespace FhirTool.Core
                 Questionnaire.EnableWhenComponent enableWhenComponent = new Questionnaire.EnableWhenComponent
                 {
                     Question = enableWhen.Question,
+                    // TODO: Defaults to Equal for the first iteration of "migrate to R4"
+                    Operator = Questionnaire.QuestionnaireItemOperator.Equal,
                 };
                 if (enableWhen.HasAnswer.HasValue)
-                    enableWhenComponent.HasAnswer = enableWhen.HasAnswer;
+                {
+                    if (enableWhen.Answer == null)
+                    {
+                        enableWhenComponent.Operator = Questionnaire.QuestionnaireItemOperator.Exists;
+                        enableWhenComponent.Answer = new FhirBoolean(enableWhen.HasAnswer);
+                    }
+                }
                 if (enableWhen.AnswerBoolean.HasValue)
                     enableWhenComponent.Answer = new FhirBoolean(enableWhen.AnswerBoolean);
                 if (enableWhen.AnswerDecimal.HasValue)

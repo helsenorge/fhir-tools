@@ -5,6 +5,7 @@ using FhirTool.Core.Utils;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using R3Rest = R3::Hl7.Fhir.Rest;
 using R4Rest = R4::Hl7.Fhir.Rest;
@@ -17,11 +18,13 @@ namespace FhirTool.Core.FhirWrappers
         public R3Rest.FhirClient R3Client { get; set; }
         public R4Rest.FhirClient R4Client { get; set; }
         public string LastBodyAsText { get; private set; }
+        public string Endpoint { get; private set; }
 
         private ILogger _logger;
 
         internal FhirClientWrapper(string endpoint, ILogger logger, FhirVersion? fhirVersion = null)
         {
+            Endpoint = endpoint;
             _logger = logger;
 
             if(fhirVersion == FhirVersion.None)
@@ -110,6 +113,36 @@ namespace FhirTool.Core.FhirWrappers
                 case FhirVersion.R4:
                     var resultR4 = await R4Client.TransactionAsync(bundleWrapper.R4Bundle);
                     return resultR4 != null ? new BundleWrapper(resultR4) : null;
+                default:
+                    return default;
+            }
+        }
+
+        public async Task<ResourceWrapper> CreateAsync(ResourceWrapper resourceWrapper)
+        {
+            switch(FhirVersion)
+            {
+                case FhirVersion.R3:
+                    var resultR3 = await R3Client.CreateAsync(resourceWrapper.R3Resource);
+                    return resultR3 != null ? new ResourceWrapper(resultR3) : null;
+                case FhirVersion.R4:
+                    var resultR4 = await R4Client.CreateAsync(resourceWrapper.R4Resource);
+                    return resultR4 != null ? new ResourceWrapper(resultR4) : null;
+                default:
+                    return default;
+            }
+        }
+
+        public async Task<ResourceWrapper> UpdateAsync(ResourceWrapper resourceWrapper)
+        {
+            switch (FhirVersion)
+            {
+                case FhirVersion.R3:
+                    var resultR3 = await R3Client.UpdateAsync(resourceWrapper.R3Resource);
+                    return resultR3 != null ? new ResourceWrapper(resultR3) : null;
+                case FhirVersion.R4:
+                    var resultR4 = await R4Client.UpdateAsync(resourceWrapper.R4Resource);
+                    return resultR4 != null ? new ResourceWrapper(resultR4) : null;
                 default:
                     return default;
             }

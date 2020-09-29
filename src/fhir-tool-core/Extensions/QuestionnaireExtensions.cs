@@ -1,7 +1,7 @@
-﻿extern alias R3;
+﻿extern alias R4;
 
 using EnsureThat;
-using R3::Hl7.Fhir.Model;
+using R4::Hl7.Fhir.Model;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,11 +24,11 @@ namespace FhirTool.Core
             return false;
         }
 
-        public static bool HasContainedValueSet(this Questionnaire questionnaire, ResourceReference reference)
+        public static bool HasContainedValueSet(this Questionnaire questionnaire, Canonical canonical)
         {
-            EnsureArg.IsNotNull(reference, nameof(reference));
+            EnsureArg.IsNotNull(canonical, nameof(canonical));
 
-            string literal = reference.Reference.IndexOf("#") == 0 ? reference.Reference.Substring(1) : string.Empty;
+            string literal = canonical.Value.IndexOf("#") == 0 ? canonical.Value.Substring(1) : string.Empty;
 
             return questionnaire.Contained.Any(r => r.ResourceType == ResourceType.ValueSet && r.Id == literal);
         }
@@ -57,18 +57,18 @@ namespace FhirTool.Core
         {
             if (item.Type != Questionnaire.QuestionnaireItemType.Choice && item.Type != Questionnaire.QuestionnaireItemType.OpenChoice)
                 return new Issue[0];
-            if(item.Options == null)
+            if(item.AnswerValueSet == null)
                 return new Issue[0];
 
             var issues = new List<Issue>();
 
-            if (!questionnaire.HasContainedValueSet(item.Options))
+            if (!questionnaire.HasContainedValueSet(item.AnswerValueSet))
             {
                 issues.Add(new Issue
                 {
                     LinkId = item.LinkId,
                     Severity = IssueSeverityEnum.Error,
-                    Details = $"Cannot find the reference to ValueSet {item.Options?.Reference}"
+                    Details = $"Cannot find the reference to ValueSet {item.AnswerValueSet}"
                 });
             }
 

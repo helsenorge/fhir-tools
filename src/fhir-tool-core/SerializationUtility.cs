@@ -1,8 +1,8 @@
-﻿extern alias R3;
+﻿extern alias R4;
 
 using EnsureThat;
-using R3::Hl7.Fhir.Model;
-using R3::Hl7.Fhir.Serialization;
+using R4::Hl7.Fhir.Model;
+using R4::Hl7.Fhir.Serialization;
 using Hl7.Fhir.Utility;
 using Newtonsoft.Json.Linq;
 using System;

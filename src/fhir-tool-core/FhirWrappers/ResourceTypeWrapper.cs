@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using R3Model = R3::Hl7.Fhir.Model;
 using R4Model = R4::Hl7.Fhir.Model;
+using Hl7.Fhir.Utility;
 
 namespace FhirTool.Core.FhirWrappers
 {
@@ -56,12 +57,19 @@ namespace FhirTool.Core.FhirWrappers
 
     public enum ResourceTypeWrapper
     {
+        [EnumLiteral("Binary")]
         Binary = 8,
+        [EnumLiteral("CodeSystem")]
         CodeSystem = 18,
+        [EnumLiteral("DocumentReference")]
         DocumentReference = 37,
+        [EnumLiteral("Endpoint")]
         Endpoint = 42,
+        [EnumLiteral("Questionnaire")]
         Questionnaire = 93,
+        [EnumLiteral("StructureDefinition")]
         StructureDefinition = 108,
+        [EnumLiteral("ValueSet")]
         ValueSet = 117
     }
 }
