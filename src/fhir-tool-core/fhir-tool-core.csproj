@@ -5,7 +5,7 @@
     <RootNamespace>FhirTool.Core</RootNamespace>
     <AssemblyName>FhirTool.Core</AssemblyName>
     <LangVersion>8.0</LangVersion>
-    <Version>0.6-beta01</Version>
+    <Version>0.6</Version>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
