@@ -6,8 +6,9 @@ using R4Model = R4::Hl7.Fhir.Model;
 using R3Serialization = R3::Hl7.Fhir.Serialization;
 using R4Serialization = R4::Hl7.Fhir.Serialization;
 
-using Hl7.Fhir.Model;
 using Hl7.Fhir.Utility;
+using Hl7.Fhir.Model;
+using FhirTool.Core.Utils;
 
 namespace FhirTool.Core.FhirWrappers
 {
@@ -24,6 +25,19 @@ namespace FhirTool.Core.FhirWrappers
         public SerializationWrapper(FhirVersion version)
         {
             Version = version;
+        }
+
+        public string Serialize(ResourceWrapper resourceWrapper, FhirMimeType type = FhirMimeType.Json)
+        {
+            switch(Version)
+            {
+                case FhirVersion.R3:
+                    return Serialize(resourceWrapper.R3Resource, type);
+                case FhirVersion.R4:
+                    return Serialize(resourceWrapper.R4Resource, type);
+                default:
+                    return default;
+            }
         }
 
         public string Serialize(Base resource, FhirMimeType type = FhirMimeType.Json)
@@ -50,7 +64,7 @@ namespace FhirTool.Core.FhirWrappers
         {
             if (!type.HasValue)
             {
-                type = ProbeFhirMimeType(content);
+                type = MimeTypeUtils.ProbeFhirMimeType(content);
             }
             
             if(!type.HasValue)
@@ -75,20 +89,6 @@ namespace FhirTool.Core.FhirWrappers
                 default:
                     return default;
             }
-        }
-
-        private FhirMimeType? ProbeFhirMimeType(string content)
-        {
-            if(SerializationUtil.ProbeIsJson(content))
-            {
-                return FhirMimeType.Json;
-            }
-            if(SerializationUtil.ProbeIsXml(content))
-            {
-                return FhirMimeType.Xml;
-            }
-
-            return null;
         }
     }
 }
