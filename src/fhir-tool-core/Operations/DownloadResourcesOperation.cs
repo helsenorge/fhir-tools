@@ -21,7 +21,7 @@ namespace FhirTool.Core.Operations
 
         [Option('r', "resolve-url", HelpText = "resolve url")]
         public bool ResolveUrl { get; set; }
-        
+
         [Option('c', "credentials", HelpText = "credentials")]
         public string Credentials { get; set; }
 
@@ -33,6 +33,9 @@ namespace FhirTool.Core.Operations
 
         [Option("keep-server-url", Required = false, HelpText = "...")]
         public bool KeepServerUrl { get; set; }
+
+        [Option('f', "format", Default = FhirMimeType.Json, MetaValue = "xml/json", HelpText = "json or xml")]
+        public FhirMimeType MimeType { get; set; }
     }
 
     public class DownloadResourcesOperation : Operation
@@ -104,18 +107,20 @@ namespace FhirTool.Core.Operations
         private async Task SerializeAndStore(BundleWrapper result, DirectoryInfo baseDir)
         {
             if (result == null) return;
+
+            var serializer = new SerializationWrapper(result.FhirVersion);
             var resources = result.GetResources();
             _logger.LogInformation($"  Fetched {resources.Count()} resources from server");
             foreach (var resource in resources)
             {
-                string serialized = resource.Serialize();
+                string serialized = serializer.Serialize(resource, _arguments.MimeType);
                 await Store(resource.Id, serialized, baseDir);
             }
         }
 
         private async Task Store(string id, string serialized, DirectoryInfo baseDir)
         {
-            var filename = SafeFilename(string.Join(".", id, "json"));
+            var filename = SafeFilename(string.Join(".", id, _arguments.MimeType.ToString().ToLower()));
             var path = Path.Combine(baseDir.FullName, filename);
             _logger.LogInformation($"    Storing resource {id} at {MakeRelativeToCurrentDirectory(path)}");
             await File.WriteAllTextAsync(path, serialized);
