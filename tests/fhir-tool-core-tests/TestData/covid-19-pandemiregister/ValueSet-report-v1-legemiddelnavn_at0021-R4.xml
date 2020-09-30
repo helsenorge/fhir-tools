@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Legemiddelnavn. Navn på legemiddelet eller underklassen av legemiddelklassen.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from terminology SNOMED-CT</p>
+         <ul>
+            <li>428787002: Macrolide (substance)</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+   <version value="20200603"/>
+   <name value="Legemiddelnavn"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Navn på legemiddelet eller underklassen av legemiddelklassen."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.medication_use.v0"/>
+         <concept>
+            <code value="428787002"/>
+            <display value="Macrolide (substance)"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

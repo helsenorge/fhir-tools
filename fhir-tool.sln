@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FhirTool", "src\fhir-tool\FhirTool.csproj", "{0C12CAE1-5D82-408D-8606-2E91CCC64D7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FhirTool", "src\fhir-tool\FhirTool.csproj", "{0C12CAE1-5D82-408D-8606-2E91CCC64D7F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fhir-tool-core-tests", "tests\fhir-tool-core-tests\fhir-tool-core-tests.csproj", "{992595B9-8AD8-46B1-AC08-78BFE3C3ACCF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fhir-tool-core", "src\fhir-tool-core\fhir-tool-core.csproj", "{98888B69-210F-4205-952C-E49FB5EB4015}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{0C12CAE1-5D82-408D-8606-2E91CCC64D7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C12CAE1-5D82-408D-8606-2E91CCC64D7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C12CAE1-5D82-408D-8606-2E91CCC64D7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{992595B9-8AD8-46B1-AC08-78BFE3C3ACCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{992595B9-8AD8-46B1-AC08-78BFE3C3ACCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{992595B9-8AD8-46B1-AC08-78BFE3C3ACCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{992595B9-8AD8-46B1-AC08-78BFE3C3ACCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98888B69-210F-4205-952C-E49FB5EB4015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98888B69-210F-4205-952C-E49FB5EB4015}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98888B69-210F-4205-952C-E49FB5EB4015}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98888B69-210F-4205-952C-E49FB5EB4015}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

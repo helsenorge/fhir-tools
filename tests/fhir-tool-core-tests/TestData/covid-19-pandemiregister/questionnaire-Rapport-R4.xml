@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Questionnaire xmlns="http://hl7.org/fhir">
+   <id value="questionnaire-Rapport-R4"/>
+   <url value="http://linkehr.com/fhir/questionnaire-rapport-R4"/>
+   <version value="0"/>
+   <name value="Rapport"/>
+   <status value="draft"/>
+   <date value="2020-06-03"/>
+   <publisher value="openEHR"/>
+   <contact>
+      <telecom>
+         <system value="url"/>
+         <value value="http://www.veratech.es"/>
+      </telecom>
+   </contact>
+   <description value="Dokument som brukes for å kommunisere informasjon til andre, ofte som svar på en forespørsel."/>
+   <item>
+      <linkId value="openEHR-EHR-COMPOSITION.report.v1:at0000"/>
+      <text value="COVID-19 - datasett - Pandemiregister inklusjonsskjema"/>
+      <type value="group"/>
+      <item>
+         <linkId value="openEHR-EHR-SECTION.adhoc.v1:at0000"/>
+         <text value="Inklusjon"/>
+         <type value="group"/>
+         <item>
+            <linkId value="openEHR-EHR-ADMIN_ENTRY.episode_institution.v0:at0000"/>
+            <text value="Omsorgsepisode - institusjon"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-ADMIN_ENTRY.episode_institution.v0:at0004"/>
+               <text value="Tidspunkt for innleggelse ved denne institusjonen"/>
+               <type value="dateTime"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-ADMIN_ENTRY.episode_institution.v0:at0007"/>
+               <text value="Hvor kom pasienten fra ved innleggelse i dette sykehuset?"/>
+               <type value="choice"/>
+               <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-innleggelsefra-R4"/>
+            </item>
+         </item>
+         <item>
+            <linkId value="openEHR-EHR-EVALUATION.problem_diagnosis.v1:at0000"/>
+            <text value="Diagnose"/>
+            <type value="group"/>
+         </item>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-SECTION.adhoc.v1:at0000_1"/>
+         <text value="Demografi og epidemiologi"/>
+         <type value="group"/>
+         <item>
+            <linkId value="openEHR-EHR-OBSERVATION.travel_event.v0:at0000"/>
+            <text value="Reisehendelse"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.travel_event.v0:at0004"/>
+               <text value="Har pasienten siste 14 dager vært på reise utenfor Norge"/>
+               <type value="choice"/>
+               <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-reise_-R4"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.travel_event.v0:at0026"/>
+               <text value="Innenlands/utenlands"/>
+               <type value="choice"/>
+               <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-innenlands_utenlands-R4"/>
+            </item>
+         </item>
+         <item>
+            <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0000"/>
+            <text value="Spørreskjema for eksponering"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0002"/>
+               <text value="Siste 14 dager"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0043"/>
+                  <text value="Agens"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-agens-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0044"/>
+                  <text value="Har pasienten siste 14 dager hatt nærkontakt med en bekreftet eller sannsynlig COVID-19 pasient mens denne pasienten hadde symptomer"/>
+                  <type value="group"/>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0045"/>
+                     <text value="Eksponering"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-eksponeringssituasjon-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0046"/>
+                     <text value="Tilstedeværelse"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstedeværelse-R4"/>
+                  </item>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0002_1"/>
+               <text value="På registreringstidspunktet"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0043_1"/>
+                  <text value="Agens"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-agens_at0043-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0044_1"/>
+                  <text value="Er pasienten ansatt som helsepersonell"/>
+                  <type value="group"/>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0045_1"/>
+                     <text value="Eksponering"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-eksponeringssituasjon_at0045-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0046_1"/>
+                     <text value="Tilstedeværelse"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstedeværelse_at0046-R4"/>
+                  </item>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0044_2"/>
+                  <text value="Jobber pasienten på mikrobiologisk laboratorium"/>
+                  <type value="group"/>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0045_2"/>
+                     <text value="Eksponering"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-eksponeringssituasjon_at0045-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.exposure_assessment.v0:at0046_2"/>
+                     <text value="Tilstedeværelse"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstedeværelse_at0046-R4"/>
+                  </item>
+               </item>
+            </item>
+         </item>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-SECTION.adhoc.v1:at0000_2"/>
+         <text value="Kjente risikofaktorer ved innkomst"/>
+         <type value="group"/>
+         <item>
+            <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0000"/>
+            <text value="Spørreskjema for tilstander"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0034"/>
+               <text value="Registreringsformål"/>
+               <type value="string"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0028"/>
+               <text value="Har pasienten kjente risikofaktorer for alvorlig sykdomsforløp ved innleggelse?"/>
+               <type value="choice"/>
+               <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-erdetnoentilstandertilstede_-R4"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022"/>
+               <text value="Aktiv kreftsykdom"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede_-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_1"/>
+               <text value="Nedsatt immunforsvar, inkludert HIV og immunsuppresiv behandling"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_1"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_1"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_2"/>
+               <text value="Diabetes mellitus type 1 eller 2"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_2"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_2"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_3"/>
+               <text value="Astma"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_3"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_3"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_4"/>
+               <text value="Kronisk lungesykdom, unntatt astma"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_4"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_4"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_5"/>
+               <text value="Hjertesykdom, inkludert hypertensjon"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_5"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_5"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_6"/>
+               <text value="Nyresykdom, inkludert nyresvikt"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_6"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_6"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_7"/>
+               <text value="Leversykdom, inkludert leversvikt"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_7"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_7"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_8"/>
+               <text value="Kronisk nevrologisk/nevromuskulær sykdom"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_8"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_8"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_9"/>
+               <text value="Gravid"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_9"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_9"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_10"/>
+               <text value="Nåværende røyker"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_10"/>
+                  <text value="Navn på tilstand"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_10"/>
+                  <text value="Tilstede?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+               </item>
+            </item>
+         </item>
+         <item>
+            <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0000"/>
+            <text value="Bruker pasienten ACE-hemmer eller A2-blokker fast ved innkomst"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008"/>
+               <text value="ACE-hemmer"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk_-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_1"/>
+               <text value="A2-blokker"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_1"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_1"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+         </item>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-SECTION.adhoc.v1:at0000_3"/>
+         <text value="Status ved innkomst"/>
+         <type value="group"/>
+         <item>
+            <linkId value="openEHR-EHR-SECTION.adhoc.v1:at0000_4"/>
+            <text value="Vitale målinger"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.height.v2:at0000"/>
+               <text value="Høyde/Lengde"/>
+               <type value="group"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.body_weight.v2:at0000"/>
+               <text value="Kroppsvekt"/>
+               <type value="group"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.body_temperature.v2:at0000"/>
+               <text value="Kroppstemperatur"/>
+               <type value="group"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.pulse_oximetry.v1:at0000"/>
+               <text value="Pulsoksymetri"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.pulse_oximetry.v1:at0006"/>
+                  <text value="Oksygenmetning (%)"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.respiration.v2:at0000"/>
+               <text value="Åndedrett"/>
+               <type value="group"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0000"/>
+               <text value="Blodtrykk"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0004"/>
+                  <text value="Systolisk blodtrykk"/>
+                  <type value="quantity"/>
+                  <answerOption>
+                     <valueCoding>
+                        <system value="http://unitsofmeasure.org"/>
+                        <code value="mm[Hg]"/>
+                     </valueCoding>
+                  </answerOption>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0005"/>
+                  <text value="Diastolisk blodtrykk"/>
+                  <type value="quantity"/>
+                  <answerOption>
+                     <valueCoding>
+                        <system value="http://unitsofmeasure.org"/>
+                        <code value="mm[Hg]"/>
+                     </valueCoding>
+                  </answerOption>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.pulse.v2:at0000"/>
+               <text value="Puls/Hjertefrekvens"/>
+               <type value="group"/>
+            </item>
+         </item>
+         <item>
+            <linkId value="openEHR-EHR-SECTION.adhoc.v1:at0000_5"/>
+            <text value="Komplikasjoner"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0000_1"/>
+               <text value="Spørreskjema for tilstander"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0034_1"/>
+                  <text value="Registreringsformål"/>
+                  <type value="string"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_11"/>
+                  <text value="Akutt nyresvikt"/>
+                  <type value="group"/>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_11"/>
+                     <text value="Navn på tilstand"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_11"/>
+                     <text value="Tilstede?"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+                  </item>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_12"/>
+                  <text value="Akutt sirkulasjonssvikt"/>
+                  <type value="group"/>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_12"/>
+                     <text value="Navn på tilstand"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_12"/>
+                     <text value="Tilstede"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.questionnaire_details.v0:at0000"/>
+                     <text value="Spørreskjemadetaljer"/>
+                     <type value="group"/>
+                  </item>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_13"/>
+                  <text value="Akutt respirasjonssvikt"/>
+                  <type value="group"/>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_13"/>
+                     <text value="Navn på tilstand"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_13"/>
+                     <text value="Tilstede?"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.questionnaire_details.v0:at0000_1"/>
+                     <text value="Spørreskjemadetaljer"/>
+                     <type value="group"/>
+                  </item>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0022_14"/>
+                  <text value="Endret bevissthetsnivå eller forvirring"/>
+                  <type value="group"/>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0004_14"/>
+                     <text value="Navn på tilstand"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpatilstand_at0004-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-OBSERVATION.condition_screening.v0:at0005_14"/>
+                     <text value="Tilstede?"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede__at0005-R4"/>
+                  </item>
+               </item>
+            </item>
+         </item>
+         <item>
+            <linkId value="openEHR-EHR-SECTION.adhoc.v1:at0000_6"/>
+            <text value="Diagnostiske undersøkelser"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.laboratory_test_result.v1:at0000"/>
+               <text value="Laboratorieresultat"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.laboratory_test_result.v1:at0005"/>
+                  <text value="Undersøkelsesnavn"/>
+                  <type value="string"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0000"/>
+                  <text value="Leukocytter"/>
+                  <type value="group"/>
+                  <repeats value="true"/>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0024"/>
+                     <text value="Analysenavn"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-analysenavn-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0001"/>
+                     <text value="Analyseresultat"/>
+                     <type value="quantity"/>
+                     <answerOption>
+                        <valueCoding>
+                           <system value="http://unitsofmeasure.org"/>
+                           <code value="10*9/L"/>
+                        </valueCoding>
+                     </answerOption>
+                  </item>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0000_1"/>
+                  <text value="Trombocytter"/>
+                  <type value="group"/>
+                  <repeats value="true"/>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0024_1"/>
+                     <text value="Analysenavn"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-analysenavn_at0024-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0001_1"/>
+                     <text value="Analyseresultat"/>
+                     <type value="quantity"/>
+                     <answerOption>
+                        <valueCoding>
+                           <system value="http://unitsofmeasure.org"/>
+                           <code value="10*9/L"/>
+                        </valueCoding>
+                     </answerOption>
+                  </item>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0000_2"/>
+                  <text value="Kreatinin"/>
+                  <type value="group"/>
+                  <repeats value="true"/>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0024_2"/>
+                     <text value="Analysenavn"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-analysenavn_at0024-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0001_2"/>
+                     <text value="Analyseresultat"/>
+                     <type value="quantity"/>
+                     <answerOption>
+                        <valueCoding>
+                           <system value="http://unitsofmeasure.org"/>
+                           <code value="umol/L"/>
+                        </valueCoding>
+                     </answerOption>
+                  </item>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0000_3"/>
+                  <text value="Bilirubin"/>
+                  <type value="group"/>
+                  <repeats value="true"/>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0024_3"/>
+                     <text value="Analysenavn"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-analysenavn_at0024-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0001_3"/>
+                     <text value="Analyseresultat"/>
+                     <type value="quantity"/>
+                     <answerOption>
+                        <valueCoding>
+                           <system value="http://unitsofmeasure.org"/>
+                           <code value="umol/L"/>
+                        </valueCoding>
+                     </answerOption>
+                  </item>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0000_4"/>
+                  <text value="D-dimer"/>
+                  <type value="group"/>
+                  <repeats value="true"/>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0024_4"/>
+                     <text value="Analysenavn"/>
+                     <type value="choice"/>
+                     <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-analysenavn_at0024-R4"/>
+                  </item>
+                  <item>
+                     <linkId value="openEHR-EHR-CLUSTER.laboratory_test_analyte.v1:at0001_4"/>
+                     <text value="Analyseresultat"/>
+                     <type value="quantity"/>
+                     <answerOption>
+                        <valueCoding>
+                           <system value="http://unitsofmeasure.org"/>
+                           <code value="mg/L"/>
+                        </valueCoding>
+                     </answerOption>
+                  </item>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.imaging_exam_result.v0:at0000"/>
+               <text value="Bildediagnostisk svar"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.imaging_exam_result.v0:at0004"/>
+                  <text value="Undersøkelse"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-_testname_en_-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-CLUSTER.exclusion_exam.v1:at0000"/>
+                  <text value="Eksklusjon av en undersøkelse"/>
+                  <type value="group"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.imaging_exam_result.v0:at0020"/>
+                  <text value="Bildediagnostisk diagnose"/>
+                  <type value="choice"/>
+                  <repeats value="true"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-bildediagnostiskdiagnose-R4"/>
+               </item>
+            </item>
+         </item>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-SECTION.adhoc.v1:at0000_7"/>
+         <text value="Ordinasjon ved innkomst"/>
+         <type value="group"/>
+         <item>
+            <linkId value="openEHR-EHR-OBSERVATION.management_screening.v0:at0000"/>
+            <text value="Registreringsskjema for sykdomshåndtering/behandling"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.management_screening.v0:at0022"/>
+               <text value="Antibiotika"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.management_screening.v0:at0004"/>
+                  <text value="Navn på aktiviteten"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpaaktiviteten-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.management_screening.v0:at0005"/>
+                  <text value="Iverksatt?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-iverksatt_-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.management_screening.v0:at0022_1"/>
+               <text value="Ble pasienten isolert fra innkomst"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.management_screening.v0:at0004_1"/>
+                  <text value="Navn på aktiviteten"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-navnpaaktiviteten_at0004-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.management_screening.v0:at0005_1"/>
+                  <text value="Iverksatt?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-iverksatt__at0005-R4"/>
+               </item>
+            </item>
+         </item>
+         <item>
+            <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0000_1"/>
+            <text value="Spørreskjema for legemiddelbruk"/>
+            <type value="group"/>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0002"/>
+               <text value="Legemiddelklasse"/>
+               <type value="choice"/>
+               <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelklasse-R4"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0003"/>
+               <text value="Legemiddelklasse i bruk?"/>
+               <type value="choice"/>
+               <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelklasseibruk_-R4"/>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_2"/>
+               <text value="Penicillin"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_2"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_2"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_3"/>
+               <text value="Penicillin med enzymhemmer"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_3"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="string"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_3"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_4"/>
+               <text value="Aminoglykosid"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_4"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_4"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_5"/>
+               <text value="2. generasjons cefalosporin"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_5"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_5"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_6"/>
+               <text value="3. generasjons cefalosporin"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_6"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_6"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_7"/>
+               <text value="Kinolon"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_7"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_7"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_8"/>
+               <text value="Karbapenem"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_8"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_8"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_9"/>
+               <text value="Makrolid"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_9"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelnavn_at0021-R4"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_9"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+            <item>
+               <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0008_10"/>
+               <text value="Annet antibiotikum"/>
+               <type value="group"/>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0021_10"/>
+                  <text value="Legemiddelnavn"/>
+                  <type value="string"/>
+               </item>
+               <item>
+                  <linkId value="openEHR-EHR-OBSERVATION.medication_use.v0:at0024_10"/>
+                  <text value="Legemiddel i bruk?"/>
+                  <type value="choice"/>
+                  <answerValueSet value="http://linkehr.com/fhir/ValueSet-report-v1-legemiddelibruk__at0024-R4"/>
+               </item>
+            </item>
+         </item>
+      </item>
+   </item>
+</Questionnaire>

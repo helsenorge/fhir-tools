@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-tilstede_-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Tilstede?. Tilstedeværelse av tilstanden.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from archetype openEHR-EHR-COMPOSITION.report.v1 internal terminology</p>
+         <ul>
+            <li>at0023: Tilstede</li>
+            <li>at0024: Fraværende</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-tilstede_-R4"/>
+   <version value="20200603"/>
+   <name value="Tilstede?"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Tilstedeværelse av tilstanden."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.condition_screening.v0"/>
+         <concept>
+            <code value="at0023"/>
+            <display value="Tilstede"/>
+         </concept>
+         <concept>
+            <code value="at0024"/>
+            <display value="Fraværende"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

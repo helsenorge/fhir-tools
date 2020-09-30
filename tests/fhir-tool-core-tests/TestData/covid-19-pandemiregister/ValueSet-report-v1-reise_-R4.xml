@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-reise_-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Reise?. Har personen reist i det angitte intervallet?</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from archetype openEHR-EHR-COMPOSITION.report.v1 internal terminology</p>
+         <ul>
+            <li>at0006: Ja</li>
+            <li>at0005: Nei</li>
+            <li>at0027: Ukjent</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-reise_-R4"/>
+   <version value="20200603"/>
+   <name value="Reise?"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Har personen reist i det angitte intervallet?"/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.travel_event.v0"/>
+         <concept>
+            <code value="at0006"/>
+            <display value="Ja"/>
+         </concept>
+         <concept>
+            <code value="at0005"/>
+            <display value="Nei"/>
+         </concept>
+         <concept>
+            <code value="at0027"/>
+            <display value="Ukjent"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

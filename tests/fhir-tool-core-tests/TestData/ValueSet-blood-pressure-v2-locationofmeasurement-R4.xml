@@ -1,0 +1,762 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-blood-pressure-v2-locationofmeasurement-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Location of measurement. Simple body site where blood pressure was measured.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from archetype openEHR-EHR-OBSERVATION.blood_pressure.v2 internal terminology</p>
+         <ul>
+            <li>at0025: Right arm</li>
+            <li>at0026: Left arm</li>
+            <li>at0027: Right thigh</li>
+            <li>at0028: Left thigh</li>
+            <li>at1020: Right wrist</li>
+            <li>at1021: Left wrist</li>
+            <li>at1026: Right ankle</li>
+            <li>at1031: Left ankle</li>
+            <li>at1032: Finger</li>
+            <li>at1051: Toe</li>
+            <li>at1056: Dorsum of foot</li>
+            <li>at1053: Intra-arterial</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-blood-pressure-v2-locationofmeasurement-R4"/>
+   <version value="20200424"/>
+   <name value="Location of measurement"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Simple body site where blood pressure was measured."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.blood_pressure.v2"/>
+         <concept>
+            <code value="at0025"/>
+            <display value="Right arm"/>
+            <designation>
+               <language value="ja"/>
+               <value value="右腕"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Rechter Arm"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="右臂"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Rechterarm"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Правая рука"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Right arm(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الذراع الأيمن"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Brazo derecho"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Braço direito"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*우측 팔(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Brazo derecho"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Overarm, høyre"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Höger arm"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Oikea käsivarsi"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at0026"/>
+            <display value="Left arm"/>
+            <designation>
+               <language value="ja"/>
+               <value value="左腕"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Linker Arm"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="左臂"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Linkerarm"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Левая рука"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Left arm(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الذراع الأيسر"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Brazo izquierdo"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Braço esquerdo"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*좌측 팔(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Brazo izquierdo"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Overarm, venstre"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Vänster arm"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Vasen käsivarsi"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at0027"/>
+            <display value="Right thigh"/>
+            <designation>
+               <language value="ja"/>
+               <value value="右大腿"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Rechter Oberschenkel"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="右腿"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Rechterdijbeen"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Правое бедро"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Right thigh(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الفخذ الأيمن"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Muslo derecho"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Coxa direita"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*우측 허벅지(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Muslo derecho"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Lår, høyre"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Höger lår"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Oikea reisi"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at0028"/>
+            <display value="Left thigh"/>
+            <designation>
+               <language value="ja"/>
+               <value value="左大腿"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Linker Oberschenkel"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="左腿"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Linkerdijbeen"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Левое бедро"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Left thigh(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الفخذ الأيسر"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Muslo izquierdo"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Coxa esquerda"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*좌측 허벅지(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Muslo izquierdo"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Lår, venstre"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Vänster lår"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Vasen reisi"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1020"/>
+            <display value="Right wrist"/>
+            <designation>
+               <language value="ja"/>
+               <value value="右手首"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Rechtes Handgelenk"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="右手腕"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Rechterpols"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Правое запястье"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Right wrist(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الساعد الأيمن"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Muñeca derecha"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Pulso direito"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*우측 손목(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Muñeca derecha"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Håndledd, høyre"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Höger handled"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Oikea ranne"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1021"/>
+            <display value="Left wrist"/>
+            <designation>
+               <language value="ja"/>
+               <value value="左手首"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Linkes Handgelenk"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="左手腕"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Linkerpols"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Левое запястье"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Left wrist(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الساعد الأيسر"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Muñeca izquierda"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Pulso esquerdo"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*좌측 손목(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Muñeca izquierda"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Håndledd, venstre"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Vänster handled"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Vasen ranne"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1026"/>
+            <display value="Right ankle"/>
+            <designation>
+               <language value="ja"/>
+               <value value="右足首"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Rechtes Fußgelenk"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="右踝"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Rechterenkel"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Правая лодыжка"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Right ankle(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الكاحل الأيمن"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Tobillo derecho "/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Tornozelo direito"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*우측 발목(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Tobillo derecho"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Ankel, høyre"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Höger vrist"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Oikea nilkka"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1031"/>
+            <display value="Left ankle"/>
+            <designation>
+               <language value="ja"/>
+               <value value="左足首"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Linkes Fußgelenk"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="左踝"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Linkerenkel"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Левая лодыжка"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Left ankle(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الكاحل الأيسر"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Tobillo izquierdo"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Tornozelo esquerdo"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*좌측 발목(ko)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Tobillo izquierdo"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Ankel, venstre"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Vänster vrist"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Vasen nilkka"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1032"/>
+            <display value="Finger"/>
+            <designation>
+               <language value="ja"/>
+               <value value="手指"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="*Finger(en)"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="手指"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="*Finger(en)"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="*Finger(en)"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Finger(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="*Finger(en)"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="*Finger(en)"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="*Finger(en)"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*Finger(en)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="*Finger(en)"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Finger"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Finger"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Sormi"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1051"/>
+            <display value="Toe"/>
+            <designation>
+               <language value="ja"/>
+               <value value="足尖"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="*Toe(en)"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="脚趾"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="*Toe(en)"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="*Toe(en)"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Toe(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="*Toe(en)"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="*Toe(en)"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="*Toe(en)"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*Toe(en)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="*Toe(en)"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Tå"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Tå"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Varvas"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1056"/>
+            <display value="Dorsum of foot"/>
+            <designation>
+               <language value="ja"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="足背"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Fotrygg"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Fotryggen"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="*Dorsum of foot(en)"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1053"/>
+            <display value="Intra-arterial"/>
+            <designation>
+               <language value="ja"/>
+               <value value="動脈内"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="*Intra-arterial(en)"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="动脉内"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="*Intra-arterial(en)"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="*Intra-arterial(en)"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Intra-arterial(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="*Intra-arterial(en)"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="*Intra-arterial(en)"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="*Intra-arterial(en)"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*Intra-arterial(en)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="*Intra-arterial(en)"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Intra-arterielt"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Intraarteriell"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Valtimonsisäinen"/>
+            </designation>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>FhirTool.Core</RootNamespace>
+    <AssemblyName>FhirTool.Core</AssemblyName>
+    <LangVersion>8.0</LangVersion>
+    <Version>0.6</Version>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.0-preview1" />
+    <PackageReference Include="Ensure.That" Version="9.2.0" />
+    <PackageReference Include="FileHelpers" Version="3.4.1" />
+    <PackageReference Include="Hl7.Fhir.Specification.R4" Version="1.4.0" />
+    <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="1.4.0" />
+    <PackageReference Include="Hl7.Fhir.STU3" Version="1.4.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="NuGet.Versioning" Version="5.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="FhirConverter\" />
+  </ItemGroup>
+
+  <Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.STU3.Core'">
+        <Aliases>R3</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.R4.Core'">
+        <Aliases>R4</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.STU3.Specification'">
+        <Aliases>R3</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.R4.Specification'">
+        <Aliases>R4</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
+
+</Project>

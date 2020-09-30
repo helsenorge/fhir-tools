@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-blood-pressure-v2-diastolicendpoint-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Diastolic endpoint. Record which Korotkoff sound is used for determining diastolic pressure using auscultative method.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from archetype openEHR-EHR-OBSERVATION.blood_pressure.v2 internal terminology</p>
+         <ul>
+            <li>at1011: Phase IV</li>
+            <li>at1012: Phase V</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-blood-pressure-v2-diastolicendpoint-R4"/>
+   <version value="20200424"/>
+   <name value="Diastolic endpoint"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Record which Korotkoff sound is used for determining diastolic pressure using auscultative method."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-OBSERVATION.blood_pressure.v2"/>
+         <concept>
+            <code value="at1011"/>
+            <display value="Phase IV"/>
+            <designation>
+               <language value="ja"/>
+               <value value="4期"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Phase IV"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="第IV时相"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Fase IV"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Фаза 4"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Phase IV(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الطور الرابع"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Fase IV"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Fhase IV."/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*Phase IV(en)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Fase IV"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Fase IV"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Fas IV"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Vaihe IV"/>
+            </designation>
+         </concept>
+         <concept>
+            <code value="at1012"/>
+            <display value="Phase V"/>
+            <designation>
+               <language value="ja"/>
+               <value value="5期"/>
+            </designation>
+            <designation>
+               <language value="de"/>
+               <value value="Phase V"/>
+            </designation>
+            <designation>
+               <language value="zh-cn"/>
+               <value value="第V时相"/>
+            </designation>
+            <designation>
+               <language value="nl"/>
+               <value value="Fase 5"/>
+            </designation>
+            <designation>
+               <language value="ru"/>
+               <value value="Фаза 5"/>
+            </designation>
+            <designation>
+               <language value="fa"/>
+               <value value="*Phase V(en)"/>
+            </designation>
+            <designation>
+               <language value="ar-sy"/>
+               <value value="الطور الخامس"/>
+            </designation>
+            <designation>
+               <language value="es-ar"/>
+               <value value="Fase V"/>
+            </designation>
+            <designation>
+               <language value="pt-br"/>
+               <value value="Phase V"/>
+            </designation>
+            <designation>
+               <language value="ko"/>
+               <value value="*Phase V(en)"/>
+            </designation>
+            <designation>
+               <language value="es"/>
+               <value value="Fase V"/>
+            </designation>
+            <designation>
+               <language value="nb"/>
+               <value value="Fase V"/>
+            </designation>
+            <designation>
+               <language value="sv"/>
+               <value value="Fas V"/>
+            </designation>
+            <designation>
+               <language value="fi"/>
+               <value value="Vaihe V"/>
+            </designation>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

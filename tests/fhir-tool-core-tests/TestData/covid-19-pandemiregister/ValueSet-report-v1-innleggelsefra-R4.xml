@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-innleggelsefra-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Innleggelse fra. *Where the individual was admitted from into the institution. (en)</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from terminology SNOMED-CT</p>
+         <ul>
+            <li>22232009: Hospital (environment)</li>
+            <li>285202004: Community environment (environment)</li>
+            <li>261665006: Unknown (qualifier value)</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-innleggelsefra-R4"/>
+   <version value="20200603"/>
+   <name value="Innleggelse fra"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="*Where the individual was admitted from into the institution. (en)"/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-ADMIN_ENTRY.episode_institution.v0"/>
+         <concept>
+            <code value="22232009"/>
+            <display value="Hospital (environment)"/>
+         </concept>
+         <concept>
+            <code value="285202004"/>
+            <display value="Community environment (environment)"/>
+         </concept>
+         <concept>
+            <code value="261665006"/>
+            <display value="Unknown (qualifier value)"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>

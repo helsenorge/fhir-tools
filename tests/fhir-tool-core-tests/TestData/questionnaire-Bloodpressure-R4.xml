@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Questionnaire xmlns="http://hl7.org/fhir">
+   <id value="questionnaire-Bloodpressure-R4"/>
+   <url value="nullquestionnaire-bloodpressure-R4"/>
+   <version value="0"/>
+   <name value="Bloodpressure"/>
+   <status value="draft"/>
+   <date value="2020-04-24"/>
+   <publisher value="openEHR"/>
+   <contact>
+      <telecom>
+         <system value="url"/>
+         <value value="http://www.veratech.es"/>
+      </telecom>
+   </contact>
+   <description value="The local measurement of arterial blood pressure which is a surrogate for arterial pressure in the systemic circulation."/>
+   <item>
+      <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0000"/>
+      <text value="Blood pressure"/>
+      <type value="group"/>
+      <enableBehavior value="any"/>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0006"/>
+         <text value="Any event"/>
+         <enableBehavior value="any"/>
+         <repeats value="true"/>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at1042"/>
+         <text value="24 hour average"/>
+         <enableBehavior value="any"/>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0013"/>
+         <text value="Cuff size"/>
+         <type value="choice"/>
+         <enableBehavior value="any"/>
+         <answerValueSet value="http://linkehr.com/fhir/ValueSet-blood-pressure-v2-cuffsize-R4"/>
+      </item>
+      <code>
+         <system value="SNOMED-CT(2003)"/>
+         <code value="246153002"/>
+      </code>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at0014"/>
+         <text value="Location of measurement"/>
+         <type value="choice"/>
+         <enableBehavior value="any"/>
+         <answerValueSet value="http://linkehr.com/fhir/ValueSet-blood-pressure-v2-locationofmeasurement-R4"/>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at1035"/>
+         <text value="Method"/>
+         <type value="choice"/>
+         <enableBehavior value="any"/>
+         <answerValueSet value="http://linkehr.com/fhir/ValueSet-blood-pressure-v2-method-R4"/>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at1038"/>
+         <text value="Mean arterial pressure formula"/>
+         <type value="text"/>
+         <enableBehavior value="any"/>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at1054"/>
+         <text value="Systolic pressure formula"/>
+         <type value="text"/>
+         <enableBehavior value="any"/>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at1055"/>
+         <text value="Diastolic pressure formula"/>
+         <type value="text"/>
+         <enableBehavior value="any"/>
+      </item>
+      <item>
+         <linkId value="openEHR-EHR-OBSERVATION.blood_pressure.v2:at1010"/>
+         <text value="Diastolic endpoint"/>
+         <type value="choice"/>
+         <enableBehavior value="any"/>
+         <answerValueSet value="http://linkehr.com/fhir/ValueSet-blood-pressure-v2-diastolicendpoint-R4"/>
+      </item>
+   </item>
+   <code>
+      <system value="SNOMED-CT(2003)"/>
+      <code value="364090009"/>
+   </code>
+</Questionnaire>

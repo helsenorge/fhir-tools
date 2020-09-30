@@ -1,4 +1,4 @@
-name: .NET Core
+name: Build Release
 
 on:
   push:
@@ -26,9 +26,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
-    - name: Install dependencies
-      run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: |
+        dotnet build "src/fhir-tool-core/fhir-tool-core.csproj" --configuration Release
     - name: Test
-      run: dotnet test tests\fhir-tool-conversion-tests\fhir-tool-conversion-tests.csproj --no-restore --verbosity normal
+      run: dotnet test tests\fhir-tool-core-tests\fhir-tool-core-tests.csproj --no-restore --verbosity normal

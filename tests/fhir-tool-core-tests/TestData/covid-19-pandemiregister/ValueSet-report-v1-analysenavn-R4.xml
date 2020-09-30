@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValueSet xmlns="http://hl7.org/fhir">
+   <id value="ValueSet-report-v1-analysenavn-R4"/>
+   <meta>
+      <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+   </meta>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <p> Value set Analysenavn. Navnet på analyseresultatet.</p>
+         <p> Developed by: openEHR community</p>
+         <p> Generated with LinkEHR</p>
+         <p> This value set includes codes from terminology NPU</p>
+         <ul>
+            <li>NPU02593: B-Leukocytter</li>
+         </ul>
+      </div>
+   </text>
+   <url value="http://linkehr.com/fhir/ValueSet-report-v1-analysenavn-R4"/>
+   <version value="20200603"/>
+   <name value="Analysenavn"/>
+   <status value="active"/>
+   <experimental value="false"/>
+   <publisher value="openEHR"/>
+   <description value="Navnet på analyseresultatet."/>
+   <compose>
+      <include>
+         <system value="http://openehr.org/ckm/archetypes/openEHR-EHR-CLUSTER.laboratory_test_analyte.v1"/>
+         <concept>
+            <code value="NPU02593"/>
+            <display value="B-Leukocytter"/>
+         </concept>
+      </include>
+   </compose>
+</ValueSet>
