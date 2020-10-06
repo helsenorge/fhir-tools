@@ -1,1 +1,1 @@
-.\fhir-tool.exe generate --version 2 --format xml --questionnaire %1 --valueset %2
+.\fhir-tool.exe generate --excel-sheet-version 2 --format json --questionnaire %1 --valueset %2
