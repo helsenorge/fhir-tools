@@ -98,11 +98,11 @@ namespace FhirTool
                 }
             }
 
-            //if (!Debugger.IsAttached)
-            //{
+            if (Debugger.IsAttached)
+            {
                 Console.WriteLine("\nPress any key to exit. . .");
                 Console.ReadKey(true);
-            //}
+            }
         }
     }
 }
