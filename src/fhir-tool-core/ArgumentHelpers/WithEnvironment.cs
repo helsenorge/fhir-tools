@@ -1,5 +1,4 @@
-﻿using EnsureThat;
-using System;
+﻿using FhirTool.Core.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,9 +6,9 @@ namespace FhirTool.Core.ArgumentHelpers
 {
     public static class DefinedEnvironments
     {
-        public static IEnumerable<FhirEnvironment> Environments { get; set; }
+        public static IEnumerable<EnvironmentSettings> Environments { get; set; }
 
-        public static FhirEnvironment GetEnvironment(string env)
+        public static EnvironmentSettings GetEnvironment(string env)
         {
             return Environments.FirstOrDefault(it => it.Name == env);
         }
@@ -18,12 +17,6 @@ namespace FhirTool.Core.ArgumentHelpers
         {
             return GetEnvironment(env) != null;
         }
-    }
-    public class FhirEnvironment
-    {
-        public string Name { get; set; }
-        public string FhirBaseUrl { get; set; }
-        public string ProxyBaseUrl { get; set; }
     }
 
     public class WithEnvironment
@@ -37,7 +30,7 @@ namespace FhirTool.Core.ArgumentHelpers
         {
             Environment = environment;
 
-            FhirEnvironment e = DefinedEnvironments.GetEnvironment(environment);
+            var e = DefinedEnvironments.GetEnvironment(environment);
             if (e != null)
             {
                 FhirBaseUrl = e.FhirBaseUrl;

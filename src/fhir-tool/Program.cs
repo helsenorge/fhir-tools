@@ -1,9 +1,13 @@
 ﻿using CommandLine;
 using FhirTool.Core.ArgumentHelpers;
+using FhirTool.Core.Configuration;
 using FhirTool.Core.Operations;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FhirTool
@@ -46,13 +50,17 @@ namespace FhirTool
         // fhir-tool.exe generate-kith --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
         // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
 
-
-
         // fhir-tool.exe transfer-data --environment-source test --environment-destination qa --resourcetype Questionnaire --searchcount 1000
         static async Task Main(string[] args)
         {
-            // Hack until tool api is moved from fhir-tool-core to FhirTool
-            DefinedEnvironments.Environments = EnvironmentHelper.LoadEnvironments();
+            var configurationRoot = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", false)
+                .Build();
+
+            var environmentSettings = new List<EnvironmentSettings>();
+            configurationRoot.GetSection("EnvironmentSettings").Bind(environmentSettings);
+            DefinedEnvironments.Environments = environmentSettings;
 
             using (var loggerFactory = LoggerFactory.Create(builder => builder
                  .AddConsole(options => options.IncludeScopes = false)
