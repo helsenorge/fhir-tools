@@ -9,7 +9,6 @@ using System.Linq;
 using System.Xml.Xsl;
 using Task = System.Threading.Tasks.Task;
 using Tasks = System.Threading.Tasks;
-using System.Threading.Tasks;
 using FhirTool.Core.Utils;
 using System.Xml;
 
@@ -40,7 +39,6 @@ namespace FhirTool.Core.Operations
     {
         private readonly TransformOperationOptions _arguments;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly FhirConverterWrapper _converter;
         private readonly ILogger<TransformOperation> _logger;
 
         private readonly JustTransform _justTransformer;
