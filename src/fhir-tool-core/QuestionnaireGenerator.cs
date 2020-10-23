@@ -320,12 +320,7 @@ namespace FhirTool.Core
             if (item.MaxValueDate.HasValue)
                 itemComponent.SetExtension(Constants.MaxValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
             if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(Constants.MinValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
-
-            if (item.MaxValueDate.HasValue)
-                itemComponent.SetExtension(Constants.MaxValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
-            if (item.MinValueDate.HasValue)
-                itemComponent.SetExtension(Constants.MinValueUri, new FhirDateTime(new DateTimeOffset(item.MaxValueDate.Value.ToUniversalTime())));
+                itemComponent.SetExtension(Constants.MinValueUri, new FhirDateTime(new DateTimeOffset(item.MinValueDate.Value.ToUniversalTime())));
 
             if (item.MinLength.HasValue)
                 itemComponent.SetIntegerExtension(Constants.MinLenghtUri, item.MinLength.Value);
