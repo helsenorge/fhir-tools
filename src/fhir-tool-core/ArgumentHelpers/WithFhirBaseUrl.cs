@@ -1,8 +1,7 @@
 ﻿using EnsureThat;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
+using System.Net.Http.Headers;
 
 namespace FhirTool.Core.ArgumentHelpers
 {
@@ -29,7 +28,7 @@ namespace FhirTool.Core.ArgumentHelpers
             }
         }
 
-        public HttpResponseMessage ResolveUrl(Uri uri, string credentials)
+        public HttpResponseMessage ResolveUrl(Uri uri, string token)
         {
             EnsureArg.IsNotNull(uri, nameof(uri));
 
@@ -42,8 +41,8 @@ namespace FhirTool.Core.ArgumentHelpers
 
             using (HttpClient client = new HttpClient())
             {
-                if (!string.IsNullOrWhiteSpace(credentials))
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", credentials.ToBase64());
+                if (!string.IsNullOrWhiteSpace(token))
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 response = client.SendAsync(request).GetAwaiter().GetResult();
             }
             return response;

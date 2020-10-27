@@ -21,13 +21,15 @@ namespace FhirTool.Core.FhirWrappers
         public string Endpoint { get; private set; }
 
         private ILogger _logger;
+        private readonly string _accessToken;
 
-        internal FhirClientWrapper(string endpoint, ILogger logger, FhirVersion? fhirVersion = null)
+        internal FhirClientWrapper(string endpoint, ILogger logger, FhirVersion? fhirVersion = null, string accessToken = null)
         {
             Endpoint = endpoint;
             _logger = logger;
+            _accessToken = accessToken;
 
-            if(fhirVersion == FhirVersion.None)
+            if (fhirVersion == FhirVersion.None)
             {
                 R3Client = new R3Rest.FhirClient(endpoint);
                 var meta = R3Client.CapabilityStatement(R3Rest.SummaryType.Text);
@@ -57,6 +59,11 @@ namespace FhirTool.Core.FhirWrappers
         private void R3Client_OnBeforeRequest(object sender, R3Rest.BeforeRequestEventArgs e)
         {
             _logger.LogInformation($"{e.RawRequest.Method} {e.RawRequest.Address}");
+
+            if (!string.IsNullOrEmpty(_accessToken))
+            {
+                e.RawRequest.Headers.Add(HttpRequestHeader.Authorization, $"Bearer {_accessToken}");
+            }
         }
 
         private void R3Client_OnAfterRequest(object sender, R3Rest.AfterResponseEventArgs e)
@@ -67,6 +74,11 @@ namespace FhirTool.Core.FhirWrappers
         private void R4Client_OnBeforeRequest(object sender, R4Rest.BeforeRequestEventArgs e)
         {
             _logger.LogInformation($"{e.RawRequest.Method} {e.RawRequest.Address}");
+
+            if (!string.IsNullOrEmpty(_accessToken))
+            {
+                e.RawRequest.Headers.Add(HttpRequestHeader.Authorization, $"Bearer {_accessToken}");
+            }
         }
 
         private void R4Client_OnAfterRequest(object sender, R4Rest.AfterResponseEventArgs e)

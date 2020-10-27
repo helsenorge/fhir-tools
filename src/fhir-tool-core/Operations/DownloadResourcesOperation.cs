@@ -7,20 +7,21 @@ using FhirTool.Core.FhirWrappers;
 using CommandLine;
 using System.Collections.Generic;
 using FhirTool.Core.ArgumentHelpers;
+using IdentityModel.Client;
 
 namespace FhirTool.Core.Operations
 {
     [Verb("download", HelpText = "Downloads resources from fhir server")]
     public class DownloadResourcesOperationOptions
     {
-        [Option('u', "fhir-base-url", Group = "url", HelpText = "url to Fhir server")]
+        [Option('u', "fhir-base-url", Group = "url", Required = true, HelpText = "fhir server url")]
         public WithFhirBaseUrl FhirBaseUrl { get; set; } = new WithFhirBaseUrl();
 
-        [Option('e', "environment", Group = "url", HelpText = "environment")]
+        [Option('e', "environment", Group = "url", Required = true, HelpText = "fhir server from environment")]
         public WithEnvironment Environment { get; set; }
 
-        [Option('r', "resolve-url", HelpText = "resolve url")]
-        public bool ResolveUrl { get; set; }
+        [Option('a', "authorization-url", HelpText = "authorization url when using argument '-u' or '--fhir-base-url'")]
+        public string AuthorizationUrl { get; set; }
 
         [Option('c', "credentials", HelpText = "credentials")]
         public string Credentials { get; set; }
@@ -49,17 +50,27 @@ namespace FhirTool.Core.Operations
             _loggerFactory = loggerFactory;
             _arguments = arguments;
             _logger = loggerFactory.CreateLogger<DownloadResourcesOperation>();
-
-            arguments.FhirBaseUrl.Uri ??= arguments.Environment?.FhirBaseUrl;
-
-            Validate(arguments);
         }
 
         public override async Task<OperationResultEnum> Execute()
         {
-            var client = new FhirClientWrapper(_arguments.FhirBaseUrl.Uri, _logger, _arguments.FhirVersion);
+            Validate(_arguments);
+
+            TokenResponse tokenResponse = null;
+            if (!string.IsNullOrEmpty(_arguments.Credentials))
+            {
+                tokenResponse = await GetToken(_arguments.Environment?.AuthorizationUrl, _arguments.Credentials, _arguments.AuthorizationUrl);
+            }
+
+            var endpoint = _arguments.FhirBaseUrl?.Uri;
+            if (string.IsNullOrEmpty(endpoint))
+            {
+                endpoint = tokenResponse == null ? _arguments.Environment.FhirBaseUrl : _arguments.Environment.ProxyBaseUrl;
+            }
+
+            var client = new FhirClientWrapper(endpoint, _logger, _arguments.FhirVersion, tokenResponse?.AccessToken);
             
-            var baseDir = CreateBaseDirectory(new Uri(_arguments.FhirBaseUrl.Uri), client.FhirVersion);
+            var baseDir = CreateBaseDirectory(new Uri(endpoint), client.FhirVersion);
             _logger.LogInformation($"Created local storage at {MakeRelativeToCurrentDirectory(baseDir.FullName)}");
             await DownloadAndStore(client, baseDir);
 
@@ -88,20 +99,20 @@ namespace FhirTool.Core.Operations
         {
             var resourceTypeDir = Directory.CreateDirectory(SafeDirectoryName(Path.Combine(baseDir.FullName, resourceType)));
             var result = await client.SearchAsync(resourceType);
-            result = _arguments.KeepServerUrl && result != null ? UpdateBundleServerUrl(result) : result;
+            result = _arguments.KeepServerUrl && result != null ? UpdateBundleServerUrl(result, client.Endpoint) : result;
             await SerializeAndStore(result, resourceTypeDir);
 
             while(result != null)
             {
                 result = await client.ContinueAsync(result);
-                result = _arguments.KeepServerUrl && result != null ? UpdateBundleServerUrl(result) : result;
+                result = _arguments.KeepServerUrl && result != null ? UpdateBundleServerUrl(result, client.Endpoint) : result;
                 await SerializeAndStore(result, resourceTypeDir);
             }
         }
 
-        private BundleWrapper UpdateBundleServerUrl(BundleWrapper bundle)
+        private BundleWrapper UpdateBundleServerUrl(BundleWrapper bundle, string endpoint)
         {
-            return bundle.UpdateLinks(new Uri(_arguments.FhirBaseUrl.Uri));
+            return bundle.UpdateLinks(new Uri(endpoint));
         }
 
         private async Task SerializeAndStore(BundleWrapper result, DirectoryInfo baseDir)
@@ -156,7 +167,6 @@ namespace FhirTool.Core.Operations
         private void Validate(DownloadResourcesOperationOptions arguments)
         {
             arguments.Environment?.Validate(nameof(arguments.Environment));
-            arguments.FhirBaseUrl?.Validate(nameof(arguments.FhirBaseUrl), arguments.ResolveUrl, arguments.Credentials);
         }
     }
 }

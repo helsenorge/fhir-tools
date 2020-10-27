@@ -1,6 +1,4 @@
-﻿extern alias R3;
-
-using Hl7.Fhir.Utility;
+﻿using Hl7.Fhir.Utility;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using Tasks = System.Threading.Tasks;
@@ -8,6 +6,7 @@ using CommandLine;
 using FhirTool.Core.ArgumentHelpers;
 using FhirTool.Core.FhirWrappers;
 using System.IO;
+using IdentityModel.Client;
 
 namespace FhirTool.Core.Operations
 {
@@ -20,11 +19,11 @@ namespace FhirTool.Core.Operations
         [Option('e', "environment", Group = "url", Required = true, HelpText = "fhir server from environment")]
         public WithEnvironment Environment { get; set; }
 
+        [Option('a', "authorization-url", HelpText = "authorization url when using argument '-u' or '--fhir-base-url'")]
+        public string AuthorizationUrl { get; set; }
+
         [Option('c', "credentials", HelpText = "credentials")]
         public string Credentials { get; set; }
-
-        [Option('r', "resolve-url", HelpText = "try to resolve url")]
-        public bool ResolveUrl { get; set; }
 
         [Option('q', "questionnaire", Required = true, HelpText = "path to questionnaire")]
         public string QuestionnairePath { get; set; }
@@ -34,7 +33,7 @@ namespace FhirTool.Core.Operations
 
         [Option("fhir-version", Required = false, HelpText = "which fhir version to assume")]
         public FhirVersion FhirVersion { get; set; }
-    } 
+    }
 
     public class UploadResourceOperation : Operation
     {
@@ -48,14 +47,24 @@ namespace FhirTool.Core.Operations
             _loggerFactory = loggerFactory;
 
             _logger = loggerFactory.CreateLogger<UploadResourceOperation>();
-
-            arguments.FhirBaseUrl.Uri ??= arguments.Environment?.FhirBaseUrl;
-
-            Validate(arguments);
         }
 
         public override async Tasks.Task<OperationResultEnum> Execute()
         {
+            Validate(_arguments);
+
+            TokenResponse tokenResponse = null;
+            if (!string.IsNullOrEmpty(_arguments.Credentials))
+            {
+                tokenResponse = await GetToken(_arguments.Environment?.AuthorizationUrl, _arguments.Credentials, _arguments.AuthorizationUrl);
+            }
+
+            var endpoint = _arguments.FhirBaseUrl?.Uri;
+            if (string.IsNullOrEmpty(endpoint))
+            {
+                endpoint = tokenResponse == null ? _arguments.Environment.FhirBaseUrl : _arguments.Environment.ProxyBaseUrl;
+            }
+
             _logger.LogInformation($"Deserializing Fhir resource at '{_arguments.QuestionnairePath}'.");
             _logger.LogInformation($"Expecting format: '{_arguments.MimeType}'.");
 
@@ -73,14 +82,14 @@ namespace FhirTool.Core.Operations
                 return OperationResultEnum.Failed;
             }
 
-            _logger.LogInformation($"Uploading {resource.ResourceType} to endpoint: '{_arguments.FhirBaseUrl.Uri}'");
+            _logger.LogInformation($"Uploading {resource.ResourceType} to endpoint: '{endpoint}'");
             // Set a relative url before posting to the server
             SetQuestionnaireUrl(resource);
 
-            var client = new FhirClientWrapper(_arguments.FhirBaseUrl.Uri, _logger, _arguments.FhirVersion);
+            var client = new FhirClientWrapper(endpoint, _logger, _arguments.FhirVersion, tokenResponse?.AccessToken);
             resource = await UploadResource(resource, client);
 
-            _logger.LogInformation($"Successfully uploaded {resource.ResourceType.GetLiteral()} to endpoint: '{_arguments.FhirBaseUrl.Uri}'.");
+            _logger.LogInformation($"Successfully uploaded {resource.ResourceType.GetLiteral()} to endpoint: '{endpoint}'.");
             _logger.LogInformation($"Questionnaire was assigned the Id: '{resource.Id}'");
             _logger.LogInformation($"Questionnaire can be accessed at: '{client.Endpoint}{resource.ResourceType.GetLiteral()}/{resource.Id}'");
 
@@ -106,7 +115,6 @@ namespace FhirTool.Core.Operations
         private void Validate(UploadResourceOperationOptions arguments)
         {
             arguments.Environment?.Validate(nameof(arguments.Environment));
-            arguments.FhirBaseUrl?.Validate(nameof(arguments.FhirBaseUrl), arguments.ResolveUrl, arguments.Credentials);
         }
     }
 }
