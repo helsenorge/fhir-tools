@@ -5,11 +5,9 @@ using R3::Hl7.Fhir.Rest;
 using Hl7.Fhir.Utility;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Tasks = System.Threading.Tasks;
 using CommandLine;
-using System;
 using FhirTool.Core.ArgumentHelpers;
 
 namespace FhirTool.Core.Operations
@@ -25,9 +23,6 @@ namespace FhirTool.Core.Operations
 
         [Option('e', "environment", Group = "url", Required = true, HelpText = "fhir server from environment")]
         public WithEnvironment Environment { get; set; }
-
-        [Option('r', "resolve-url", HelpText = "resolve url")]
-        public bool ResolveUrl { get; set; }
 
         [Option('c', "credentials", HelpText = "credentials")]
         public string Credentials { get; set; }
@@ -100,7 +95,6 @@ namespace FhirTool.Core.Operations
         private void Validate(UploadDefinitionOperationOptions arguments)
         {
             arguments.Environment?.Validate(nameof(arguments.Environment));
-            arguments.FhirBaseUrl?.Validate(nameof(arguments.FhirBaseUrl), arguments.ResolveUrl, arguments.Credentials);
         }
     }
 }

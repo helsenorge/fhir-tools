@@ -25,6 +25,7 @@ namespace FhirTool.Core.ArgumentHelpers
 
         public string ProxyBaseUrl { get; set; }
         public string FhirBaseUrl { get; set; }
+        public string AuthorizationUrl { get; set; }
 
         public WithEnvironment(string environment)
         {
@@ -35,6 +36,7 @@ namespace FhirTool.Core.ArgumentHelpers
             {
                 FhirBaseUrl = e.FhirBaseUrl;
                 ProxyBaseUrl = e.ProxyBaseUrl;
+                AuthorizationUrl = e.AuthorizationUrl;
             }
         }
 

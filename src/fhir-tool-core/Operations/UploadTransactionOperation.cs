@@ -2,13 +2,12 @@
 using FhirTool.Core.ArgumentHelpers;
 using FhirTool.Core.Extensions;
 using FhirTool.Core.FhirWrappers;
-using Hl7.Fhir.Model;
+using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Tasks = System.Threading.Tasks;
 
 namespace FhirTool.Core.Operations
@@ -22,11 +21,11 @@ namespace FhirTool.Core.Operations
         [Option('e', "environment", Group = "url", Required = true, HelpText = "fhir server from environment")]
         public WithEnvironment Environment { get; set; }
 
+        [Option('a', "authorization-url", HelpText = "authorization url when using argument '-u' or '--fhir-base-url'")]
+        public string AuthorizationUrl { get; set; }
+
         [Option('c', "credentials", HelpText = "credentials")]
         public string Credentials { get; set; }
-
-        [Option('r', "resolve-url", HelpText = "try to resolve url")]
-        public bool ResolveUrl { get; set; }
 
         [Option('f', "format", MetaValue = "xml/json", HelpText = "json or xml")]
         public FhirMimeType? MimeType { get; set; }
@@ -56,16 +55,27 @@ namespace FhirTool.Core.Operations
             _loggerFactory = loggerFactory;
 
             _logger = loggerFactory.CreateLogger<UploadTransactionOperation>();
-
-            arguments.FhirBaseUrl.Uri ??= arguments.Environment?.FhirBaseUrl;
-
-            Validate(arguments);
         }
 
 
         public override async Tasks.Task<OperationResultEnum> Execute()
         {
-            var client = new FhirClientWrapper(_arguments.FhirBaseUrl.Uri, _logger, _arguments.FhirVersion);
+            Validate(_arguments);
+
+            TokenResponse tokenResponse = null;
+            if (!string.IsNullOrEmpty(_arguments.Credentials))
+            {
+                tokenResponse = await GetToken(_arguments.Environment?.AuthorizationUrl, _arguments.Credentials, _arguments.AuthorizationUrl);
+            }
+
+            var endpoint = _arguments.FhirBaseUrl?.Uri;
+            if (string.IsNullOrEmpty(endpoint))
+            {
+                endpoint = tokenResponse == null ? _arguments.Environment.FhirBaseUrl : _arguments.Environment.ProxyBaseUrl;
+            }
+
+            var client = new FhirClientWrapper(endpoint, _logger, _arguments.FhirVersion, tokenResponse?.AccessToken);
+
             var batches = FindFiles().Batch(_arguments.BatchSize);
             foreach (var batch in batches)
             {
@@ -159,7 +169,6 @@ namespace FhirTool.Core.Operations
 
         private void Validate(UploadTransactionOperationOptions arguments)
         {
-            arguments.FhirBaseUrl?.Validate(nameof(arguments.FhirBaseUrl), arguments.ResolveUrl, arguments.Credentials);
             arguments.Environment?.Validate(nameof(arguments.Environment));
 
             foreach (var item in arguments.SourceFiles)

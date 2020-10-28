@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace FhirTool
@@ -102,7 +101,6 @@ namespace FhirTool
                 catch (Exception e)
                 {
                     logger.LogError(e.Message);
-                    throw;
                 }
             }
 
