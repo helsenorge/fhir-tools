@@ -4,6 +4,7 @@
     {
         public string Question { get; set; }
         public bool? HasAnswer { get; set; }
+        public string Operator { get; set; }
         public bool? AnswerBoolean { get; set; }
         public decimal? AnswerDecimal { get; set; }
         public int? AnswerInteger { get; set; }
@@ -26,6 +27,7 @@
                 if (!string.IsNullOrWhiteSpace(AnswerDate)) return AnswerDate;
                 if (!string.IsNullOrWhiteSpace(AnswerDateTime)) return AnswerDateTime;
                 if (!string.IsNullOrWhiteSpace(AnswerTime)) return AnswerTime;
+                if (!string.IsNullOrWhiteSpace(AnswerString)) return AnswerString;
                 if (!string.IsNullOrWhiteSpace(AnswerUri)) return AnswerUri;
                 if (AnswerReference == null) return AnswerReference;
                 if (AnswerCoding == null) return AnswerCoding;

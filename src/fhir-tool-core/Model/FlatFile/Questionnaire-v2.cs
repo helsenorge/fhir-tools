@@ -186,5 +186,7 @@ namespace FhirTool.Core.Model.FlatFile
         public string FhirPathMaxValue;
         [FieldOptional]
         public string FhirPathMinValue;
+        [FieldOptional]
+        public string EnableBehavior;
     }
 }

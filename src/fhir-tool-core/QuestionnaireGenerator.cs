@@ -431,6 +431,11 @@ namespace FhirTool.Core
                 itemComponent.SetStringExtension(Constants.SdfMinValueUri, item.FhirPathMinValue);
             }
 
+            if (!string.IsNullOrWhiteSpace(item.EnableBehavior))
+            {
+                itemComponent.EnableBehavior = EnumUtility.ParseLiteral<Questionnaire.EnableWhenBehavior>(item.EnableBehavior);
+            }
+
             return itemComponent;
         }
 
@@ -719,17 +724,20 @@ namespace FhirTool.Core
                 Questionnaire.EnableWhenComponent enableWhenComponent = new Questionnaire.EnableWhenComponent
                 {
                     Question = enableWhen.Question,
-                    // TODO: Defaults to Equal for the first iteration of "migrate to R4"
+                    // NOTE: For backwards compatibility we default to equal
                     Operator = Questionnaire.QuestionnaireItemOperator.Equal,
                 };
                 if (enableWhen.HasAnswer.HasValue)
                 {
+                    // NOTE: For backwards compatibility we still support HasAnswer and migrate it to QuestionnaireItemOperator.Exists
                     if (enableWhen.Answer == null)
                     {
                         enableWhenComponent.Operator = Questionnaire.QuestionnaireItemOperator.Exists;
                         enableWhenComponent.Answer = new FhirBoolean(enableWhen.HasAnswer);
                     }
                 }
+                if (!string.IsNullOrWhiteSpace(enableWhen.Operator))
+                    enableWhenComponent.Operator = GetEnableWhenOperator(enableWhen.Operator);
                 if (enableWhen.AnswerBoolean.HasValue)
                     enableWhenComponent.Answer = new FhirBoolean(enableWhen.AnswerBoolean);
                 if (enableWhen.AnswerDecimal.HasValue)
@@ -766,6 +774,21 @@ namespace FhirTool.Core
 
                 yield return enableWhenComponent;
             }
+        }
+
+        private static Questionnaire.QuestionnaireItemOperator? GetEnableWhenOperator(string op)
+        {
+            return op.ToLowerInvariant() switch
+            {
+                "exists" => Questionnaire.QuestionnaireItemOperator.Exists,
+                "=" => Questionnaire.QuestionnaireItemOperator.Equal,
+                "!=" => Questionnaire.QuestionnaireItemOperator.NotEqual,
+                ">" => Questionnaire.QuestionnaireItemOperator.GreaterThan,
+                "<" => Questionnaire.QuestionnaireItemOperator.LessThan,
+                ">=" => Questionnaire.QuestionnaireItemOperator.GreaterOrEqual,
+                "<=" => Questionnaire.QuestionnaireItemOperator.LessOrEqual,
+                _ => null,
+            };
         }
 
         private static List<Element> ParseArrayOfElement(string value)
