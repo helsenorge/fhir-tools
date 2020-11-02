@@ -87,6 +87,8 @@ namespace FhirTool.Core.Model.FlatFile
         public string Reservered8;
         [FieldOptional]
         public string Reservered9;
+        [FieldOptional]
+        public string Reservered10;
     }
 
     [DelimitedRecord("\t")]
