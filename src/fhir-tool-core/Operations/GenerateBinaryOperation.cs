@@ -11,10 +11,10 @@ using System.Linq;
 
 namespace FhirTool.Core.Operations
 {
-    [Verb("generate-binary", HelpText = "Generates file")]
+    [Verb("generate-binary", HelpText = "Generates binary file")]
     public class GenerateBinaryOperationOptions
     {       
-        [Option('i', "id", HelpText = "File id", Required = true)]
+        [Option('i', "id", HelpText = "Binary id", Required = true)]
         public string Id { get; set; }
 
         [Option('c', "contentType", HelpText = "Content type", Required = true)]
