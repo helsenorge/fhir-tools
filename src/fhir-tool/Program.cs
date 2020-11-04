@@ -100,7 +100,7 @@ namespace FhirTool
                           (ValidateMongoDumpOperationOptions opts) => new ValidateMongoDumpOperation(opts, loggerFactory).Execute(),
                           (TransformOperationOptions opts) => new TransformOperation(opts, loggerFactory).Execute(),
                           (GenerateBinaryOperationOptions opts) => new GenerateBinaryOperation(opts, loggerFactory).Execute(),
-                          (GenerateDocumentReferenceOptions opts) => new GenerateDocumentReferenceOption(opts, loggerFactory).Execute(),
+                          (GenerateDocumentReferenceOptions opts) => new GenerateDocumentReferenceOperation(opts, loggerFactory).Execute(),
                           errs => Task.FromResult(OperationResultEnum.Failed));
                 }
                 catch (SemanticArgumentException e)

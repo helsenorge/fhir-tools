@@ -16,32 +16,27 @@ namespace FhirTool.Core.Operations
         [Option('i', "id", HelpText = "Documentreference id", Required = true)]
         public string Id { get; set; }
 
-        [Option('c', "contentType", HelpText = "contentType for attachment", Required = true)]
+        [Option('c', "content-type", HelpText = "Content-Type for attachment", Required = true)]
         public string ContentType { get; set; }
 
-        [Option('p', HelpText = "Save documentreference to path", Required = true)]
-        public string SaveToPath { get; set; }
+        [Option('o', "out", HelpText = "Save documentreference to path", Required = true)]
+        public string OutPath { get; set; }
 
-        [Option('m', "format", MetaValue = "xml/json", HelpText = "json or xml")]
+        [Option('f', "format", MetaValue = "xml/json", HelpText = "json or xml")]
         public FhirMimeType MimeType { get; set; }
-
-        [Option("fhir-version", MetaValue = "fhirVersion", HelpText = "fhir version")]
-        public FhirVersion FhirVersion { get; set; }
-
-
     }
-    public class GenerateDocumentReferenceOption : Operation
+    public class GenerateDocumentReferenceOperation : Operation
     {
         private readonly GenerateDocumentReferenceOptions _arguments;
-        private readonly ILogger<GenerateDocumentReferenceOption> _logger;
+        private readonly ILogger<GenerateDocumentReferenceOperation> _logger;
         private readonly ILoggerFactory _loggerFactory;
 
         private readonly DocumentReferenceGenerator _documentReferenceGenerator;
 
-        public GenerateDocumentReferenceOption(GenerateDocumentReferenceOptions arguments, ILoggerFactory loggerFactory)
+        public GenerateDocumentReferenceOperation(GenerateDocumentReferenceOptions arguments, ILoggerFactory loggerFactory)
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentOutOfRangeException(nameof(loggerFactory));
-            _logger = _loggerFactory.CreateLogger<GenerateDocumentReferenceOption>();
+            _logger = _loggerFactory.CreateLogger<GenerateDocumentReferenceOperation>();
             _arguments = arguments;
 
             _documentReferenceGenerator = new DocumentReferenceGenerator(loggerFactory);
@@ -51,7 +46,7 @@ namespace FhirTool.Core.Operations
             DocumentReference documentReference = _documentReferenceGenerator.GenerateDocumentReference(_arguments);
 
             var resource = new ResourceWrapper(documentReference);
-            var serializer = new SerializationWrapper(_arguments.FhirVersion);
+            var serializer = new SerializationWrapper(FhirVersion.R4);
 
             var serialized = serializer.Serialize(resource, _arguments.MimeType);
 
@@ -66,9 +61,9 @@ namespace FhirTool.Core.Operations
                 return OperationResultEnum.Failed;
             }
 
-            await File.WriteAllTextAsync(@$"{_arguments.SaveToPath}\documentreference-{_arguments.Id}.json", serialized);
+            await File.WriteAllTextAsync(@$"{_arguments.OutPath}\documentreference-{_arguments.Id}.json", serialized);
 
-            _logger.LogInformation($"Successfully generated 'documentreference-{_arguments.Id}.json' to location: '{_arguments.SaveToPath}'.");
+            _logger.LogInformation($"Successfully generated 'documentreference-{_arguments.Id}.json' to location: '{_arguments.OutPath}'.");
 
             return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
                ? OperationResultEnum.Failed

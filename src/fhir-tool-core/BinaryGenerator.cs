@@ -17,9 +17,9 @@ namespace FhirTool.Core.Operations
 
         public Binary GenerateBinary(GenerateBinaryOperationOptions arguments)
         {            
-            _logger.LogInformation($"Loading file: '{arguments.File}'.");
+            _logger.LogInformation($"Loading file: '{arguments.Path}'.");
 
-            var bytes = File.ReadAllBytes(arguments.File.Path);
+            var bytes = File.ReadAllBytes(arguments.Path.Path);
             
             return new Binary
             {

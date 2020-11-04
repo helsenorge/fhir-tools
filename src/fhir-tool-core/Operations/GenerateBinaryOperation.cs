@@ -17,23 +17,20 @@ namespace FhirTool.Core.Operations
         [Option('i', "id", HelpText = "Binary id", Required = true)]
         public string Id { get; set; }
 
-        [Option('c', "contentType", HelpText = "Content type", Required = true)]
+        [Option('c', "content-type", HelpText = "Content-Type", Required = true)]
         public string ContentType { get; set; }
 
         [Option('s', "securityContext", HelpText = "Security context", Required = true)]
         public string SecurityContext { get; set; }
 
-        [Option('f', "file", HelpText = "file", Required = true)]
-        public WithFile File { get; set; }
+        [Option('p', "path", HelpText = "path to file", Required = true)]
+        public WithFile Path { get; set; }       
 
-        [Option("fhir-version", MetaValue = "fhirVersion", HelpText = "fhir version")]
-        public FhirVersion FhirVersion { get; set; }
-
-        [Option('m', "format", MetaValue = "xml/json", HelpText = "json or xml")]
+        [Option('f', "format", MetaValue = "xml/json", HelpText = "json or xml")]
         public FhirMimeType MimeType { get; set; }
 
-        [Option('p', HelpText = "Save binary to path", Required = true)]
-        public string SaveToPath { get; set; }
+        [Option('o', "out", HelpText = "Save binary to path", Required = true)]
+        public string OutPath { get; set; }
     }
     public class GenerateBinaryOperation : Operation
     {
@@ -57,7 +54,7 @@ namespace FhirTool.Core.Operations
 
             var resource = new ResourceWrapper(binary);
 
-            var serializer = new SerializationWrapper(_arguments.FhirVersion);
+            var serializer = new SerializationWrapper(FhirVersion.R4);
 
             var serialized = serializer.Serialize(resource, _arguments.MimeType);
 
@@ -65,16 +62,16 @@ namespace FhirTool.Core.Operations
             {
                 _issues.Add(new Issue
                 {
-                    Details = $"Failed to serialize binary from file\nLocation: '{_arguments.File}'.",
+                    Details = $"Failed to serialize binary from file\nLocation: '{_arguments.Path}'.",
                     Severity = IssueSeverityEnum.Error
                 });
 
                 return OperationResultEnum.Failed;
             }
 
-            await File.WriteAllTextAsync(@$"{_arguments.SaveToPath}\binary-{_arguments.Id}.json", serialized);
+            await File.WriteAllTextAsync(@$"{_arguments.OutPath}\binary-{_arguments.Id}.json", serialized);
 
-            _logger.LogInformation($"Successfully generated 'binary-{_arguments.Id}.json' to location: '{_arguments.SaveToPath}'.");
+            _logger.LogInformation($"Successfully generated 'binary-{_arguments.Id}.json' to location: '{_arguments.OutPath}'.");
 
             return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
                 ? OperationResultEnum.Failed
@@ -83,7 +80,7 @@ namespace FhirTool.Core.Operations
 
         private void Validate(GenerateBinaryOperationOptions arguments)
         {
-            arguments.File.Validate(nameof(arguments.File));
+            arguments.Path.Validate(nameof(arguments.Path));
         }
     }
 }
