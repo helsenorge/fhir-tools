@@ -20,10 +20,10 @@ namespace FhirTool.Core.Operations
         [Option('c', "content-type", HelpText = "Content-Type", Required = true)]
         public string ContentType { get; set; }
 
-        [Option('s', "securityContext", HelpText = "Security context", Required = true)]
+        [Option('s', "security-context", HelpText = "Security-Context", Required = true)]
         public string SecurityContext { get; set; }
 
-        [Option('p', "path", HelpText = "path to file", Required = true)]
+        [Option('p', "path", HelpText = "Path to file", Required = true)]
         public WithFile Path { get; set; }       
 
         [Option('f', "format", MetaValue = "xml/json", HelpText = "json or xml")]
