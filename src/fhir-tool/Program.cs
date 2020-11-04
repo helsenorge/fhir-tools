@@ -50,6 +50,10 @@ namespace FhirTool
         // fhir-tool.exe sendasync --questionnaire Questionnaire-Helfo_E121_NB-no.xml --fhir-base-url https://skjemakatalog-dev-fhir-api.azurewebsites.net/ --resolve-url
 
         // fhir-tool.exe transfer-data --environment-source test --environment-destination qa --resourcetype Questionnaire --searchcount 1000
+
+        //fhir-tool.exe generate-binary --i testid6 --c application/pdf --s  DocumentReference/testid6 --f F:\test.pdf --m 2 --fhir-version 4  --p F:\testjson
+
+        //generate-documentreference --i jalla --c application/pdf --p F:\testjson --m 2 --fhir-version 4
         static async Task Main(string[] args)
         {
             var configurationRoot = new ConfigurationBuilder()
@@ -80,7 +84,9 @@ namespace FhirTool
                                       ConvertOperationOptions,
                                       UploadTransactionOperationOptions,
                                       ValidateMongoDumpOperationOptions,
-                                      TransformOperationOptions>(args)
+                                      TransformOperationOptions,
+                                      GenerateBinaryOperationOptions,
+                                      GenerateDocumentReferenceOptions>(args)
                       .MapResult(
                           (DownloadResourcesOperationOptions opts) => new DownloadResourcesOperation(opts, loggerFactory).Execute(),
                           (GenerateQuestionnaireOperationOptions opts) => new GenerateQuestionnaireOperation(opts, loggerFactory).Execute(),
@@ -92,6 +98,8 @@ namespace FhirTool
                           (UploadTransactionOperationOptions opts) => new UploadTransactionOperation(opts, loggerFactory).Execute(),
                           (ValidateMongoDumpOperationOptions opts) => new ValidateMongoDumpOperation(opts, loggerFactory).Execute(),
                           (TransformOperationOptions opts) => new TransformOperation(opts, loggerFactory).Execute(),
+                          (GenerateBinaryOperationOptions opts) => new GenerateBinaryOperation(opts, loggerFactory).Execute(),
+                          (GenerateDocumentReferenceOptions opts) => new GenerateDocumentReferenceOperation(opts, loggerFactory).Execute(),
                           errs => Task.FromResult(OperationResultEnum.Failed));
                 }
                 catch (SemanticArgumentException e)
