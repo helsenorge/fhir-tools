@@ -433,7 +433,7 @@ namespace FhirTool.Core
 
             if (!string.IsNullOrWhiteSpace(item.EnableBehavior))
             {
-                itemComponent.EnableBehavior = EnumUtility.ParseLiteral<Questionnaire.EnableWhenBehavior>(item.EnableBehavior);
+                itemComponent.EnableBehavior = EnumUtility.ParseLiteral<Questionnaire.EnableWhenBehavior>(item.EnableBehavior.ToLowerInvariant());
             }
 
             return itemComponent;
