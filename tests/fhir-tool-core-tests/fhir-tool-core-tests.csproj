@@ -29,6 +29,48 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\account.profile-r3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\account.profile-r4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\activitydefinition.profile-r3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\activitydefinition.profile-r4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\adverseevent.profile-r3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\adverseevent.profile-r4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\allergyintolerance.profile-r3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\allergyintolerance.profile-r4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\appointment.profile-r3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\appointment.profile-r4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\appointmentresponse.profile-r3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\appointmentresponse.profile-r4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\consent.profile-r3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\consent.profile-r4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\covid-19-pandemiregister\questionnaire-Rapport-R4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -116,34 +158,34 @@
     <None Update="TestData\covid-19-pandemiregister\ValueSet-report-v1-_testname_en_-R4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Generelt blodtrykk\questionnaire-Blodtrykk-R4.xml">
+    <None Update="TestData\Generelt blodtrykk\questionnaire-Blodtrykk-r4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\questionnaire-305-R3.json">
+    <None Update="TestData\questionnaire-305-r3.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\questionnaire-305-R4.json">
+    <None Update="TestData\questionnaire-305-r4.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\questionnaire-Bloodpressure-R4.xml">
+    <None Update="TestData\questionnaire-Bloodpressure-r4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\questionnaire-example-R3.json">
+    <None Update="TestData\questionnaire-example-r3.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\questionnaire-example-R4.json">
+    <None Update="TestData\questionnaire-example-r4.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ValueSet-blood-pressure-v2-cuffsize-R4.xml">
+    <None Update="TestData\valueSet-blood-pressure-v2-cuffsize-r4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ValueSet-blood-pressure-v2-diastolicendpoint-R4.xml">
+    <None Update="TestData\valueSet-blood-pressure-v2-diastolicendpoint-r4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ValueSet-blood-pressure-v2-locationofmeasurement-R4.xml">
+    <None Update="TestData\valueSet-blood-pressure-v2-locationofmeasurement-r4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ValueSet-blood-pressure-v2-method-R4.xml">
+    <None Update="TestData\valueSet-blood-pressure-v2-method-r4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

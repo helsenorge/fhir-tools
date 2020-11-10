@@ -41,7 +41,7 @@ namespace FhirTool.Conversion
             {
                 Converter = new FhirR4ToR3ConversionRoutines();
             }
-            else if(ToVersion == FhirVersion.R4 && FromVersion == FhirVersion.R3)
+            else if (ToVersion == FhirVersion.R4 && FromVersion == FhirVersion.R3)
             {
                 Converter = new FhirR3ToR4ConversionRoutines();
             }
@@ -55,9 +55,9 @@ namespace FhirTool.Conversion
             var version = modelInfoType
                 .GetProperty("Version", BindingFlags.Static | BindingFlags.Public)
                 .GetValue(null) as string;
-            
+
             FhirVersion? fhirVersion = default;
-            if(SemanticVersion.TryParse(version, out SemanticVersion semanticVersion))
+            if (SemanticVersion.TryParse(version, out SemanticVersion semanticVersion))
             {
                 fhirVersion = EnumUtility.ParseLiteral<FhirVersion>($"{semanticVersion.Major}.{semanticVersion.Minor}");
             }
@@ -102,7 +102,7 @@ namespace FhirTool.Conversion
             }
         }
 
-        internal TTo ConvertElement<TTo,TFrom>(TFrom fromObject)
+        internal TTo ConvertElement<TTo, TFrom>(TFrom fromObject)
             where TFrom : Base
             where TTo : Base
         {
@@ -157,19 +157,21 @@ namespace FhirTool.Conversion
             return targetObject;
         }
 
+        private Stack<HashSet<string>> HandledProperties { get; } = new Stack<HashSet<string>>();
+
         private ISet<string> ConvertTypesWithChanges(Base targetObject, Base sourceObject)
         {
-            var handledProperties = new HashSet<string>();
+            HandledProperties.Push(new HashSet<string>());
             PropertyChangedEventHandler propertyListener = delegate (object o, PropertyChangedEventArgs e)
             {
-                handledProperties.Add(e.PropertyName);
+                HandledProperties.Peek().Add(e.PropertyName);
             };
 
             targetObject.PropertyChanged += propertyListener;
             Converter.Convert(targetObject, sourceObject, this);
             targetObject.PropertyChanged -= propertyListener;
 
-            return handledProperties;
+            return HandledProperties.Pop();
         }
 
         private object ConvertGenericProperty(PropertyInfo targetProperty, PropertyInfo sourceProperty, Base targetObject, Base sourceObject, object sourceValue)

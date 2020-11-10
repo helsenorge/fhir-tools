@@ -7,6 +7,7 @@ using Hl7.Fhir.Utility;
 
 using TargetModel = R3::Hl7.Fhir.Model;
 using SourceModel = R4::Hl7.Fhir.Model;
+using System.Collections.Generic;
 
 namespace FhirTool.Conversion.Converters
 {
@@ -33,6 +34,34 @@ namespace FhirTool.Conversion.Converters
             Map.Add<TargetModel.ParameterDefinition, SourceModel.ParameterDefinition>(ConvertParameterDefinition);
             Map.Add<TargetModel.Dosage, SourceModel.Dosage>(ConvertDosage);
             Map.Add<TargetModel.Endpoint, SourceModel.Endpoint>(ConvertEndpoint);
+            Map.Add<TargetModel.StructureDefinition, SourceModel.StructureDefinition>(ConvertStructureDefinition);
+            Map.Add<TargetModel.ElementDefinition, SourceModel.ElementDefinition>(ConvertElementDefinition);
+        }
+
+        private static void ConvertElementDefinition(TargetModel.ElementDefinition to, SourceModel.ElementDefinition from, FhirConverter converter)
+        {
+            to.DefinitionElement = converter.ConvertElement<TargetModel.Markdown, SourceModel.Markdown>(from.Definition);
+            to.CommentElement = converter.ConvertElement<TargetModel.Markdown, SourceModel.Markdown>(from.Comment);
+            to.RequirementsElement = converter.ConvertElement<TargetModel.Markdown, SourceModel.Markdown>(from.Requirements);
+            to.MeaningWhenMissingElement = converter.ConvertElement<TargetModel.Markdown, SourceModel.Markdown>(from.MeaningWhenMissing);
+        }
+
+        private void ConvertStructureDefinition(TargetModel.StructureDefinition to, SourceModel.StructureDefinition from, FhirConverter converter)
+        {
+            to.FhirVersionElement = new TargetModel.Id("3.0.2")
+            {
+                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.FhirVersionElement?.Extension).ToList()
+            };
+
+            var contextTypeElement = from.Context?.FirstOrDefault()?.TypeElement;
+            to.ContextTypeElement = converter.ConvertElement<TargetModel.Code<TargetModel.StructureDefinition.ExtensionContext>, SourceModel.Code<SourceModel.StructureDefinition.ExtensionContextType>>(contextTypeElement);
+            to.ContextElement = from.Context.Select(context => 
+                converter.ConvertElement<TargetModel.FhirString, SourceModel.FhirString>(context.ExpressionElement)
+            ).ToList();
+
+            to.TypeElement = ConvertFhirUriToCode(from.TypeElement, converter);
+
+            to.BaseDefinitionElement = ConvertCanonicalToFhirUri(from.BaseDefinitionElement, converter);
         }
 
         private static void ConvertQuestionnaireResponse(TargetModel.QuestionnaireResponse to, SourceModel.QuestionnaireResponse from, FhirConverter converter)
@@ -181,6 +210,17 @@ namespace FhirTool.Conversion.Converters
             if (from == null) return default;
 
             return new TargetModel.FhirUri
+            {
+                Value = from.Value,
+                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
+            };
+        }
+
+        private static TargetModel.Code ConvertFhirUriToCode(SourceModel.FhirUri from, FhirConverter converter)
+        {
+            if (from == null) return default;
+
+            return new TargetModel.Code
             {
                 Value = from.Value,
                 Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()

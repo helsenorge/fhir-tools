@@ -33,6 +33,16 @@ namespace FhirTool.Conversion.Converters.Support.TypeMaps
                 {typeof(R4Model.Bundle.RequestComponent), typeof(R3Model.Bundle.RequestComponent)},
                 {typeof(R4Model.Bundle.ResponseComponent), typeof(R3Model.Bundle.ResponseComponent)},
                 {typeof(R4Model.Bundle.SearchComponent), typeof(R3Model.Bundle.SearchComponent)},
+                {typeof(R4Model.StructureDefinition.DifferentialComponent), typeof(R3Model.StructureDefinition.DifferentialComponent)},
+                {typeof(R4Model.StructureDefinition.SnapshotComponent), typeof(R3Model.StructureDefinition.SnapshotComponent)},
+                {typeof(R4Model.StructureDefinition.MappingComponent), typeof(R3Model.StructureDefinition.MappingComponent)},
+                {typeof(R4Model.ElementDefinition.BaseComponent), typeof(R3Model.ElementDefinition.BaseComponent)},
+                {typeof(R4Model.ElementDefinition.SlicingComponent), typeof(R3Model.ElementDefinition.SlicingComponent)},
+                {typeof(R4Model.ElementDefinition.TypeRefComponent), typeof(R3Model.ElementDefinition.TypeRefComponent)},
+                {typeof(R4Model.ElementDefinition.ExampleComponent), typeof(R3Model.ElementDefinition.ExampleComponent)},
+                {typeof(R4Model.ElementDefinition.ConstraintComponent), typeof(R3Model.ElementDefinition.ConstraintComponent)},
+                {typeof(R4Model.ElementDefinition.ElementDefinitionBindingComponent), typeof(R3Model.ElementDefinition.ElementDefinitionBindingComponent)},
+                {typeof(R4Model.ElementDefinition.MappingComponent), typeof(R3Model.ElementDefinition.MappingComponent)},
             };
     }
 }
