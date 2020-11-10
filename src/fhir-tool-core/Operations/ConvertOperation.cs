@@ -28,6 +28,9 @@ namespace FhirTool.Core.Operations
 
         [Value(0, Required = true, MetaName = "files", MetaValue = "file or dir", HelpText = "files or directories of fhir files")]
         public IEnumerable<WithFileOrDirectory> SourcePath { get; set; }
+        
+        [Option('f', "format", MetaValue = "xml/json", HelpText = "Json or Xml", Default = FhirMimeType.Json)]
+        public FhirMimeType MimeType { get; set; }
 
         public bool OutputIsDirectory { get; set; } = false;
     }
@@ -105,7 +108,7 @@ namespace FhirTool.Core.Operations
             _logger.LogInformation($"  Converting '{file}' --> {newFile}");
 
             var content = await File.ReadAllTextAsync(file);
-            var newContent = _converter.Convert(content);
+            var newContent = _converter.Convert(content, _arguments.MimeType);
 
             await File.WriteAllTextAsync(newFile, newContent);
         }

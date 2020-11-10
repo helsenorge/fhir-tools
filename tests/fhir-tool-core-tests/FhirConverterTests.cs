@@ -8,47 +8,66 @@ using R4Model = R4::Hl7.Fhir.Model;
 using Xunit;
 using R3Serialization = R3::Hl7.Fhir.Serialization;
 using R4Serialization = R4::Hl7.Fhir.Serialization;
+using FhirTool.Core.FhirWrappers;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace FhirTool.Conversion.Tests
 {
     public class FhirConverterTests : FhirTestsBase
     {
         [Theory]
-        [InlineData(@"TestData\questionnaire-example-R3.json")]
-        [InlineData(@"TestData\questionnaire-305-R3.json")]
-        public void CanConvert_Questionnaire_FromR3ToR4_RoundTrip(string path)
+        [InlineData(@"TestData\questionnaire-example-r3.json")]
+        [InlineData(@"TestData\questionnaire-305-r3.json")]
+        [InlineData(@"TestData\account.profile-r3.json")]
+        [InlineData(@"TestData\activitydefinition.profile-r3.json")]
+        [InlineData(@"TestData\adverseevent.profile-r3.json")]
+        [InlineData(@"TestData\allergyintolerance.profile-r3.json")]
+        [InlineData(@"TestData\appointment.profile-r3.json")]
+        [InlineData(@"TestData\appointmentresponse.profile-r3.json")]
+        [InlineData(@"TestData\consent.profile-r3.json")]
+        public async Task CanConvert_Resource_FromR3ToR4_RoundTrip(string path)
         {
             var converterFromR3ToR4 = new FhirConverter(to: FhirVersion.R4, from: FhirVersion.R3);
             var converterFromR4ToR3 = new FhirConverter(to: FhirVersion.R3, from: FhirVersion.R4);
-            var r3Serializer = new R3Serialization.FhirJsonSerializer();
+            
+            var r3Serializer = new SerializationWrapper(FhirVersion.R3);
+            var r3Resource = r3Serializer.Parse(await File.ReadAllTextAsync(path));
 
-            var r3Questionnaire = ReadR3Resource(path) as R3Model.Questionnaire;
-            var r4Questionnaire = converterFromR3ToR4.Convert<R4Model.Questionnaire, R3Model.Questionnaire>(r3Questionnaire);
-            var r3QuestionnaireRoundTrip = converterFromR4ToR3.Convert<R3Model.Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
+            var r4Resource = converterFromR3ToR4.Convert<R4Model.Resource, R3Model.Resource>(r3Resource.R3Resource);
+            var r3ResourceRoundTrip = converterFromR4ToR3.Convert<R3Model.Resource, R4Model.Resource>(r4Resource);
 
-            var r3QuestionnaireContent = r3Serializer.SerializeToString(r3Questionnaire);
-            var r3QuestionnaireRoundTripContent = r3Serializer.SerializeToString(r3QuestionnaireRoundTrip);
+            var r3ResourceContent = r3Serializer.Serialize(r3Resource, FhirMimeType.Json);
+            var r3ResourceRoundTripContent = r3Serializer.Serialize(r3ResourceRoundTrip, FhirMimeType.Json);
 
-            Assert.Equal(r3QuestionnaireContent, r3QuestionnaireRoundTripContent);
+            Assert.Equal(r3ResourceContent, r3ResourceRoundTripContent);
         }
 
         [Theory]
-        [InlineData(@"TestData\questionnaire-example-R4.json")]
-        [InlineData(@"TestData\questionnaire-305-R4.json")]
-        public void CanConvert_Questionnaire_FromR4ToR3_RoundTrip(string path)
+        [InlineData(@"TestData\questionnaire-example-r4.json")]
+        [InlineData(@"TestData\questionnaire-305-r4.json")]
+        //[InlineData(@"TestData\account.profile-r4.json")]
+        //[InlineData(@"TestData\activitydefinition.profile-r4.json")]
+        //[InlineData(@"TestData\adverseevent.profile-r4.json")]
+        //[InlineData(@"TestData\allergyintolerance.profile-r4.json")]
+        //[InlineData(@"TestData\appointment.profile-r4.json")]
+        //[InlineData(@"TestData\appointmentresponse.profile-r4.json")]
+        //[InlineData(@"TestData\consent.profile-r4.json")]
+        public async Task CanConvert_Questionnaire_FromR4ToR3_RoundTrip(string path)
         {
             var converterFromR4ToR3 = new FhirConverter(to: FhirVersion.R3, from: FhirVersion.R4);
             var converterFromR3ToR4 = new FhirConverter(to: FhirVersion.R4, from: FhirVersion.R3);
-            var r4Serializer = new R4Serialization.FhirJsonSerializer();
+            
+            var r4Serializer = new SerializationWrapper(FhirVersion.R4);
+            var r4Resource = r4Serializer.Parse(await File.ReadAllTextAsync(path));
 
-            var r4Questionnaire = ReadR4Resource(path) as R4Model.Questionnaire;
-            var r3Questionnaire = converterFromR4ToR3.Convert<R3Model.Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
-            var r4QuestionnaireRoundTrip = converterFromR3ToR4.Convert<R4Model.Questionnaire, R3Model.Questionnaire>(r3Questionnaire);
+            var r3Resource = converterFromR4ToR3.Convert<R3Model.Resource, R4Model.Resource>(r4Resource.R4Resource);
+            var r4ResourceRoundTrip = converterFromR3ToR4.Convert<R4Model.Resource, R3Model.Resource>(r3Resource);
 
-            var r4QuestionnaireContent = r4Serializer.SerializeToString(r4Questionnaire);
-            var r4QuestionnaireRoundTripContent = r4Serializer.SerializeToString(r4QuestionnaireRoundTrip);
+            var r4ResourceContent = r4Serializer.Serialize(r4Resource);
+            var r4ResourceRoundTripContent = r4Serializer.Serialize(r4ResourceRoundTrip);
 
-            Assert.Equal(r4QuestionnaireContent, r4QuestionnaireRoundTripContent);
+            Assert.Equal(r4ResourceContent, r4ResourceRoundTripContent);
         }
 
         [Theory]

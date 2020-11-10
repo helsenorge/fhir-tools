@@ -18,11 +18,11 @@ namespace FhirTool.Core.FhirWrappers
             FromSerializer = new SerializationWrapper(from);
         }
 
-        public string Convert(string content)
+        public string Convert(string content, FhirMimeType fhirMimeType)
         {
             var baseFromObject = FromSerializer.Parse(content);
             var baseToObject = _converter.Convert<Base, Base>(baseFromObject.ToBase());
-            return ToSerializer.Serialize(baseToObject);
+            return ToSerializer.Serialize(baseToObject, fhirMimeType);
         }
     }
 }
