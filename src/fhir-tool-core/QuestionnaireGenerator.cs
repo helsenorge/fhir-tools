@@ -57,7 +57,7 @@ namespace FhirTool.Core
             }
 
             IList<ValueSet> valueSets = null;
-            if (!string.IsNullOrWhiteSpace(arguments.ValueSet.Path))
+            if (!string.IsNullOrWhiteSpace(arguments?.ValueSet?.Path))
             {
                 _logger.LogInformation($"Loading ValueSet(s) from file: '{arguments.ValueSet}'.");
                 valueSets = GetValueSetsFromFlatFileFormat(arguments.ValueSet.Path, false);
