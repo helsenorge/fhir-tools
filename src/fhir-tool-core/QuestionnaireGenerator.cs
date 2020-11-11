@@ -307,7 +307,14 @@ namespace FhirTool.Core
                 itemComponent.SetStringExtension(Constants.ValidationTextUri, item.ValidationText);
 
             if (!string.IsNullOrWhiteSpace(item.Options) && item.Options.IndexOf('#') == 0)
+            {
                 itemComponent.AnswerValueSetElement = new Canonical($"#{item.Options.Substring(1)}");
+            }
+            else if (!string.IsNullOrWhiteSpace(item.Options) &&
+                (item.Options.IndexOf("http://") == 0 || item.Options.IndexOf("https://") == 0))
+            {
+                itemComponent.AnswerValueSetElement = new Canonical(item.Options);
+            }
 
             if (!string.IsNullOrWhiteSpace(item.EntryFormat))
                 itemComponent.SetStringExtension(Constants.EntryFormatUri, item.EntryFormat);
