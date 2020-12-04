@@ -5,6 +5,10 @@
     <AssemblyName>fhir-tool</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Deterministic>false</Deterministic>
+    <PackAsTool>true</PackAsTool>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <ToolCommandName>fhir-tool</ToolCommandName>
+    <Version>1.0.4</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Update="appsettings.json">
