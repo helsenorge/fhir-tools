@@ -14,6 +14,7 @@ jobs:
       - name: Build
         run: |
           dotnet pack "src/fhir-tool-core/fhir-tool-core.csproj" -c Release
+          dotnet pack "src/fhir-tool/FhirTool.csproj" -c Release
       - name: Deploy Nuget Packages
         run: dotnet nuget push .\src\**\*.nupkg
           --api-key ${{ secrets.NUGET_API_KEY }}
