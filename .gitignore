@@ -16,6 +16,7 @@ x64/
 packages/
 *.ide
 working/
+nupkg
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
