@@ -8,7 +8,7 @@
     <PackAsTool>true</PackAsTool>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <ToolCommandName>fhir-tool</ToolCommandName>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Update="appsettings.json">
