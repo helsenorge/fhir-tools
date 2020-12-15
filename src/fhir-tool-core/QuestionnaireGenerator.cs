@@ -207,6 +207,16 @@ namespace FhirTool.Core
                     questionnaire.Code = ParseArrayOfCoding(masterDetail.Master.Code);
                 }
 
+                if(!string.IsNullOrWhiteSpace(masterDetail.Master.QuestionaireNavigatorState))
+                {
+                    questionnaire.SetExtension(Constants.QuestionaireNavigatorStateUri, new CodeableConcept { Coding = new List<Coding> { new Coding { System = Constants.NavigatorStateSystem, Code = masterDetail.Master.QuestionaireNavigatorState, } } });
+                }
+
+                if(!string.IsNullOrWhiteSpace(masterDetail.Master.QuestionnairePrintVersionReference))
+                {
+                    questionnaire.SetExtension(Constants.QuestionnairePrintVersionUri, new ResourceReference(masterDetail.Master.QuestionnairePrintVersionReference));
+                }
+
                 IList<string> linkIds = new List<string>();
                 Questionnaire.ItemComponent item = null;
                 for (int i = 0; i < masterDetail.Details.Length; i++)

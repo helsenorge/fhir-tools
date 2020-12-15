@@ -68,6 +68,11 @@ namespace FhirTool.Core.Model.FlatFile
         [FieldQuoted]
         public string Code;
         [FieldOptional]
+        [FieldQuoted]
+        public string QuestionaireNavigatorState;
+        [FieldOptional]
+        public string QuestionnairePrintVersionReference;
+        [FieldOptional]
         public string Reservered0;
         [FieldOptional]
         public string Reservered1;
@@ -85,10 +90,6 @@ namespace FhirTool.Core.Model.FlatFile
         public string Reservered7;
         [FieldOptional]
         public string Reservered8;
-        [FieldOptional]
-        public string Reservered9;
-        [FieldOptional]
-        public string Reservered10;
     }
 
     [DelimitedRecord("\t")]
