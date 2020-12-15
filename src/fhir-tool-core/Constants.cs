@@ -45,8 +45,12 @@
         public const string CanBePerformedBySystem = "http://ehelse.no/fhir/ValueSet/CanBePerformedBy";
         public const string DiscretionSystem = "http://ehelse.no/fhir/ValueSet/Discretion";
 
+        public const string QuestionaireNavigatorStateUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-questionnaire-navgiator-state";
+        public const string QuestionnairePrintVersionUri = "http://helsenorge.no/fhir/StructureDefinition/sdf-questionnaire-print-version";
+        
         public const string ItemControlSystem = "http://hl7.org/fhir/ValueSet/questionnaire-item-control";
 
         public const string PresentationButtonsSystem = "http://helsenorge.no/fhir/ValueSet/presentationbuttons";
+        public const string NavigatorStateSystem = "http://helsenorge.no/fhir/CodeSystem/sdf-questionnaire-navigator-state";
     }
 }

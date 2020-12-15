@@ -108,8 +108,10 @@ namespace FhirTool.Core.Operations
 
         private void SetQuestionnaireUrl(ResourceWrapper resource)
         {
-            if (resource.ResourceType != ResourceTypeWrapper.Questionnaire && string.IsNullOrWhiteSpace(resource.Id)) return;
-            resource.SetProperty("Url", $"Questionnaire/{resource.Id}");
+            if (resource.ResourceType == ResourceTypeWrapper.Questionnaire && !string.IsNullOrWhiteSpace(resource.Id))
+            {
+                resource.SetProperty("Url", $"Questionnaire/{resource.Id}");
+            }
         }
 
         private void Validate(UploadResourceOperationOptions arguments)
