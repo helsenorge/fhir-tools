@@ -68,7 +68,10 @@ namespace FhirTool.Core.FhirWrappers
 
         private void R3Client_OnAfterRequest(object sender, R3Rest.AfterResponseEventArgs e)
         {
-            LastBodyAsText = System.Text.Encoding.UTF8.GetString(e.Body);
+            if (e != null && e.Body != null)
+            {
+                LastBodyAsText = System.Text.Encoding.UTF8.GetString(e.Body);
+            }
         }
 
         private void R4Client_OnBeforeRequest(object sender, R4Rest.BeforeRequestEventArgs e)
@@ -83,7 +86,10 @@ namespace FhirTool.Core.FhirWrappers
 
         private void R4Client_OnAfterRequest(object sender, R4Rest.AfterResponseEventArgs e)
         {
-            LastBodyAsText = System.Text.Encoding.UTF8.GetString(e.Body);
+            if (e != null && e.Body != null)
+            {
+                LastBodyAsText = System.Text.Encoding.UTF8.GetString(e.Body);
+            }
         }
 
         internal async Task<BundleWrapper> SearchAsync(string resource)
