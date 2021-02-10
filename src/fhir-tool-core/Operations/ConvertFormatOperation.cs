@@ -31,6 +31,9 @@ namespace FhirTool.Core.Operations
         [Option('o', "out", Default = ".", HelpText = "The path where the file should be stored.")]
         public string OutPath { get; set; }
 
+        [Option('v', "fhir-version", Required = false, HelpText = "which fhir version to assume", Default = FhirVersion.R4)]
+        public FhirVersion FhirVersion { get; set; }
+
         internal FhirMimeType? ToMimeType { get; set; }
         internal FhirMimeType? FromMimeType { get; set; }
 
@@ -56,7 +59,7 @@ namespace FhirTool.Core.Operations
             {
                 _logger.LogInformation($"Starting conversion of source file: '{_arguments.Source}' from format: '{_arguments.FromMimeType}' to format '{_arguments.ToMimeType}'.");
 
-                var serializer = new SerializationWrapper(FhirVersion.R4);                
+                var serializer = new SerializationWrapper(_arguments.FhirVersion);
                 var resource = serializer.Parse(_arguments.SourceContent, _arguments.FromMimeType, true);
                 var outContent = serializer.Serialize(resource, _arguments.ToMimeType.GetValueOrDefault());
                 var outPath = GetOutPath(_arguments.OutPath, resource, _arguments.ToMimeType.GetValueOrDefault());
@@ -144,6 +147,11 @@ namespace FhirTool.Core.Operations
             if (toFormat == fromFormat)
             {
                 throw new SemanticArgumentException("The 'to' format must differ from contents of the 'source' format.", nameof(arguments.ToFormat));
+            }
+
+            if(!(arguments.FhirVersion == FhirVersion.R3 || arguments.FhirVersion == FhirVersion.R4))
+            {
+                throw new SemanticArgumentException("The 'fhir-version' parameter only accepts the arguments 'R3' or 'R4'.", nameof(arguments.FhirVersion));
             }
 
             if(!Directory.Exists(arguments.OutPath))
