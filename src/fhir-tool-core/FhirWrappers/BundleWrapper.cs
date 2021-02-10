@@ -1,4 +1,12 @@
-﻿extern alias R3;
+﻿/* 
+ * Copyright (c) 2021, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
+ */
+
+extern alias R3;
 extern alias R4;
 
 using System;
@@ -7,7 +15,6 @@ using System.Collections.Generic;
 
 using R3Model = R3::Hl7.Fhir.Model;
 using R4Model = R4::Hl7.Fhir.Model;
-using R3::Hl7.Fhir.Support;
 using Hl7.Fhir.Model;
 
 namespace FhirTool.Core.FhirWrappers

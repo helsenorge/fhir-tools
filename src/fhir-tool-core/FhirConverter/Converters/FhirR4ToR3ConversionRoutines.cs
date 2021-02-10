@@ -1,13 +1,18 @@
-﻿extern alias R3;
-extern alias R4;
+﻿/* 
+ * Copyright (c) 2021, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
+ */
 
-using System;
+extern alias R3;
+extern alias R4;
 using System.Linq;
 using Hl7.Fhir.Utility;
 
 using TargetModel = R3::Hl7.Fhir.Model;
 using SourceModel = R4::Hl7.Fhir.Model;
-using System.Collections.Generic;
 
 namespace FhirTool.Conversion.Converters
 {

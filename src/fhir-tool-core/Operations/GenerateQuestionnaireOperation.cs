@@ -1,9 +1,16 @@
-﻿extern alias R4;
+﻿/* 
+ * Copyright (c) 2021, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
+ */
+
+extern alias R4;
 
 using R4::Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
 using System;
-using System.IO;
 using System.Linq;
 using Tasks = System.Threading.Tasks;
 using CommandLine;

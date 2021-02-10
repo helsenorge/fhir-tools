@@ -1,4 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿/* 
+ * Copyright (c) 2021, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
+ */
+
+using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("FhirTool.Conversion.Tests,PublicKey=" +
     "0024000004800000940000000602000000240000525341310004000001000100ff3f07ac97f72c" +

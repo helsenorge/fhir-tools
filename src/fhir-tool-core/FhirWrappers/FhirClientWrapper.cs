@@ -5,7 +5,6 @@ using FhirTool.Core.Utils;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using R3Rest = R3::Hl7.Fhir.Rest;
 using R4Rest = R4::Hl7.Fhir.Rest;

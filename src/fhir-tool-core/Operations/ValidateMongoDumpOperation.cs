@@ -1,12 +1,18 @@
-﻿using CommandLine;
+﻿/* 
+ * Copyright (c) 2021, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
+ */
+
+using CommandLine;
 using FhirTool.Core.ArgumentHelpers;
 using FhirTool.Core.FhirWrappers;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using Tasks = System.Threading.Tasks;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 

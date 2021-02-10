@@ -1,10 +1,15 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿/* 
+ * Copyright (c) 2021, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
+ */
+
+using System;
 
 namespace FhirTool.Conversion
 {
-    [SuppressMessage("Usage", "CA2237:Mark ISerializable types with serializable")]
-    [SuppressMessage("Design", "CA1032:Implement standard exception constructors")]
     internal class UnknownFhirTypeException : Exception
     {
         public UnknownFhirTypeException(Type type)
