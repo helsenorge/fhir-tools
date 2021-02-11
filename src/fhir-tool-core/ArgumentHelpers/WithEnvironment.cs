@@ -42,9 +42,9 @@ namespace FhirTool.Core.ArgumentHelpers
             var e = DefinedEnvironments.GetEnvironment(environment);
             if (e != null)
             {
-                FhirBaseUrl = e.FhirBaseUrl;
-                ProxyBaseUrl = e.ProxyBaseUrl;
-                AuthorizationUrl = e.AuthorizationUrl;
+                FhirBaseUrl = e.FhirBaseUrl.AppendCharToEndOfStringIfMissing('/');
+                ProxyBaseUrl = e.ProxyBaseUrl.AppendCharToEndOfStringIfMissing('/');
+                AuthorizationUrl = e.AuthorizationUrl.AppendCharToEndOfStringIfMissing('/');
             }
         }
 

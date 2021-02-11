@@ -24,5 +24,14 @@ namespace FhirTool.Core
             var bytes = Encoding.UTF8.GetBytes(s);
             return Convert.ToBase64String(bytes);
         }
+
+        public static string AppendCharToEndOfStringIfMissing(this string s, char c)
+        {
+            if (s.LastIndexOf(c) != s.Length - 1)
+            {
+                s += c;
+            }
+            return s;
+        }
     }
 }
