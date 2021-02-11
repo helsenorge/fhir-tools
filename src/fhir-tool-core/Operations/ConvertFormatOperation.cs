@@ -55,31 +55,18 @@ namespace FhirTool.Core.Operations
 
         public override async Task<OperationResultEnum> Execute()
         {
-            try
+            _logger.LogInformation($"Starting conversion of source file: '{_arguments.Source}' from format: '{_arguments.FromMimeType}' to format '{_arguments.ToMimeType}'.");
+
+            var serializer = new SerializationWrapper(_arguments.FhirVersion);
+            var resource = serializer.Parse(_arguments.SourceContent, _arguments.FromMimeType, true);
+            var outContent = serializer.Serialize(resource, _arguments.ToMimeType.GetValueOrDefault());
+            var outPath = GetOutPath(_arguments.OutPath, resource, _arguments.ToMimeType.GetValueOrDefault());
+            if (!string.IsNullOrWhiteSpace(outContent))
             {
-                _logger.LogInformation($"Starting conversion of source file: '{_arguments.Source}' from format: '{_arguments.FromMimeType}' to format '{_arguments.ToMimeType}'.");
+                using var stream = File.Open(outPath, FileMode.OpenOrCreate, FileAccess.Write);
+                await stream.WriteAsync(Encoding.UTF8.GetBytes(outContent));
 
-                var serializer = new SerializationWrapper(_arguments.FhirVersion);
-                var resource = serializer.Parse(_arguments.SourceContent, _arguments.FromMimeType, true);
-                var outContent = serializer.Serialize(resource, _arguments.ToMimeType.GetValueOrDefault());
-                var outPath = GetOutPath(_arguments.OutPath, resource, _arguments.ToMimeType.GetValueOrDefault());
-                if (!string.IsNullOrWhiteSpace(outContent))
-                {
-                    using var stream = File.Open(outPath, FileMode.OpenOrCreate, FileAccess.Write);
-                    await stream.WriteAsync(Encoding.UTF8.GetBytes(outContent));
-
-                    _logger.LogInformation($"Converted file stored at: '{outPath}'.");
-                }
-            }
-            catch (Exception ex)
-            {
-                _issues.Add(new Issue
-                {
-                    Severity = IssueSeverityEnum.Error,
-                    Details = ex.Message,
-                });
-
-                return await Task.FromResult(OperationResultEnum.Failed);
+                _logger.LogInformation($"Converted file stored at: '{outPath}'.");
             }
 
             return await Task.FromResult(OperationResultEnum.Succeeded);
