@@ -60,7 +60,8 @@ namespace FhirTool.Core.Operations
             var serializer = new SerializationWrapper(_arguments.FhirVersion);
             var resource = serializer.Parse(_arguments.SourceContent, _arguments.FromMimeType, true);
             var outContent = serializer.Serialize(resource, _arguments.ToMimeType.GetValueOrDefault());
-            var outPath = GetOutPath(_arguments.OutPath, resource, _arguments.ToMimeType.GetValueOrDefault());
+            var fileName = Path.GetFileName(_arguments.Source);
+            var outPath = GetOutPath(_arguments.OutPath, fileName, _arguments.ToMimeType.GetValueOrDefault());
             if (!string.IsNullOrWhiteSpace(outContent))
             {
                 using var stream = File.Open(outPath, FileMode.OpenOrCreate, FileAccess.Write);
@@ -72,14 +73,16 @@ namespace FhirTool.Core.Operations
             return await Task.FromResult(OperationResultEnum.Succeeded);
         }
 
-        private string GetOutPath(string outPath, ResourceWrapper resource, FhirMimeType mimeType)
+        private string GetOutPath(string outPath, string fileName, FhirMimeType mimeType)
         {
             string path = outPath;
-            if(Directory.Exists(path))
+            if (!Directory.Exists(path))
             {
-                var resourceType = resource.ResourceType.GetLiteral().ToLowerInvariant();
-                path += $"{resourceType}-{resource.Id}.{GetFileExtension(mimeType)}";
+                Directory.CreateDirectory(path);
             }
+
+            var fileNameWithOutExtension = Path.GetFileNameWithoutExtension(fileName);
+            path = Path.Combine(path, $"{fileNameWithOutExtension}.{GetFileExtension(mimeType)}");
 
             return path;
         }
@@ -139,11 +142,6 @@ namespace FhirTool.Core.Operations
             if(!(arguments.FhirVersion == FhirVersion.R3 || arguments.FhirVersion == FhirVersion.R4))
             {
                 throw new SemanticArgumentException("The 'fhir-version' parameter only accepts the arguments 'R3' or 'R4'.", nameof(arguments.FhirVersion));
-            }
-
-            if(!Directory.Exists(arguments.OutPath))
-            {
-                throw new SemanticArgumentException("The 'out' argument must point to an existing directory.", nameof(arguments.OutPath));
             }
         }
     }
