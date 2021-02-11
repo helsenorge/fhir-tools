@@ -10,9 +10,13 @@ extern alias R3;
 extern alias R4;
 
 using FhirTool.Core.Utils;
+using Hl7.Fhir.Utility;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using R3Rest = R3::Hl7.Fhir.Rest;
 using R4Rest = R4::Hl7.Fhir.Rest;
@@ -145,7 +149,16 @@ namespace FhirTool.Core.FhirWrappers
 
         public async Task<ResourceWrapper> CreateAsync(ResourceWrapper resourceWrapper)
         {
-            switch(FhirVersion)
+            // Using the FhirClient for Binary resources is causing a 
+            // 415 Unsupported Media Type on our API Management Proxy in Azure
+            // The reason seems to be that the FhirClient converts the Binary 
+            // xml/json resource to its actual binary representation
+            if (resourceWrapper.ResourceType == ResourceTypeWrapper.Binary)
+            {
+                return await CreateUsingHttpClientAsync(resourceWrapper);
+            }
+
+            switch (FhirVersion)
             {
                 case FhirVersion.R3:
                     var resultR3 = await R3Client.CreateAsync(resourceWrapper.R3Resource);
@@ -160,6 +173,15 @@ namespace FhirTool.Core.FhirWrappers
 
         public async Task<ResourceWrapper> UpdateAsync(ResourceWrapper resourceWrapper)
         {
+            // Using the FhirClient for Binary resources is causing a 
+            // 415 Unsupported Media Type on our API Management Proxy in Azure
+            // The reason seems to be that the FhirClient converts the Binary 
+            // xml/json resource to its actual binary representation
+            if (resourceWrapper.ResourceType == ResourceTypeWrapper.Binary)
+            {
+                return await UpdateUsingHttpClientAsync(resourceWrapper);
+            }
+
             switch (FhirVersion)
             {
                 case FhirVersion.R3:
@@ -171,6 +193,49 @@ namespace FhirTool.Core.FhirWrappers
                 default:
                     return default;
             }
+        }
+
+        private async Task<ResourceWrapper> CreateUsingHttpClientAsync(ResourceWrapper resourceWrapper)
+        {
+            var serializer = new SerializationWrapper(FhirVersion);
+            var request = new FhirRequestMessage(HttpMethod.Post, resourceWrapper);
+            var response = await CreateOrUpdateAsync(request);
+            return serializer.Parse(response.Content, response.MimeType);
+        }
+
+        private async Task<ResourceWrapper> UpdateUsingHttpClientAsync(ResourceWrapper resourceWrapper)
+        {
+            var serializer = new SerializationWrapper(FhirVersion);
+            var request = new FhirRequestMessage(HttpMethod.Put, resourceWrapper);
+            var response = await CreateOrUpdateAsync(request);
+            return serializer.Parse(response.Content, response.MimeType);
+        }
+
+        private async Task<FhirResponseMessage> CreateOrUpdateAsync(FhirRequestMessage request)
+        {
+             var relativeUrl = request.Resource.ResourceType.GetLiteral();
+            if (request.Method == HttpMethod.Put)
+            {
+                relativeUrl += $"/{request.Resource.Id}";
+            }
+            // Build REST url
+            var endpoint = $"{Endpoint}{relativeUrl}";
+
+            // Build Request Message
+            var requestMessage = new HttpRequestMessage(request.Method, endpoint);
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(request.MediaType));
+            requestMessage.Content = new StringContent(request.GetContentAsString(), Encoding.UTF8, request.MediaType);
+
+            // Initialzie HttpClient and Send the request
+            var client = new HttpClient();
+            using var response = await client.SendAsync(requestMessage);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"HTTP Request failed with status code: '{response.StatusCode}' and reason: '{response.ReasonPhrase}'");
+            }
+            
+            return new FhirResponseMessage((int)response.StatusCode, response.Content.Headers.ContentType.MediaType, await response.Content.ReadAsStringAsync());
         }
     }
 }
