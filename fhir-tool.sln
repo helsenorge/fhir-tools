@@ -9,6 +9,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fhir-tool-core-tests", "tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fhir-tool-core", "src\fhir-tool-core\fhir-tool-core.csproj", "{98888B69-210F-4205-952C-E49FB5EB4015}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7D014B20-1B42-4607-80E7-F0EA9677D700}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{EB126A0B-594A-4177-A351-B94056328157}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{0D9A39A7-2878-45DF-991F-24217B490BA5}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\deploy.yml = .github\workflows\deploy.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +40,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EB126A0B-594A-4177-A351-B94056328157} = {7D014B20-1B42-4607-80E7-F0EA9677D700}
+		{0D9A39A7-2878-45DF-991F-24217B490BA5} = {EB126A0B-594A-4177-A351-B94056328157}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19E55ADC-976C-4330-BE44-B0596C0D79B3}
