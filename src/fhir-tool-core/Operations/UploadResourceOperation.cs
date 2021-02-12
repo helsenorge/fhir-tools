@@ -15,6 +15,7 @@ using FhirTool.Core.ArgumentHelpers;
 using FhirTool.Core.FhirWrappers;
 using System.IO;
 using IdentityModel.Client;
+using System;
 
 namespace FhirTool.Core.Operations
 {
@@ -95,11 +96,15 @@ namespace FhirTool.Core.Operations
             SetQuestionnaireUrl(resource);
 
             var client = new FhirClientWrapper(endpoint, _logger, _arguments.FhirVersion, tokenResponse?.AccessToken);
-            resource = await UploadResource(resource, client);
+            var response = await UploadResource(resource, client);
 
-            _logger.LogInformation($"Successfully uploaded {resource.ResourceType.GetLiteral()} to endpoint: '{endpoint}'.");
-            _logger.LogInformation($"Questionnaire was assigned the Id: '{resource.Id}'");
-            _logger.LogInformation($"Questionnaire can be accessed at: '{client.Endpoint}{resource.ResourceType.GetLiteral()}/{resource.Id}'");
+            var resourceType = resource.ResourceType.GetLiteral();
+            _logger.LogInformation($"Successfully uploaded {resourceType} to endpoint: '{endpoint}'.");
+            if (response != null)
+            {
+                _logger.LogInformation($"Resource was assigned the Id: '{resource.Id}'");
+                _logger.LogInformation($"Resource can be accessed at: '{resource.ResourceType.GetLiteral()}/{resource.Id}'");
+            }
 
             return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
                 ? OperationResultEnum.Failed
