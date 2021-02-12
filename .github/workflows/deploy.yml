@@ -10,7 +10,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.301
+          dotnet-version: 5.0.103
       - name: Build
         run: |
           dotnet pack "src/fhir-tool-core/fhir-tool-core.csproj" -c Release
