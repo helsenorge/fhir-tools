@@ -17,7 +17,7 @@
     <PackageReference Include="Hl7.Fhir.Specification.R4" Version="1.9.0" />
     <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="1.9.0" />
     <PackageReference Include="Hl7.Fhir.STU3" Version="1.9.0" />
-    <PackageReference Include="IdentityModel" Version="4.5.0" />
+    <PackageReference Include="IdentityModel" Version="5.0.1" />
     <PackageReference Include="JUST.net" Version="4.0.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.12" />
