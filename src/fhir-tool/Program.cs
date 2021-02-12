@@ -73,7 +73,7 @@ namespace FhirTool
             DefinedEnvironments.Environments = environmentSettings;
 
             using (var loggerFactory = LoggerFactory.Create(builder => builder
-                 .AddConsole(options => options.IncludeScopes = false)
+                 .AddSimpleConsole(options => options.IncludeScopes = false)
                  .SetMinimumLevel(LogLevel.Information)
              ))
             {
