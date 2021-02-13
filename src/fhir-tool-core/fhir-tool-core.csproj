@@ -4,8 +4,6 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>FhirTool.Core</RootNamespace>
     <AssemblyName>FhirTool.Core</AssemblyName>
-    <LangVersion>8.0</LangVersion>
-    <Version>1.1.2</Version>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>

@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>8.0</LangVersion>
+    <Version>1.1.2</Version>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Authors>Norsk Helsenett SF</Authors>
+    <Company>Norsk Helsenett SF</Company>
+    <Copyright>Norsk Helsenett SF</Copyright>
+    <RepositoryUrl>https://github.com/helsenorge/fhir-tools</RepositoryUrl>
+    <PackageIcon>helsenorge-logo-128x128.png</PackageIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
+    <None Include="..\..\helsenorge-logo-128x128.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>
