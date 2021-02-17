@@ -15,6 +15,7 @@ using System.Reflection;
 using EnsureThat;
 using FhirTool.Conversion.Converters;
 using FhirTool.Core;
+using FhirTool.Core.FhirWrappers;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Utility;
 using NuGet.Versioning;
@@ -91,6 +92,25 @@ namespace FhirTool.Conversion
         {
             int versionHops = Math.Abs(to - from);
             return MAX_VERSION_HOPS == versionHops;
+        }
+
+        public string Convert(string fromString)
+        {
+            var parser = new SerializationWrapper(FromVersion);
+            var serializer = new SerializationWrapper(ToVersion);
+
+            var fromObject = parser.Parse(fromString);
+            Base converted = null;
+            switch(FromVersion)
+            {
+                case FhirVersion.R3:
+                    converted = Convert<Base, Base>(fromObject.R3Resource);
+                    break;
+                case FhirVersion.R4:
+                    converted = Convert<Base, Base>(fromObject.R4Resource);
+                    break;
+            }
+            return serializer.Serialize(converted);
         }
 
         public TTo Convert<TTo, TFrom>(TFrom fromObject)
