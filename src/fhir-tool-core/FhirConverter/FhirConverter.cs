@@ -100,16 +100,8 @@ namespace FhirTool.Conversion
             var serializer = new SerializationWrapper(ToVersion);
 
             var fromObject = parser.Parse(fromString);
-            Base converted = null;
-            switch(FromVersion)
-            {
-                case FhirVersion.R3:
-                    converted = Convert<Base, Base>(fromObject.R3Resource);
-                    break;
-                case FhirVersion.R4:
-                    converted = Convert<Base, Base>(fromObject.R4Resource);
-                    break;
-            }
+            var converted = Convert<Base, Base>(fromObject.Resource);
+                 
             return serializer.Serialize(converted);
         }
 

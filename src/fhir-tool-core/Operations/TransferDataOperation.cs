@@ -20,8 +20,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Tasks = System.Threading.Tasks;
 using CommandLine;
-using ParserSettings = R3::Hl7.Fhir.Serialization.ParserSettings;
 using FhirTool.Core.ArgumentHelpers;
+using Hl7.Fhir.Model;
+using Hl7.Fhir.Rest;
 
 namespace FhirTool.Core.Operations
 {
@@ -62,9 +63,9 @@ namespace FhirTool.Core.Operations
             FhirJsonSerializer serializer = new FhirJsonSerializer();
             FhirClient sourceClient = new FhirClient(_arguments.SourceEnvironment.FhirBaseUrl)
             {
-                ParserSettings = new ParserSettings
+                Settings = new FhirClientSettings
                 {
-                    PermissiveParsing = false,
+                    ParserSettings = new Hl7.Fhir.Serialization.ParserSettings { PermissiveParsing = false }
                 }
             };
             HttpClient destClient = new HttpClient()
@@ -80,7 +81,7 @@ namespace FhirTool.Core.Operations
             foreach (Bundle.EntryComponent entry in sourceBundle.Entry)
             {
                 Resource resource = entry.Resource;
-                string resourceType = resource.ResourceType.GetLiteral();
+                string resourceType = resource.ResourceType(FhirVersion.R3).GetLiteral();
 
                 if (resource is Questionnaire questionnaire)
                 {
@@ -121,9 +122,9 @@ namespace FhirTool.Core.Operations
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/fhir+json");
                 HttpResponseMessage response;
                 if (string.IsNullOrWhiteSpace(resource.Id))
-                    response = await destClient.PostAsync($"{resource.ResourceType.GetLiteral()}", content);
+                    response = await destClient.PostAsync($"{resource.ResourceType(FhirVersion.R3).GetLiteral()}", content);
                 else
-                    response = await destClient.PutAsync($"{resource.ResourceType.GetLiteral()}/{resource.Id}", content);
+                    response = await destClient.PutAsync($"{resource.ResourceType(FhirVersion.R3).GetLiteral()}/{resource.Id}", content);
 
                 _logger.LogInformation($"{response.StatusCode} - {response.RequestMessage.Method} {response.RequestMessage.RequestUri}");
             }

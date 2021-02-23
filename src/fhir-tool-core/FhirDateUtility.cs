@@ -6,9 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
  */
 
-extern alias R3;
-
-using R3::Hl7.Fhir.Model;
+using Hl7.Fhir.Model;
 using System;
 
 namespace FhirTool.Core

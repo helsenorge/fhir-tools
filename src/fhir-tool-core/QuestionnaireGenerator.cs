@@ -24,6 +24,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using FhirTool.Core.Operations;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Core
 {
@@ -398,7 +399,7 @@ namespace FhirTool.Core
             if (!string.IsNullOrWhiteSpace(item.Option))
             {
                 List<Element> options = ParseArrayOfElement(item.Option);
-                foreach (Element element in options)
+                foreach (DataType element in options)
                 {
                     if (element is ResourceReference)
                     {
@@ -613,7 +614,7 @@ namespace FhirTool.Core
             return itemComponent;
         }
 
-        private static Element GetElement(Questionnaire.QuestionnaireItemType itemType, string value)
+        private static DataType GetElement(Questionnaire.QuestionnaireItemType itemType, string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return null;
             switch (itemType)
@@ -829,10 +830,10 @@ namespace FhirTool.Core
             return elements;
         }
 
-        private static Element ParseElement(string value)
+        private static DataType ParseElement(string value)
         {
             JObject elementJObject = JObject.Parse(value);
-            Element element = null;
+            DataType element = null;
             IList<Extension> extension = new List<Extension>();
 
             if (elementJObject.ContainsKey("extension"))

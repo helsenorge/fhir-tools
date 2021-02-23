@@ -53,7 +53,7 @@ namespace FhirTool.Core.Operations
         {
             DocumentReference documentReference = _documentReferenceGenerator.GenerateDocumentReference(_arguments);
 
-            var resource = new ResourceWrapper(documentReference);
+            var resource = new ResourceWrapper(documentReference, FhirVersion.R4);
             var serializer = new SerializationWrapper(FhirVersion.R4);
 
             var serialized = serializer.Serialize(resource, _arguments.MimeType);

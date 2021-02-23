@@ -15,8 +15,8 @@ using R4::Hl7.Fhir.Model;
 using Xunit;
 using System;
 using Hl7.Fhir.Utility;
-using FhirTool.Conversion.Converters;
 using FhirTool.Core;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Conversion.Tests
 {
@@ -26,9 +26,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_Instant_To_R4_Instant()
         {
             var value = DateTimeOffset.UtcNow;
-            var r3TypeInstance = new R3Model.Instant(value);
+            var r3TypeInstance = new Instant(value);
             var r3ToR4Conversion = new FhirConverter(FhirVersion.R4, FhirVersion.R3);
-            var r4TypeInstance = r3ToR4Conversion.Convert<Instant,R3Model.Instant>(r3TypeInstance);
+            var r4TypeInstance = r3ToR4Conversion.Convert<Instant,Instant>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -37,8 +37,8 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_Time_To_R4_Time()
         {
             var value = "13:09:45";
-            var r3TypeInstance = new R3Model.Time(value);
-            var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3).Convert<Time,R3Model.Time>(r3TypeInstance);
+            var r3TypeInstance = new Time(value);
+            var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3).Convert<Time,Time>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -47,9 +47,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_Date_To_R4_Date()
         {
             var value = "2020-06-23";
-            var r3TypeInstance = new R3Model.Date(value);
+            var r3TypeInstance = new Date(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<Date,R3Model.Date>(r3TypeInstance);
+                .Convert<Date,Date>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -58,9 +58,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_FhirDateTime_To_R4_FhirDateTime()
         {
             var value = "2022-06-23T00:00:00.000Z";
-            var r3TypeInstance = new R3Model.FhirDateTime(value);
+            var r3TypeInstance = new FhirDateTime(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<FhirDateTime, R3Model.FhirDateTime>(r3TypeInstance);
+                .Convert<FhirDateTime, FhirDateTime>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -69,9 +69,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_Base64Binary_To_R4_Base64Binary()
         {
             var value = System.Convert.FromBase64String("VGhpcyB0ZXN0IGNhc2UgdmVyaWZpZXMgdGhhdCB3ZSBjYW4gY29udmVydCBmcm9tIGFuIFIzIGluc3RhbmNlIG9mIEJhc2U2NEJpbmFyeSB0byBhbiBSNCBpbnN0YW5jZSBvZiBCYXNlNjRCaW5hcnk=");
-            var r3TypeInstance = new R3Model.Base64Binary(value);
+            var r3TypeInstance = new Base64Binary(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<Base64Binary,R3Model.Base64Binary>(r3TypeInstance);
+                .Convert<Base64Binary,Base64Binary>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -80,9 +80,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_FhirDecimal_To_R4_FhirDecimal()
         {
             var value = 10.7564785m;
-            var r3TypeInstance = new R3Model.FhirDecimal(value);
+            var r3TypeInstance = new FhirDecimal(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<FhirDecimal,R3Model.FhirDecimal>(r3TypeInstance);
+                .Convert<FhirDecimal,FhirDecimal>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -91,9 +91,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_FhirBoolean_To_R4_FhirBoolean()
         {
             var value = true;
-            var r3TypeInstance = new R3Model.FhirBoolean(value);
+            var r3TypeInstance = new FhirBoolean(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<FhirBoolean,R3Model.FhirBoolean>(r3TypeInstance);
+                .Convert<FhirBoolean,FhirBoolean>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -102,9 +102,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_Code_To_R4_Code()
         {
             var value = "J-001";
-            var r3TypeInstance = new R3Model.Code(value);
+            var r3TypeInstance = new Code(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<Code, R3Model.Code>(r3TypeInstance);
+                .Convert<Code, Code>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -113,9 +113,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_FhirString_To_R4_FhirString()
         {
             var value = "This is a FhirString converted from R3 to R4";
-            var r3TypeInstance = new R3Model.FhirString(value);
+            var r3TypeInstance = new FhirString(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<FhirString,R3Model.FhirString>(r3TypeInstance);
+                .Convert<FhirString,FhirString>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -124,9 +124,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_Integer_To_R4_Integer()
         {
             var value = 42;
-            var r3TypeInstance = new R3Model.Integer(value);
+            var r3TypeInstance = new Integer(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<Integer,R3Model.Integer>(r3TypeInstance);
+                .Convert<Integer,Integer>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -135,9 +135,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_FhirUri_To_R4_FhirUri()
         {
             var value = "https://helsenorge.no";
-            var r3TypeInstance = new R3Model.FhirUri(value);
+            var r3TypeInstance = new FhirUri(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<FhirUri, R3Model.FhirUri>(r3TypeInstance);
+                .Convert<FhirUri, FhirUri>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -146,9 +146,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_Id_To_R4_Id()
         {
             var value = "9ed040e6-e75c-4c76-bb65-40c147e4fce0";
-            var r3TypeInstance = new R3Model.Id(value);
+            var r3TypeInstance = new Id(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<Id, R3Model.Id>(r3TypeInstance);
+                .Convert<Id, Id>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -157,9 +157,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_Oid_To_R4_Oid()
         {
             var value = "urn:oid:2.16.578.1.12.4.1.1";
-            var r3TypeInstance = new R3Model.Oid(value);
+            var r3TypeInstance = new Oid(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<Oid, R3Model.Oid>(r3TypeInstance);
+                .Convert<Oid, Oid>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -168,9 +168,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_Uuid_To_R4_Uuid()
         {
             var value = "9ed040e6-e75c-4c76-bb65-40c147e4fce0";
-            var r3TypeInstance = new R3Model.Uuid(value);
+            var r3TypeInstance = new Uuid(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<Uuid, R3Model.Uuid>(r3TypeInstance);
+                .Convert<Uuid, Uuid>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -179,9 +179,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_UnsignedInt_To_R4_UnsignedInt()
         {
             var value = 0;
-            var r3TypeInstance = new R3Model.UnsignedInt(value);
+            var r3TypeInstance = new UnsignedInt(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<UnsignedInt, R3Model.UnsignedInt>(r3TypeInstance);
+                .Convert<UnsignedInt, UnsignedInt>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -190,9 +190,9 @@ namespace FhirTool.Conversion.Tests
         public void Can_ConvertElement_R3_PositiveInt_To_R4_PositiveInt()
         {
             var value = 1;
-            var r3TypeInstance = new R3Model.PositiveInt(value);
+            var r3TypeInstance = new PositiveInt(value);
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<PositiveInt, R3Model.PositiveInt>(r3TypeInstance);
+                .Convert<PositiveInt, PositiveInt>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(value, r4TypeInstance.Value);
         }
@@ -233,13 +233,13 @@ namespace FhirTool.Conversion.Tests
         [Fact]
         public void Can_ConvertElement_R3_Period_To_R4_Period()
         {
-            var r3TypeInstance = new R3Model.Period
+            var r3TypeInstance = new Period
             {
                 Start = "2020-06-23",
                 End = "2020-06-27"
             };
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<Period, R3Model.Period>(r3TypeInstance);
+                .Convert<Period, Period>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(r3TypeInstance.Start, r4TypeInstance.Start);
             Assert.Equal(r3TypeInstance.End, r4TypeInstance.End);
@@ -290,18 +290,18 @@ namespace FhirTool.Conversion.Tests
         [Fact]
         public void Can_ConvertElement_R3_Identifier_To_R4_Identifier()
         {
-            var r3TypeInstance = new R3Model.Identifier
+            var r3TypeInstance = new Identifier
             {
-                Use = R3Model.Identifier.IdentifierUse.Official,
+                Use = Identifier.IdentifierUse.Official,
                 System = "http://www.acmehosp.com/patients",
                 Value = "44552",
-                Period = new R3Model.Period
+                Period = new Period
                 {
                     Start = "2003-05-03"
                 }
             };
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<Identifier, R3Model.Identifier>(r3TypeInstance);
+                .Convert<Identifier, Identifier>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(r3TypeInstance.Use.GetLiteral(), r4TypeInstance.Use.GetLiteral());
             Assert.Equal(r3TypeInstance.System, r4TypeInstance.System);
@@ -313,14 +313,14 @@ namespace FhirTool.Conversion.Tests
         {
             var r3TypeInstance = new R3Model.Annotation
             {
-                Author = new R3Model.FhirString("Kenneth Myhra"),
+                Author = new FhirString("Kenneth Myhra"),
                 Time = "20:36",
                 Text = "This is the annotation"
             };
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
                 .Convert<Annotation, R3Model.Annotation>(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
-            Assert.Equal(((R3Model.FhirString)r3TypeInstance.Author).Value, ((FhirString)r4TypeInstance.Author).Value);
+            Assert.Equal(((FhirString)r3TypeInstance.Author).Value, ((FhirString)r4TypeInstance.Author).Value);
             Assert.Equal(r3TypeInstance.Time, r4TypeInstance.Time);
             Assert.Equal(r3TypeInstance.Text, r4TypeInstance.Text?.Value);
         }

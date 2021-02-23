@@ -10,6 +10,7 @@ extern alias R4;
 using R4::Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Core.Operations
 {

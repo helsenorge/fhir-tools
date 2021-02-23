@@ -71,7 +71,7 @@ namespace FhirTool.Core.Operations
             string filename = $"{questionnaire.Name}-{ questionnaire.Language}-{questionnaire.Version}.{_arguments.MimeType}";
             IOUtility.GenerateLegalFilename(filename);
             
-            questionnaire.SerializeResourceToDisk(filename, _arguments.MimeType);
+            questionnaire.SerializeResourceToDisk(FhirVersion.R4, filename, _arguments.MimeType);
 
             _logger.LogInformation($"Questionnaire written in '{_arguments.MimeType}' format to local disk: {filename}");
             _logger.LogInformation($"Questionnaire will be assigned the Id: {questionnaire.Id}");

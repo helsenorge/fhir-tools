@@ -15,8 +15,8 @@ using FhirTool.Conversion.Converters.Support.TypeMaps;
 using TargetModel = R4::Hl7.Fhir.Model;
 using SourceModel = R3::Hl7.Fhir.Model;
 
-using TargetIntrospection = R4::Hl7.Fhir.Introspection;
-using SourceIntrospection = R3::Hl7.Fhir.Introspection;
+using Hl7.Fhir.Introspection;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Conversion.Converters
 {
@@ -30,22 +30,22 @@ namespace FhirTool.Conversion.Converters
 
         public override Type GetTargetCodeType()
         {
-            return typeof(TargetModel.Code<>);
+            return typeof(Code<>);
         }
 
         public override Type GetSourceCodeType()
         {
-            return typeof(SourceModel.Code<>);
+            return typeof(Code<>);
         }
 
         public override Type GetTargetFhirElementAttributeType()
         {
-            return typeof(TargetIntrospection.FhirElementAttribute);
+            return typeof(FhirElementAttribute);
         }
 
         public override Type GetSourceFhirElementAttributeType()
         {
-            return typeof(SourceIntrospection.FhirElementAttribute);
+            return typeof(FhirElementAttribute);
         }
 
         protected override string GetFhirTypeNameForTargetType(Type targetType)

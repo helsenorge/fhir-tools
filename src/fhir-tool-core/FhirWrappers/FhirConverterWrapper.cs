@@ -29,7 +29,7 @@ namespace FhirTool.Core.FhirWrappers
         public string Convert(string content, FhirMimeType fhirMimeType)
         {
             var baseFromObject = FromSerializer.Parse(content);
-            var baseToObject = _converter.Convert<Base, Base>(baseFromObject.ToBase());
+            var baseToObject = _converter.Convert<Base, Base>(baseFromObject.Resource);
             return ToSerializer.Serialize(baseToObject, fhirMimeType);
         }
     }

@@ -61,9 +61,9 @@ namespace FhirTool.Core.FhirWrappers
             switch(FhirVersion)
             {
                 case FhirVersion.R3:
-                    return new EntryComponentWrapper(R3Model.BundleExtensions.AddResourceEntry(R3Bundle, resource.R3Resource, fullUri));
+                    return new EntryComponentWrapper(R3Model.BundleExtensions.AddResourceEntry(R3Bundle, resource.Resource, fullUri));
                 case FhirVersion.R4:
-                    return new EntryComponentWrapper(R4Model.BundleExtensions.AddResourceEntry(R4Bundle, resource.R4Resource, fullUri));
+                    return new EntryComponentWrapper(R4Model.BundleExtensions.AddResourceEntry(R4Bundle, resource.Resource, fullUri));
                 default:
                     return default;
             }
@@ -74,9 +74,9 @@ namespace FhirTool.Core.FhirWrappers
             switch(FhirVersion)
             {
                 case FhirVersion.R3:
-                    return R3Model.BundleExtensions.GetResources(R3Bundle).Select(it => new ResourceWrapper(it));
+                    return R3Model.BundleExtensions.GetResources(R3Bundle).Select(it => new ResourceWrapper(it, FhirVersion.R3));
                 case FhirVersion.R4:
-                    return R4Model.BundleExtensions.GetResources(R4Bundle).Select(it => new ResourceWrapper(it));
+                    return R4Model.BundleExtensions.GetResources(R4Bundle).Select(it => new ResourceWrapper(it, FhirVersion.R4));
                 default:
                     return default;
             }

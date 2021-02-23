@@ -13,6 +13,7 @@ using Hl7.Fhir.Utility;
 
 using TargetModel = R3::Hl7.Fhir.Model;
 using SourceModel = R4::Hl7.Fhir.Model;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Conversion.Converters
 {
@@ -28,7 +29,6 @@ namespace FhirTool.Conversion.Converters
             Map.Add<TargetModel.RelatedArtifact, SourceModel.RelatedArtifact>(ConvertRelatedArtifact);
             Map.Add<TargetModel.DataRequirement, SourceModel.DataRequirement>(ConvertDataRequirement);
             Map.Add<TargetModel.DataRequirement.CodeFilterComponent, SourceModel.DataRequirement.CodeFilterComponent>(ConvertDataRequirementCodeFilterComponent);
-            Map.Add<TargetModel.Meta, SourceModel.Meta>(ConvertMeta);
             Map.Add<TargetModel.ElementDefinition.TypeRefComponent, SourceModel.ElementDefinition.TypeRefComponent>(ConvertElementDefinitionTypeRefComponent);
             Map.Add<TargetModel.ElementDefinition.ConstraintComponent, SourceModel.ElementDefinition.ConstraintComponent>(ConvertElementDefinitionConstraintComponent);
             Map.Add<TargetModel.ElementDefinition.ElementDefinitionBindingComponent, SourceModel.ElementDefinition.ElementDefinitionBindingComponent>(ConvertElementDefinitionBindingComponent);
@@ -45,23 +45,23 @@ namespace FhirTool.Conversion.Converters
 
         private static void ConvertElementDefinition(TargetModel.ElementDefinition to, SourceModel.ElementDefinition from, FhirConverter converter)
         {
-            to.DefinitionElement = converter.ConvertElement<TargetModel.Markdown, SourceModel.Markdown>(from.Definition);
-            to.CommentElement = converter.ConvertElement<TargetModel.Markdown, SourceModel.Markdown>(from.Comment);
-            to.RequirementsElement = converter.ConvertElement<TargetModel.Markdown, SourceModel.Markdown>(from.Requirements);
-            to.MeaningWhenMissingElement = converter.ConvertElement<TargetModel.Markdown, SourceModel.Markdown>(from.MeaningWhenMissing);
+            to.DefinitionElement = converter.ConvertElement<Markdown, Markdown>(from.Definition);
+            to.CommentElement = converter.ConvertElement<Markdown, Markdown>(from.Comment);
+            to.RequirementsElement = converter.ConvertElement<Markdown, Markdown>(from.Requirements);
+            to.MeaningWhenMissingElement = converter.ConvertElement<Markdown, Markdown>(from.MeaningWhenMissing);
         }
 
         private void ConvertStructureDefinition(TargetModel.StructureDefinition to, SourceModel.StructureDefinition from, FhirConverter converter)
         {
-            to.FhirVersionElement = new TargetModel.Id("3.0.2")
+            to.FhirVersionElement = new Id("3.0.2")
             {
-                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.FhirVersionElement?.Extension).ToList()
+                Extension = converter.ConvertList<Extension, Extension>(from.FhirVersionElement?.Extension).ToList()
             };
 
             var contextTypeElement = from.Context?.FirstOrDefault()?.TypeElement;
-            to.ContextTypeElement = converter.ConvertElement<TargetModel.Code<TargetModel.StructureDefinition.ExtensionContext>, SourceModel.Code<SourceModel.StructureDefinition.ExtensionContextType>>(contextTypeElement);
+            to.ContextTypeElement = converter.ConvertElement<Code<TargetModel.StructureDefinition.ExtensionContext>, Code<SourceModel.StructureDefinition.ExtensionContextType>>(contextTypeElement);
             to.ContextElement = from.Context.Select(context => 
-                converter.ConvertElement<TargetModel.FhirString, SourceModel.FhirString>(context.ExpressionElement)
+                converter.ConvertElement<FhirString, FhirString>(context.ExpressionElement)
             ).ToList();
 
             to.TypeElement = ConvertFhirUriToCode(from.TypeElement, converter);
@@ -71,19 +71,19 @@ namespace FhirTool.Conversion.Converters
 
         private static void ConvertQuestionnaireResponse(TargetModel.QuestionnaireResponse to, SourceModel.QuestionnaireResponse from, FhirConverter converter)
         {
-            to.Questionnaire = new TargetModel.ResourceReference(from.Questionnaire);
+            to.Questionnaire = new ResourceReference(from.Questionnaire);
         }
 
         private static void ConvertQuestionnaireItemComponent(TargetModel.Questionnaire.ItemComponent to, SourceModel.Questionnaire.ItemComponent from, FhirConverter converter)
         {
-            to.Initial = converter.ConvertElement<TargetModel.Element, SourceModel.Element>(from.Initial.FirstOrDefault()?.Value);
+            to.Initial = converter.ConvertElement<DataType, DataType>(from.Initial.FirstOrDefault()?.Value);
             to.Options = ConvertCanonicalToResourceReference(from.AnswerValueSetElement, converter);
             to.Option = from.AnswerOption == null ? to.Option : converter.ConvertList<TargetModel.Questionnaire.OptionComponent, SourceModel.Questionnaire.AnswerOptionComponent>(from.AnswerOption).ToList();
         }
 
         private static void ConvertQuestionnaireEnableWhenComponent(TargetModel.Questionnaire.EnableWhenComponent to, SourceModel.Questionnaire.EnableWhenComponent from, FhirConverter converter)
         {
-            if (from.Operator == SourceModel.Questionnaire.QuestionnaireItemOperator.Exists && from.Answer is SourceModel.FhirBoolean answer)
+            if (from.Operator == SourceModel.Questionnaire.QuestionnaireItemOperator.Exists && from.Answer is FhirBoolean answer)
             {
                 to.HasAnswer = answer.Value;
             }
@@ -94,10 +94,10 @@ namespace FhirTool.Conversion.Converters
             if (from.Currency.HasValue)
             {
                 to.System = "urn:iso:std:iso:4217";
-                to.CodeElement = new TargetModel.Code
+                to.CodeElement = new Code
                 {
                     Value = from.Currency.Value.GetLiteral(),
-                    Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
+                    Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
                 };
             }
         }
@@ -122,11 +122,6 @@ namespace FhirTool.Conversion.Converters
         private static void ConvertDataRequirementCodeFilterComponent(TargetModel.DataRequirement.CodeFilterComponent to, SourceModel.DataRequirement.CodeFilterComponent from, FhirConverter converter)
         {
             to.ValueSet = ConvertCanonicalToResourceReference(from.ValueSetElement, converter);
-        }
-
-        private static void ConvertMeta(TargetModel.Meta to, SourceModel.Meta from, FhirConverter converter)
-        {
-            to.ProfileElement = from.ProfileElement.Select(e => ConvertCanonicalToFhirUri(e, converter)).ToList();
         }
 
         private static void ConvertElementDefinitionTypeRefComponent(TargetModel.ElementDefinition.TypeRefComponent to, SourceModel.ElementDefinition.TypeRefComponent from, FhirConverter converter)
@@ -178,8 +173,8 @@ namespace FhirTool.Conversion.Converters
             var fromDose = from.DoseAndRate.FirstOrDefault(it => it.Dose != null);
             var fromRate = from.DoseAndRate.FirstOrDefault(it => it.Rate != null);
 
-            to.Dose = fromDose == null ? to.Dose : converter.ConvertElement<TargetModel.Element, SourceModel.Element>(fromDose);
-            to.Rate = fromRate == null ? to.Rate : converter.ConvertElement<TargetModel.Element, SourceModel.Element>(fromRate);
+            to.Dose = fromDose == null ? to.Dose : converter.ConvertElement<DataType, DataType>(fromDose.Dose);
+            to.Rate = fromRate == null ? to.Rate : converter.ConvertElement<DataType, DataType>(fromRate.Rate);
         }
 
         private static void ConvertEndpoint(TargetModel.Endpoint to, SourceModel.Endpoint from, FhirConverter converter)
@@ -188,80 +183,80 @@ namespace FhirTool.Conversion.Converters
         }
 
         // Helpers
-        private static TargetModel.Code ConvertFhirStringToCode(SourceModel.FhirString from, FhirConverter converter)
+        private static Code ConvertFhirStringToCode(FhirString from, FhirConverter converter)
         {
             if (from == null) return default;
 
-            return new TargetModel.Code
+            return new Code
             {
                 Value = from.Value,
-                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
+                Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
             };
         }
 
-        private static TargetModel.FhirUri ConvertCanonicalToFhirUri(SourceModel.Canonical from, FhirConverter converter)
+        private static FhirUri ConvertCanonicalToFhirUri(Canonical from, FhirConverter converter)
         {
             if (from == null) return default;
 
-            return new TargetModel.FhirUri
+            return new FhirUri
             {
                 Value = from.Value,
-                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
+                Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
             };
         }
 
-        private static TargetModel.FhirUri ConvertFhirUrlToFhirUri(SourceModel.FhirUrl from, FhirConverter converter)
+        private static FhirUri ConvertFhirUrlToFhirUri(FhirUrl from, FhirConverter converter)
         {
             if (from == null) return default;
 
-            return new TargetModel.FhirUri
+            return new FhirUri
             {
                 Value = from.Value,
-                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
+                Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
             };
         }
 
-        private static TargetModel.Code ConvertFhirUriToCode(SourceModel.FhirUri from, FhirConverter converter)
+        private static Code ConvertFhirUriToCode(FhirUri from, FhirConverter converter)
         {
             if (from == null) return default;
 
-            return new TargetModel.Code
+            return new Code
             {
                 Value = from.Value,
-                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
+                Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
             };
         }
 
-        private static TargetModel.FhirString ConvertMarkdownToFhirString(SourceModel.Markdown from, FhirConverter converter)
+        private static FhirString ConvertMarkdownToFhirString(Markdown from, FhirConverter converter)
         {
             if (from == null) return default;
 
-            return new TargetModel.FhirString
+            return new FhirString
             {
                 Value = from.Value,
-                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
+                Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
             };
         }
 
-        private static TargetModel.Integer ConvertPositiveIntToInteger(SourceModel.PositiveInt from, FhirConverter converter)
+        private static Integer ConvertPositiveIntToInteger(PositiveInt from, FhirConverter converter)
         {
             if (from == null) return default;
 
-            return new TargetModel.Integer
+            return new Integer
             {
                 Value = from.Value,
-                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
+                Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
             };
         }
 
-        private static TargetModel.ResourceReference ConvertCanonicalToResourceReference(SourceModel.Canonical from, FhirConverter converter)
+        private static ResourceReference ConvertCanonicalToResourceReference(Canonical from, FhirConverter converter)
         {
             if (from == null) return default;
 
-            return new TargetModel.ResourceReference
+            return new ResourceReference
             {
                 Reference = from.Value,
-                Extension = converter.ConvertList<TargetModel.Extension, SourceModel.Extension>(from.Extension).ToList()
+                Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
             };
         }
     }

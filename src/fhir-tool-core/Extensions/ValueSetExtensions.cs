@@ -12,6 +12,7 @@ extern alias R4;
 using R3::Hl7.Fhir.Model;
 using R4Model = R4::Hl7.Fhir.Model;
 using System.Text;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Core
 {
@@ -65,7 +66,7 @@ namespace FhirTool.Core
             valueSet.Text = GenerateNarrative(valueSet);
         }
 
-        public static R4Model.Narrative GenerateNarrative(this R4Model.ValueSet valueSet)
+        public static Narrative GenerateNarrative(this R4Model.ValueSet valueSet)
         {
             StringBuilder div = new StringBuilder();
             div.Append("<div xmlns=\"http://www.w3.org/1999/xhtml\">");
@@ -84,9 +85,9 @@ namespace FhirTool.Core
             div.Append("</ol>");
             div.Append("</div>");
 
-            return new R4Model.Narrative
+            return new Narrative
             {
-                Status = R4Model.Narrative.NarrativeStatus.Generated,
+                Status = Narrative.NarrativeStatus.Generated,
                 Div = div.ToString()
             };
         }

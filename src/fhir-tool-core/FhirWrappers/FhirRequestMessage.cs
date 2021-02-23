@@ -6,6 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
  */
 
+using Hl7.Fhir.Model;
 using System.Net.Http;
 
 namespace FhirTool.Core.FhirWrappers

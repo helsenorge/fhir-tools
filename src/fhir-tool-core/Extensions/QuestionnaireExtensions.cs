@@ -9,6 +9,8 @@
 extern alias R4;
 
 using EnsureThat;
+using FhirTool.Core.FhirWrappers;
+using Hl7.Fhir.Model;
 using R4::Hl7.Fhir.Model;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +40,7 @@ namespace FhirTool.Core
 
             string literal = canonical.Value.IndexOf("#") == 0 ? canonical.Value.Substring(1) : string.Empty;
 
-            return questionnaire.Contained.Any(r => r.ResourceType == ResourceType.ValueSet && r.Id == literal);
+            return questionnaire.Contained.Any(r => r.ResourceType(FhirVersion.R4) == ResourceTypeWrapper.ValueSet && r.Id == literal);
         }
 
         public static IEnumerable<Issue> VerifyItemValidation(this Questionnaire questionnaire, Questionnaire.ItemComponent item)
