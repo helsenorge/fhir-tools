@@ -11,6 +11,7 @@ using FhirTool.Core.Operations;
 using R4::Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Core
 {
@@ -62,7 +63,7 @@ namespace FhirTool.Core
 
             codeableConcept.Coding = new List<Coding>() { code };
             codeableConcept.Text = "Questionnaire form definition Document";
-            category.Add(codeableConcept);            
+            category.Add(codeableConcept);
 
             return category;
         }

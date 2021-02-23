@@ -10,6 +10,8 @@ extern alias R3;
 extern alias R4;
 
 using FhirTool.Core.Utils;
+using Hl7.Fhir.Model;
+using Hl7.Fhir.Rest;
 using Hl7.Fhir.Utility;
 using Microsoft.Extensions.Logging;
 using System;
@@ -43,7 +45,7 @@ namespace FhirTool.Core.FhirWrappers
             if (fhirVersion == FhirVersion.None)
             {
                 R3Client = new R3Rest.FhirClient(endpoint);
-                var meta = R3Client.CapabilityStatement(R3Rest.SummaryType.Text);
+                var meta = R3Client.CapabilityStatement(SummaryType.Text);
                 fhirVersion = FhirVersionUtils.MapStringToFhirVersion(meta.FhirVersion);
             }
 
@@ -55,51 +57,53 @@ namespace FhirTool.Core.FhirWrappers
             FhirVersion = fhirVersion.Value;
             switch(FhirVersion) {
                 case FhirVersion.R4:
-                    R4Client = R4Client ?? new R4Rest.FhirClient(endpoint);
-                    R4Client.OnBeforeRequest += R4Client_OnBeforeRequest;
-                    R4Client.OnAfterResponse += R4Client_OnAfterRequest;
+                    var r4Handler = new R4Rest.HttpClientEventHandler();
+                    r4Handler.OnBeforeRequest += R4Client_OnBeforeRequest;
+                    r4Handler.OnAfterResponse += R4Client_OnAfterRequest;
+                    R4Client = new R4Rest.FhirClient(endpoint);
                     break;
                 case FhirVersion.R3:
-                    R3Client = R3Client ?? new R3Rest.FhirClient(endpoint);
-                    R3Client.OnBeforeRequest += R3Client_OnBeforeRequest;
-                    R3Client.OnAfterResponse += R3Client_OnAfterRequest;
+                    var r3Handler = new R3Rest.HttpClientEventHandler();
+                    r3Handler.OnBeforeRequest += R3Client_OnBeforeRequest;
+                    r3Handler.OnAfterResponse += R3Client_OnAfterRequest;
+                    R3Client = new R3Rest.FhirClient(endpoint);
                     break;
             }
         }
 
-        private void R3Client_OnBeforeRequest(object sender, R3Rest.BeforeRequestEventArgs e)
+        private void R3Client_OnBeforeRequest(object sender, R3Rest.BeforeHttpRequestEventArgs e)
         {
-            _logger.LogInformation($"{e.RawRequest.Method} {e.RawRequest.Address}");
+            _logger.LogInformation($"{e.RawRequest.Method} {e.RawRequest.RequestUri}");
 
             if (!string.IsNullOrEmpty(_accessToken))
             {
-                e.RawRequest.Headers.Add(HttpRequestHeader.Authorization, $"Bearer {_accessToken}");
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
             }
         }
 
-        private void R3Client_OnAfterRequest(object sender, R3Rest.AfterResponseEventArgs e)
+        private void R3Client_OnAfterRequest(object sender, R3Rest.AfterHttpResponseEventArgs e)
         {
             if (e != null && e.Body != null)
             {
-                LastBodyAsText = System.Text.Encoding.UTF8.GetString(e.Body);
+                LastBodyAsText = Encoding.UTF8.GetString(e.Body);
             }
         }
 
-        private void R4Client_OnBeforeRequest(object sender, R4Rest.BeforeRequestEventArgs e)
+        private void R4Client_OnBeforeRequest(object sender, R4Rest.BeforeHttpRequestEventArgs e)
         {
-            _logger.LogInformation($"{e.RawRequest.Method} {e.RawRequest.Address}");
+            _logger.LogInformation($"{e.RawRequest.Method} {e.RawRequest.RequestUri}");
 
             if (!string.IsNullOrEmpty(_accessToken))
             {
-                e.RawRequest.Headers.Add(HttpRequestHeader.Authorization, $"Bearer {_accessToken}");
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
             }
         }
 
-        private void R4Client_OnAfterRequest(object sender, R4Rest.AfterResponseEventArgs e)
+        private void R4Client_OnAfterRequest(object sender, R4Rest.AfterHttpResponseEventArgs e)
         {
             if (e != null && e.Body != null)
             {
-                LastBodyAsText = System.Text.Encoding.UTF8.GetString(e.Body);
+                LastBodyAsText = Encoding.UTF8.GetString(e.Body);
             }
         }
 
@@ -161,11 +165,11 @@ namespace FhirTool.Core.FhirWrappers
             switch (FhirVersion)
             {
                 case FhirVersion.R3:
-                    var resultR3 = await R3Client.CreateAsync(resourceWrapper.R3Resource);
-                    return resultR3 != null ? new ResourceWrapper(resultR3) : null;
+                    var resultR3 = await R3Client.CreateAsync(resourceWrapper.Resource);
+                    return resultR3 != null ? new ResourceWrapper(resultR3, FhirVersion.R3) : null;
                 case FhirVersion.R4:
-                    var resultR4 = await R4Client.CreateAsync(resourceWrapper.R4Resource);
-                    return resultR4 != null ? new ResourceWrapper(resultR4) : null;
+                    var resultR4 = await R4Client.CreateAsync(resourceWrapper.Resource);
+                    return resultR4 != null ? new ResourceWrapper(resultR4, FhirVersion.R4) : null;
                 default:
                     return default;
             }
@@ -185,11 +189,11 @@ namespace FhirTool.Core.FhirWrappers
             switch (FhirVersion)
             {
                 case FhirVersion.R3:
-                    var resultR3 = await R3Client.UpdateAsync(resourceWrapper.R3Resource);
-                    return resultR3 != null ? new ResourceWrapper(resultR3) : null;
+                    var resultR3 = await R3Client.UpdateAsync(resourceWrapper.Resource);
+                    return resultR3 != null ? new ResourceWrapper(resultR3, FhirVersion.R3) : null;
                 case FhirVersion.R4:
-                    var resultR4 = await R4Client.UpdateAsync(resourceWrapper.R4Resource);
-                    return resultR4 != null ? new ResourceWrapper(resultR4) : null;
+                    var resultR4 = await R4Client.UpdateAsync(resourceWrapper.Resource);
+                    return resultR4 != null ? new ResourceWrapper(resultR4, FhirVersion.R4) : null;
                 default:
                     return default;
             }

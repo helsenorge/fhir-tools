@@ -16,6 +16,7 @@ using FhirTool.Core.FhirWrappers;
 using System.IO;
 using IdentityModel.Client;
 using System;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Core.Operations
 {

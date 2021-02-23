@@ -60,7 +60,7 @@ namespace FhirTool.Core.Operations
 
             Binary binary = _generator.GenerateBinary(_arguments);
 
-            var resource = new ResourceWrapper(binary);
+            var resource = new ResourceWrapper(binary, FhirVersion.R4);
 
             var serializer = new SerializationWrapper(FhirVersion.R4);
 

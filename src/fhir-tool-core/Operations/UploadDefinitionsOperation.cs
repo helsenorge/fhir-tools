@@ -17,6 +17,9 @@ using System.Linq;
 using Tasks = System.Threading.Tasks;
 using CommandLine;
 using FhirTool.Core.ArgumentHelpers;
+using Hl7.Fhir.Model;
+using System.Net.Http.Headers;
+using Hl7.Fhir.Rest;
 
 namespace FhirTool.Core.Operations
 {
@@ -60,8 +63,9 @@ namespace FhirTool.Core.Operations
             IEnumerable<Resource> resources = null;
             _logger.LogInformation($"Uploading resources to endpoint: '{_arguments.FhirBaseUrl}'");
 
-            FhirClient fhirClient = new FhirClient(_arguments.FhirBaseUrl.Uri);
-            fhirClient.OnBeforeRequest += fhirClient_BeforeRequest;
+            var clientMessageHandler = new HttpClientEventHandler();
+            clientMessageHandler.OnBeforeRequest += fhirClient_BeforeRequest;
+            FhirClient fhirClient = new FhirClient(_arguments.FhirBaseUrl.Uri, FhirClientSettings.CreateDefault(), clientMessageHandler);
             foreach (Resource resource in resources)
             {
                 Resource resource2;
@@ -92,11 +96,11 @@ namespace FhirTool.Core.Operations
                 : OperationResultEnum.Succeeded);
         }
 
-        private void fhirClient_BeforeRequest(object sender, BeforeRequestEventArgs e)
+        private void fhirClient_BeforeRequest(object sender, BeforeHttpRequestEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(_arguments.Credentials))
             {
-                e.RawRequest.Headers.Add(System.Net.HttpRequestHeader.Authorization, $"Basic {_arguments.Credentials.ToBase64()}");
+                e.RawRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", _arguments.Credentials.ToBase64());
             }
         }
 

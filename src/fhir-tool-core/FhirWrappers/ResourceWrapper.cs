@@ -9,36 +9,32 @@
 extern alias R3;
 extern alias R4;
 
-using R3Model = R3::Hl7.Fhir.Model;
-using R4Model = R4::Hl7.Fhir.Model;
 using R3Serialization = R3::Hl7.Fhir.Serialization;
 using R4Serialization = R4::Hl7.Fhir.Serialization;
+
+using R3Extension = R3::Hl7.Fhir.Model.ModelInfoExtensions;
+using R4Extension = R4::Hl7.Fhir.Model.ModelInfoExtensions;
+
 using Hl7.Fhir.Model;
 using System.Reflection;
+using Hl7.Fhir.Serialization;
 
 namespace FhirTool.Core.FhirWrappers
 {
     public class ResourceWrapper
     {
         public FhirVersion FhirVersion { get; }
-        public R3Model.Resource R3Resource { get; set; }
-        public R4Model.Resource R4Resource { get; set; }
+        public Resource Resource { get; set; }
 
-        public ResourceWrapper(R3Model.Resource resource)
+        public ResourceWrapper(Resource resource, FhirVersion version)
         {
-            FhirVersion = FhirVersion.R3;
-            R3Resource = resource;
-        }
-
-        public ResourceWrapper(R4Model.Resource resource)
-        {
-            FhirVersion = FhirVersion.R4;
-            R4Resource = resource;
+            FhirVersion = version;
+            Resource = resource;
         }
 
         public string Id
         {
-            get => GetId();
+            get => Resource.Id;
         }
 
         public ResourceTypeWrapper ResourceType
@@ -51,22 +47,11 @@ namespace FhirTool.Core.FhirWrappers
             switch(FhirVersion)
             {
                 case FhirVersion.R3:
-                    return R3Resource.ResourceType.Wrap();
+                    R3Extension.TryDeriveResourceType(Resource, out var r3Type);
+                    return r3Type.Wrap();
                 case FhirVersion.R4:
-                    return R4Resource.ResourceType.Wrap();
-                default:
-                    return default;
-            }
-        }
-
-        private string GetId()
-        {
-            switch (FhirVersion)
-            {
-                case FhirVersion.R3:
-                    return R3Resource.Id;
-                case FhirVersion.R4:
-                    return R4Resource.Id;
+                    R4Extension.TryDeriveResourceType(Resource, out var r4Type);
+                    return r4Type.Wrap();
                 default:
                     return default;
             }
@@ -77,22 +62,9 @@ namespace FhirTool.Core.FhirWrappers
             switch(FhirVersion)
             {
                 case FhirVersion.R3:
-                    return new R3Serialization.FhirJsonSerializer(new R3Serialization.SerializerSettings { Pretty = true }).SerializeToString(R3Resource);
+                    return new R3Serialization.FhirJsonSerializer(new SerializerSettings { Pretty = true }).SerializeToString(Resource);
                 case FhirVersion.R4:
-                    return new R4Serialization.FhirJsonSerializer(new R4Serialization.SerializerSettings { Pretty = true }).SerializeToString(R4Resource);
-                default:
-                    return default;
-            }
-        }
-
-        public Base ToBase()
-        {
-            switch(FhirVersion)
-            {
-                case FhirVersion.R3:
-                    return R3Resource as Base;
-                case FhirVersion.R4:
-                    return R4Resource as Base;
+                    return new R4Serialization.FhirJsonSerializer(new SerializerSettings { Pretty = true }).SerializeToString(Resource);
                 default:
                     return default;
             }
@@ -100,15 +72,7 @@ namespace FhirTool.Core.FhirWrappers
 
         public void SetProperty(string name, object value)
         {
-            switch (FhirVersion)
-            {
-                case FhirVersion.R3:
-                    R3Resource.GetType().InvokeMember(name, BindingFlags.SetProperty, null, R3Resource, new[] { value });
-                    break;
-                case FhirVersion.R4:
-                    R4Resource.GetType().InvokeMember(name, BindingFlags.SetProperty, null, R4Resource, new[] { value });
-                    break;
-            }
+            Resource.GetType().InvokeMember(name, BindingFlags.SetProperty, null, Resource, new[] { value });
         }
     }
 }

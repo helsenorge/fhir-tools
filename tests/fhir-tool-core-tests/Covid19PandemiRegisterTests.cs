@@ -17,13 +17,16 @@ using System.IO;
 using Xunit;
 using System.Collections.Generic;
 using Hl7.Fhir.Utility;
+using Hl7.Fhir.Serialization;
+using Hl7.Fhir.Model;
+using FhirTool.Core.FhirWrappers;
 
 namespace FhirTool.Conversion.Tests
 {
     public class Covid19PandemiRegisterTests
     {
-        private readonly R4Serialization.FhirXmlParser _r4XmlParser = new R4Serialization.FhirXmlParser(new R4Serialization.ParserSettings { PermissiveParsing = true });
-        private readonly R4Serialization.FhirJsonParser _r4JsonParser = new R4Serialization.FhirJsonParser(new R4Serialization.ParserSettings { PermissiveParsing = true });
+        private readonly R4Serialization.FhirXmlParser _r4XmlParser = new R4Serialization.FhirXmlParser(new ParserSettings { PermissiveParsing = true });
+        private readonly R4Serialization.FhirJsonParser _r4JsonParser = new R4Serialization.FhirJsonParser(new ParserSettings { PermissiveParsing = true });
 
         [Fact]
         public void CreateCovid19PandemiRegister()
@@ -149,10 +152,10 @@ namespace FhirTool.Conversion.Tests
             valueSet = RemoveDesignation(valueSet);
             questionnaire.Contained.Add(valueSet);
 
-            FixContainedValueSetReferences(questionnaire.Contained.FindAll(r => r.ResourceType == ResourceType.ValueSet), questionnaire.Item);
+            FixContainedValueSetReferences(questionnaire.Contained.FindAll(r => r.ResourceType(FhirVersion.R3) == ResourceTypeWrapper.ValueSet), questionnaire.Item);
 
-            questionnaire.SerializeResourceToDiskAsXml($"questionnaire-Covid19-Pandemiregister.xml");
-            questionnaire.SerializeResourceToDiskAsJson("questionnaire-Covid19-Pandemiregister.json");
+            questionnaire.SerializeResourceToDiskAsXml($"questionnaire-Covid19-Pandemiregister.xml", FhirVersion.R3);
+            questionnaire.SerializeResourceToDiskAsJson("questionnaire-Covid19-Pandemiregister.json", FhirVersion.R3);
         }
 
         [Fact]
@@ -192,10 +195,10 @@ namespace FhirTool.Conversion.Tests
             valueSet = RemoveDesignation(valueSet);
             questionnaire.Contained.Add(valueSet);
 
-            FixContainedValueSetReferences(questionnaire.Contained.FindAll(r => r.ResourceType == ResourceType.ValueSet), questionnaire.Item);
+            FixContainedValueSetReferences(questionnaire.Contained.FindAll(r => r.ResourceType(FhirVersion.R3) == ResourceTypeWrapper.ValueSet), questionnaire.Item);
 
-            questionnaire.SerializeResourceToDiskAsXml("questionnaire-Bloodpressure-R3.xml");
-            questionnaire.SerializeResourceToDiskAsJson("questionnaire-Bloodpressure-R3.json");
+            questionnaire.SerializeResourceToDiskAsXml("questionnaire-Bloodpressure-R3.xml", FhirVersion.R3);
+            questionnaire.SerializeResourceToDiskAsJson("questionnaire-Bloodpressure-R3.json", FhirVersion.R3);
         }
 
         [Fact]
@@ -210,8 +213,8 @@ namespace FhirTool.Conversion.Tests
             FhirConverter converter = new FhirConverter(FhirVersion.R3, FhirVersion.R4);
             Questionnaire questionnaire = converter.Convert<Questionnaire, R4Model.Questionnaire>(r4Questionnaire);
 
-            questionnaire.SerializeResourceToDiskAsXml("questionnaire-Blodtrykk-R3.xml");
-            questionnaire.SerializeResourceToDiskAsJson("questionnaire-Blodtrykk-R3.json");
+            questionnaire.SerializeResourceToDiskAsXml("questionnaire-Blodtrykk-R3.xml", FhirVersion.R3);
+            questionnaire.SerializeResourceToDiskAsJson("questionnaire-Blodtrykk-R3.json", FhirVersion.R3);
         }
 
         private bool AddType(List<Questionnaire.ItemComponent> items, string linkId, Questionnaire.QuestionnaireItemType type, Coding unitCoding = null)
@@ -252,7 +255,7 @@ namespace FhirTool.Conversion.Tests
                     {
                         foreach (var resource in valueSets)
                         {
-                            if (resource.ResourceType != ResourceType.ValueSet) continue;
+                            if (resource.ResourceType(FhirVersion.R3) != ResourceTypeWrapper.ValueSet) continue;
                             var valueSet = resource as ValueSet;
 
                             if (options.Reference.EndsWith(valueSet.Id))

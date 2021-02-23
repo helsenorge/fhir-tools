@@ -17,6 +17,7 @@ using Xunit;
 using FhirTool.Core.FhirWrappers;
 using System.Threading.Tasks;
 using System.IO;
+using Hl7.Fhir.Model;
 
 namespace FhirTool.Conversion.Tests
 {
@@ -40,8 +41,8 @@ namespace FhirTool.Conversion.Tests
             var r3Serializer = new SerializationWrapper(FhirVersion.R3);
             var r3Resource = r3Serializer.Parse(await File.ReadAllTextAsync(path));
 
-            var r4Resource = converterFromR3ToR4.Convert<R4Model.Resource, R3Model.Resource>(r3Resource.R3Resource);
-            var r3ResourceRoundTrip = converterFromR4ToR3.Convert<R3Model.Resource, R4Model.Resource>(r4Resource);
+            var r4Resource = converterFromR3ToR4.Convert<Resource, Resource>(r3Resource.Resource);
+            var r3ResourceRoundTrip = converterFromR4ToR3.Convert<Resource, Resource>(r4Resource);
 
             var r3ResourceContent = r3Serializer.Serialize(r3Resource, FhirMimeType.Json);
             var r3ResourceRoundTripContent = r3Serializer.Serialize(r3ResourceRoundTrip, FhirMimeType.Json);
@@ -67,8 +68,8 @@ namespace FhirTool.Conversion.Tests
             var r4Serializer = new SerializationWrapper(FhirVersion.R4);
             var r4Resource = r4Serializer.Parse(await File.ReadAllTextAsync(path));
 
-            var r3Resource = converterFromR4ToR3.Convert<R3Model.Resource, R4Model.Resource>(r4Resource.R4Resource);
-            var r4ResourceRoundTrip = converterFromR3ToR4.Convert<R4Model.Resource, R3Model.Resource>(r3Resource);
+            var r3Resource = converterFromR4ToR3.Convert<Resource, Resource>(r4Resource.Resource);
+            var r4ResourceRoundTrip = converterFromR3ToR4.Convert<Resource, Resource>(r3Resource);
 
             var r4ResourceContent = r4Serializer.Serialize(r4Resource);
             var r4ResourceRoundTripContent = r4Serializer.Serialize(r4ResourceRoundTrip);
