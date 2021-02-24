@@ -44,7 +44,11 @@ namespace FhirTool.Core.FhirWrappers
 
             if (fhirVersion == FhirVersion.None)
             {
-                R3Client = new R3Rest.FhirClient(endpoint);
+                var r3Handler = new R3Rest.HttpClientEventHandler();
+                r3Handler.OnBeforeRequest += R3Client_OnBeforeRequest;
+                r3Handler.OnAfterResponse += R3Client_OnAfterRequest;
+                R3Client = new R3Rest.FhirClient(endpoint, FhirClientSettings.CreateDefault(), r3Handler);
+
                 var meta = R3Client.CapabilityStatement(SummaryType.Text);
                 fhirVersion = FhirVersionUtils.MapStringToFhirVersion(meta.FhirVersion);
             }
@@ -60,13 +64,13 @@ namespace FhirTool.Core.FhirWrappers
                     var r4Handler = new R4Rest.HttpClientEventHandler();
                     r4Handler.OnBeforeRequest += R4Client_OnBeforeRequest;
                     r4Handler.OnAfterResponse += R4Client_OnAfterRequest;
-                    R4Client = new R4Rest.FhirClient(endpoint);
+                    R4Client = new R4Rest.FhirClient(endpoint, FhirClientSettings.CreateDefault(), r4Handler);
                     break;
                 case FhirVersion.R3:
                     var r3Handler = new R3Rest.HttpClientEventHandler();
                     r3Handler.OnBeforeRequest += R3Client_OnBeforeRequest;
                     r3Handler.OnAfterResponse += R3Client_OnAfterRequest;
-                    R3Client = new R3Rest.FhirClient(endpoint);
+                    R3Client = new R3Rest.FhirClient(endpoint, FhirClientSettings.CreateDefault(), r3Handler);
                     break;
             }
         }
