@@ -1,0 +1,24 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: Hl7.Fhir.Serialization
+    versions:
+    - ">= 3.a, < 4"
+  - dependency-name: Hl7.Fhir.Specification.R4
+    versions:
+    - ">= 3.a, < 4"
+  - dependency-name: Hl7.Fhir.Specification.STU3
+    versions:
+    - ">= 3.a, < 4"
+  - dependency-name: Hl7.Fhir.STU3
+    versions:
+    - ">= 3.a, < 4"
+  - dependency-name: IdentityModel
+    versions:
+    - 5.0.0
+    - 5.0.1
