@@ -9,15 +9,15 @@
 extern alias R3;
 extern alias R4;
 
-using R3Serialization = R3::Hl7.Fhir.Serialization;
-using R4Serialization = R4::Hl7.Fhir.Serialization;
+using R3Model = R3::Hl7.Fhir.Model;
+using R4Model = R4::Hl7.Fhir.Model;
 
 using R3Extension = R3::Hl7.Fhir.Model.ModelInfoExtensions;
 using R4Extension = R4::Hl7.Fhir.Model.ModelInfoExtensions;
 
 using Hl7.Fhir.Model;
 using System.Reflection;
-using Hl7.Fhir.Serialization;
+using System;
 
 namespace FhirTool.Core.FhirWrappers
 {
@@ -57,22 +57,22 @@ namespace FhirTool.Core.FhirWrappers
             }
         }
 
-        public string Serialize()
+        public void SetProperty(string name, object value)
+        {
+            Resource.GetType().InvokeMember(name, BindingFlags.SetProperty, null, Resource, new[] { value });
+        }
+
+        public BundleWrapper CastToBundle()
         {
             switch(FhirVersion)
             {
                 case FhirVersion.R3:
-                    return new R3Serialization.FhirJsonSerializer(new SerializerSettings { Pretty = true }).SerializeToString(Resource);
+                    return new BundleWrapper(Resource as R3Model.Bundle);
                 case FhirVersion.R4:
-                    return new R4Serialization.FhirJsonSerializer(new SerializerSettings { Pretty = true }).SerializeToString(Resource);
+                    return new BundleWrapper(Resource as R4Model.Bundle);
                 default:
                     return default;
             }
-        }
-
-        public void SetProperty(string name, object value)
-        {
-            Resource.GetType().InvokeMember(name, BindingFlags.SetProperty, null, Resource, new[] { value });
         }
     }
 }

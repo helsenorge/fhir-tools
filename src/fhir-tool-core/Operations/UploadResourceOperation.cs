@@ -15,8 +15,7 @@ using FhirTool.Core.ArgumentHelpers;
 using FhirTool.Core.FhirWrappers;
 using System.IO;
 using IdentityModel.Client;
-using System;
-using Hl7.Fhir.Model;
+using System.Collections.Generic;
 
 namespace FhirTool.Core.Operations
 {
@@ -78,8 +77,32 @@ namespace FhirTool.Core.Operations
             _logger.LogInformation($"Deserializing Fhir resource at '{_arguments.QuestionnairePath}'.");
             _logger.LogInformation($"Expecting format: '{_arguments.MimeType}'.");
 
-            var serializer = new SerializationWrapper(_arguments.FhirVersion);
+            await foreach (var resource in ExpandInputFiles())
+            {
+                _logger.LogInformation($"Uploading {resource.ResourceType} to endpoint: '{endpoint}'");
+                // Set a relative url before posting to the server
+                SetQuestionnaireUrl(resource);
 
+                var client = new FhirClientWrapper(endpoint, _logger, _arguments.FhirVersion, tokenResponse?.AccessToken);
+                var response = await UploadResource(resource, client);
+
+                var resourceType = resource.ResourceType.GetLiteral();
+                _logger.LogInformation($"Successfully uploaded {resourceType} to endpoint: '{endpoint}'.");
+                if (response != null)
+                {
+                    _logger.LogInformation($"Resource was assigned the Id: '{resource.Id}'");
+                    _logger.LogInformation($"Resource can be accessed at: '{resource.ResourceType.GetLiteral()}/{resource.Id}'");
+                }
+            }
+
+            return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
+                ? OperationResultEnum.Failed
+                : OperationResultEnum.Succeeded;
+        }
+
+        private async IAsyncEnumerable<ResourceWrapper> ExpandInputFiles()
+        {
+            var serializer = new SerializationWrapper(_arguments.FhirVersion);
             var content = await File.ReadAllTextAsync(_arguments.QuestionnairePath);
             var resource = serializer.Parse(content, _arguments.MimeType);
             if (resource == null)
@@ -89,27 +112,26 @@ namespace FhirTool.Core.Operations
                     Details = $"Failed to deserialize Questionnaire from file\nLocation: '{_arguments.QuestionnairePath}'.",
                     Severity = IssueSeverityEnum.Error,
                 });
-                return OperationResultEnum.Failed;
+
+                yield break;
             }
 
-            _logger.LogInformation($"Uploading {resource.ResourceType} to endpoint: '{endpoint}'");
-            // Set a relative url before posting to the server
-            SetQuestionnaireUrl(resource);
-
-            var client = new FhirClientWrapper(endpoint, _logger, _arguments.FhirVersion, tokenResponse?.AccessToken);
-            var response = await UploadResource(resource, client);
-
-            var resourceType = resource.ResourceType.GetLiteral();
-            _logger.LogInformation($"Successfully uploaded {resourceType} to endpoint: '{endpoint}'.");
-            if (response != null)
+            if (resource.ResourceType == ResourceTypeWrapper.Bundle)
             {
-                _logger.LogInformation($"Resource was assigned the Id: '{resource.Id}'");
-                _logger.LogInformation($"Resource can be accessed at: '{resource.ResourceType.GetLiteral()}/{resource.Id}'");
+                var bundle = resource.CastToBundle();
+                foreach(var r in bundle.GetResources())
+                {
+                    if(r.ResourceType != ResourceTypeWrapper.Questionnaire)
+                    {
+                        continue;
+                    }
+                    yield return r;
+                }
             }
-
-            return _issues.Any(issue => issue.Severity == IssueSeverityEnum.Error)
-                ? OperationResultEnum.Failed
-                : OperationResultEnum.Succeeded;
+            else
+            {
+                yield return resource;
+            }
         }
 
         private async Tasks.Task<ResourceWrapper> UploadResource(ResourceWrapper resource, FhirClientWrapper client)
