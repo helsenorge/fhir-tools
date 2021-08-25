@@ -28,7 +28,8 @@ namespace FhirTool.Core.FhirWrappers
                 { ResourceTypeWrapper.Endpoint, R3Model.ResourceType.Endpoint },
                 { ResourceTypeWrapper.Questionnaire, R3Model.ResourceType.Questionnaire },
                 { ResourceTypeWrapper.StructureDefinition, R3Model.ResourceType.StructureDefinition },
-                { ResourceTypeWrapper.ValueSet, R3Model.ResourceType.ValueSet }
+                { ResourceTypeWrapper.ValueSet, R3Model.ResourceType.ValueSet },
+                { ResourceTypeWrapper.Bundle, R3Model.ResourceType.Bundle }
             };
         private static Dictionary<ResourceTypeWrapper, R4Model.ResourceType> R4Map =
             new Dictionary<ResourceTypeWrapper, R4Model.ResourceType>
@@ -39,7 +40,8 @@ namespace FhirTool.Core.FhirWrappers
                 { ResourceTypeWrapper.Endpoint, R4Model.ResourceType.Endpoint },
                 { ResourceTypeWrapper.Questionnaire, R4Model.ResourceType.Questionnaire },
                 { ResourceTypeWrapper.StructureDefinition, R4Model.ResourceType.StructureDefinition },
-                { ResourceTypeWrapper.ValueSet, R4Model.ResourceType.ValueSet }
+                { ResourceTypeWrapper.ValueSet, R4Model.ResourceType.ValueSet },
+                { ResourceTypeWrapper.Bundle, R4Model.ResourceType.Bundle }
             };
 
         public static R3Model.ResourceType ToR3(this ResourceTypeWrapper me)
@@ -67,6 +69,8 @@ namespace FhirTool.Core.FhirWrappers
     {
         [EnumLiteral("Binary")]
         Binary = 8,
+        [EnumLiteral("Bundle")]
+        Bundle = 10,
         [EnumLiteral("CodeSystem")]
         CodeSystem = 18,
         [EnumLiteral("DocumentReference")]

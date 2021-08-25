@@ -118,6 +118,7 @@ namespace FhirTool
                 catch (Exception e)
                 {
                     logger.LogError(e.Message);
+                    logger.LogError(e.StackTrace);
                 }
             }
         }

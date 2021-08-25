@@ -19,7 +19,7 @@ using Hl7.Fhir.Model;
 
 namespace FhirTool.Core.FhirWrappers
 {
-    internal class BundleWrapper
+    public class BundleWrapper
     {
         public FhirVersion FhirVersion { get; }
         public R3Model.Bundle R3Bundle { get; }
