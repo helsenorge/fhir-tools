@@ -9,6 +9,7 @@
     <Copyright>Copyright © 2018-2022 Norsk Helsenett SF</Copyright>
     <RepositoryUrl>https://github.com/helsenorge/fhir-tools</RepositoryUrl>
     <PackageIcon>helsenorge-logo-128x128.png</PackageIcon>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
