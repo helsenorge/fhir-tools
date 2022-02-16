@@ -24,15 +24,15 @@ namespace FhirTool.Conversion.Tests
     public class FhirConverterTests : FhirTestsBase
     {
         [Theory]
-        [InlineData(@"TestData\questionnaire-example-r3.json")]
-        [InlineData(@"TestData\questionnaire-305-r3.json")]
-        [InlineData(@"TestData\account.profile-r3.json")]
-        [InlineData(@"TestData\activitydefinition.profile-r3.json")]
-        [InlineData(@"TestData\adverseevent.profile-r3.json")]
-        [InlineData(@"TestData\allergyintolerance.profile-r3.json")]
-        [InlineData(@"TestData\appointment.profile-r3.json")]
-        [InlineData(@"TestData\appointmentresponse.profile-r3.json")]
-        [InlineData(@"TestData\consent.profile-r3.json")]
+        [InlineData(@"TestData/questionnaire-example-r3.json")]
+        [InlineData(@"TestData/questionnaire-305-r3.json")]
+        [InlineData(@"TestData/account.profile-r3.json")]
+        [InlineData(@"TestData/activitydefinition.profile-r3.json")]
+        [InlineData(@"TestData/adverseevent.profile-r3.json")]
+        [InlineData(@"TestData/allergyintolerance.profile-r3.json")]
+        [InlineData(@"TestData/appointment.profile-r3.json")]
+        [InlineData(@"TestData/appointmentresponse.profile-r3.json")]
+        [InlineData(@"TestData/consent.profile-r3.json")]
         public async Task CanConvert_Resource_FromR3ToR4_RoundTrip(string path)
         {
             var converterFromR3ToR4 = new FhirConverter(to: FhirVersion.R4, from: FhirVersion.R3);
@@ -51,8 +51,8 @@ namespace FhirTool.Conversion.Tests
         }
 
         [Theory]
-        [InlineData(@"TestData\questionnaire-example-r4.json")]
-        [InlineData(@"TestData\questionnaire-305-r4.json")]
+        [InlineData(@"TestData/questionnaire-example-r4.json")]
+        [InlineData(@"TestData/questionnaire-305-r4.json")]
         //[InlineData(@"TestData\account.profile-r4.json")]
         //[InlineData(@"TestData\activitydefinition.profile-r4.json")]
         //[InlineData(@"TestData\adverseevent.profile-r4.json")]
