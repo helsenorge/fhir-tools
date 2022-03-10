@@ -202,14 +202,14 @@ namespace FhirTool.Conversion.Tests
         {
             var r3TypeInstance = new R3Model.Ratio
             {
-                Numerator = new R3Model.Quantity
+                Numerator = new Quantity
                 {
                     Value = 103.50m,
                     Unit = "US$",
                     Code = "USD",
                     System = "urn:iso:std:iso:4217"
                 },
-                Denominator = new R3Model.Quantity
+                Denominator = new Quantity
                 {
                     Value = 1,
                     Unit = "day",
@@ -248,21 +248,21 @@ namespace FhirTool.Conversion.Tests
         [Fact]
         public void Can_ConvertElement_R3_Range_To_R4_Range()
         {
-            var r3TypeInstance = new R3Model.Range
+            var r3TypeInstance = new Hl7.Fhir.Model.Range
             {
-                Low = new R3Model.Quantity
+                Low = new Quantity
                 {
                     Value = 1.6m,
                     Unit = "m"
                 },
-                High = new R3Model.Quantity
+                High = new Quantity
                 {
                     Value = 1.9m,
                     Unit = "m"
                 }
             };
             var r4TypeInstance = new FhirConverter(FhirVersion.R4, FhirVersion.R3)
-                .Convert<R4::Hl7.Fhir.Model.Range, R3Model.Range>(r3TypeInstance);
+                .Convert<Hl7.Fhir.Model.Range, Hl7.Fhir.Model.Range >(r3TypeInstance);
             Assert.NotNull(r4TypeInstance);
             Assert.Equal(r3TypeInstance.Low.Value, r4TypeInstance.Low.Value);
             Assert.Equal(r3TypeInstance.Low.Unit, r4TypeInstance.Low.Unit);

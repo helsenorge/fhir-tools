@@ -40,7 +40,6 @@ namespace FhirTool.Conversion.Converters
             Map.Add<TargetModel.Timing.RepeatComponent, SourceModel.Timing.RepeatComponent>(ConvertTimingRepeatComponent);
             Map.Add<TargetModel.ParameterDefinition, SourceModel.ParameterDefinition>(ConvertParameterDefinition);
             Map.Add<TargetModel.Signature, SourceModel.Signature>(ConvertSignature);
-            Map.Add<TargetModel.Range, SourceModel.Range>(ConvertRange);
             Map.Add<TargetModel.Dosage, SourceModel.Dosage>(ConvertDosage);
             Map.Add<TargetModel.Endpoint, SourceModel.Endpoint>(ConvertEndpoint);
             Map.Add<TargetModel.StructureDefinition, SourceModel.StructureDefinition>(ConvertStructureDefinition);
@@ -220,12 +219,6 @@ namespace FhirTool.Conversion.Converters
             }
         }
 
-        private static void ConvertRange(TargetModel.Range to, SourceModel.Range from, FhirConverter converter)
-        {
-            to.High = ConvertQuantityToQuantity(from.High, converter);
-            to.Low = ConvertQuantityToQuantity(from.Low, converter);
-        }
-
         private static void ConvertDosage(TargetModel.Dosage to, SourceModel.Dosage from, FhirConverter converter)
         {
             if (from.Dose != null)
@@ -359,20 +352,6 @@ namespace FhirTool.Conversion.Converters
             return new PositiveInt
             {
                 Value = from.Value,
-                Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
-            };
-        }
-
-        private static TargetModel.Quantity ConvertQuantityToQuantity(SourceModel.Quantity from, FhirConverter converter)
-        {
-            if (from == null) return default;
-
-            return new TargetModel.Quantity
-            {
-                System = from.System,
-                Code = from.Code,
-                Value = from.Value,
-                Unit = from.Unit,
                 Extension = converter.ConvertList<Extension, Extension>(from.Extension).ToList()
             };
         }
