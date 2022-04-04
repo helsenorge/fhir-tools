@@ -94,7 +94,8 @@ namespace FhirTool
                                       TransformOperationOptions,
                                       GenerateBinaryOperationOptions,
                                       GenerateDocumentReferenceOptions,
-                                      ConvertFormatOperationOptions>(args)
+                                      ConvertFormatOperationOptions,
+                                      DeleteResourceOperationOptions>(args)
                       .MapResult(
                           (DownloadResourcesOperationOptions opts) => new DownloadResourcesOperation(opts, loggerFactory).Execute(),
                           (GenerateQuestionnaireOperationOptions opts) => new GenerateQuestionnaireOperation(opts, loggerFactory).Execute(),
@@ -109,6 +110,7 @@ namespace FhirTool
                           (GenerateBinaryOperationOptions opts) => new GenerateBinaryOperation(opts, loggerFactory).Execute(),
                           (GenerateDocumentReferenceOptions opts) => new GenerateDocumentReferenceOperation(opts, loggerFactory).Execute(),
                           (ConvertFormatOperationOptions opts) => new ConvertFormatOperation(opts, loggerFactory.CreateLogger<ConvertFormatOperation>()).Execute(),
+                          (DeleteResourceOperationOptions opts) => new DeleteResourceOperation(opts, loggerFactory).Execute(),
                           errs => Task.FromResult(OperationResultEnum.Failed));
                 }
                 catch (SemanticArgumentException e)

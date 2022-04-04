@@ -203,6 +203,19 @@ namespace FhirTool.Core.FhirWrappers
             }
         }
 
+        public async Task DeleteAsync(string resourceType, string resourceId)
+        {
+            switch (FhirVersion)
+            {
+                case FhirVersion.R3:
+                    await R3Client.DeleteAsync($"{resourceType}/{resourceId}");
+                    break;
+                case FhirVersion.R4:
+                    await R4Client.DeleteAsync($"{resourceType}/{resourceId}");
+                    break;
+            }
+        }
+
         private async Task<ResourceWrapper> CreateUsingHttpClientAsync(ResourceWrapper resourceWrapper)
         {
             var serializer = new SerializationWrapper(FhirVersion);
