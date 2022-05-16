@@ -1,5 +1,5 @@
 # Fhir tools 
-Currently just a simple tool to help us genereate Questionnaires and ValueSets from a flat file structure.
+A tool to help us genereate Questionnaires and ValueSets from a flat file structure + upload Questionnaires and Documents to a central repository using FHIR REST APIs.
 
 ## Install
 
