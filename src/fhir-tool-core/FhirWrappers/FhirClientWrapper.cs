@@ -219,6 +219,25 @@ namespace FhirTool.Core.FhirWrappers
             }
         }
 
+        public async Task<ResourceWrapper> GetAsync(string resourceType, string resourceId, string version = null)
+        {
+            var url = string.IsNullOrWhiteSpace(version)
+                ? $"{resourceType}/{resourceId}"
+                : $"{resourceType}/{resourceId}/_history/{version}";
+
+            switch (FhirVersion)
+            {
+                case FhirVersion.R3:
+                    var resultR3 = await R3Client.GetAsync(url);
+                    return resultR3 != null ? new ResourceWrapper(resultR3, FhirVersion.R3) : null;
+                case FhirVersion.R4:
+                    var resultR4 = await R4Client.GetAsync(url);
+                    return resultR4 != null ? new ResourceWrapper(resultR4, FhirVersion.R4) : null;
+                default:
+                    return default;
+            }
+        }
+
         private async Task<ResourceWrapper> CreateUsingHttpClientAsync(ResourceWrapper resourceWrapper)
         {
             var serializer = new SerializationWrapper(FhirVersion);
