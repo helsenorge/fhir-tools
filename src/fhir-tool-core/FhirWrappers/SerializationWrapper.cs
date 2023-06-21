@@ -23,7 +23,9 @@ namespace FhirTool.Core.FhirWrappers
 {
     public enum FhirMimeType
     {
+        [EnumLiteral("xml")]
         Xml = 1,
+        [EnumLiteral("json")]
         Json = 2
     }
 
