@@ -33,6 +33,8 @@ namespace FhirTool.Core.FhirWrappers
         public string LastBodyAsText { get; private set; }
         public string Endpoint { get; private set; }
 
+        public HttpStatusCode LastStatusCode { get; private set; }
+
         private ILogger _logger;
         private readonly string _accessToken;
 
@@ -87,10 +89,13 @@ namespace FhirTool.Core.FhirWrappers
 
         private void R3Client_OnAfterRequest(object sender, R3Rest.AfterHttpResponseEventArgs e)
         {
-            if (e != null && e.Body != null)
-            {
+            if (e is null)
+                return;
+
+            LastStatusCode = e.RawResponse.StatusCode;
+
+            if (e.Body is not null)
                 LastBodyAsText = Encoding.UTF8.GetString(e.Body);
-            }
         }
 
         private void R4Client_OnBeforeRequest(object sender, R4Rest.BeforeHttpRequestEventArgs e)
@@ -105,10 +110,8 @@ namespace FhirTool.Core.FhirWrappers
 
         private void R4Client_OnAfterRequest(object sender, R4Rest.AfterHttpResponseEventArgs e)
         {
-            if (e != null && e.Body != null)
-            {
+            if (e?.Body is not null)
                 LastBodyAsText = Encoding.UTF8.GetString(e.Body);
-            }
         }
 
         internal async Task<BundleWrapper> SearchAsync(string resource)
