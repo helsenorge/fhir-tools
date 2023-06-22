@@ -15,6 +15,7 @@ using System.Linq;
 using Tasks = System.Threading.Tasks;
 using CommandLine;
 using FhirTool.Core.ArgumentHelpers;
+using System;
 
 namespace FhirTool.Core.Operations
 {
@@ -31,13 +32,13 @@ namespace FhirTool.Core.Operations
     public class VerifyValidationItems : Operation
     {
         private readonly VerifyValidationItemsOptions _arguments;
-        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<VerifyValidationItems> _logger;
 
         public VerifyValidationItems(VerifyValidationItemsOptions arguments, ILoggerFactory loggerFactory)
         {
-            _arguments = arguments;
-            _loggerFactory = loggerFactory;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
 
             _logger = loggerFactory.CreateLogger<VerifyValidationItems>();
 

@@ -46,8 +46,8 @@ namespace FhirTool.Core.Operations
 
         public GenerateQuestionnaireOperation(GenerateQuestionnaireOperationOptions arguments, ILoggerFactory loggerFactory)
         {
-            _arguments = arguments ?? throw new ArgumentOutOfRangeException(nameof(arguments));
-            _loggerFactory = loggerFactory ?? throw new ArgumentOutOfRangeException(nameof(loggerFactory));
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 
             _logger = loggerFactory.CreateLogger<GenerateQuestionnaireOperation>();
 

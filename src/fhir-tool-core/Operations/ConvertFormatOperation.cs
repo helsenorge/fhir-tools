@@ -47,7 +47,7 @@ namespace FhirTool.Core.Operations
 
         public ConvertFormatOperation(ConvertFormatOperationOptions arguments, ILogger<ConvertFormatOperation> logger)
         {
-            _arguments = arguments;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
             _logger = logger;
 
             Validate(_arguments);

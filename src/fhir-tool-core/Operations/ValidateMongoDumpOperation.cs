@@ -41,13 +41,13 @@ namespace FhirTool.Core.Operations
     public class ValidateMongoDumpOperation : Operation
     {
         private readonly ValidateMongoDumpOperationOptions _arguments;
-        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<ValidateMongoDumpOperation> _logger;
 
         public ValidateMongoDumpOperation(ValidateMongoDumpOperationOptions arguments, ILoggerFactory loggerFactory)
         {
-            _arguments = arguments;
-            _loggerFactory = loggerFactory;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
 
             _logger = loggerFactory.CreateLogger<ValidateMongoDumpOperation>();
 

@@ -41,13 +41,13 @@ namespace FhirTool.Core.Operations
     public class DeleteResourceOperation : Operation
     {
         private readonly DeleteResourceOperationOptions _arguments;
-        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<UploadResourceOperation> _logger;
 
         public DeleteResourceOperation(DeleteResourceOperationOptions arguments, ILoggerFactory loggerFactory)
         {
-            _arguments = arguments;
-            _loggerFactory = loggerFactory;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(loggerFactory));
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
 
             _logger = loggerFactory.CreateLogger<UploadResourceOperation>();
         }

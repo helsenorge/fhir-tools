@@ -55,8 +55,10 @@ namespace FhirTool.Core.Operations
 
         public DownloadResourcesOperation(DownloadResourcesOperationOptions arguments, ILoggerFactory loggerFactory)
         {
-            _loggerFactory = loggerFactory;
-            _arguments = arguments;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
+
             _logger = loggerFactory.CreateLogger<DownloadResourcesOperation>();
         }
 

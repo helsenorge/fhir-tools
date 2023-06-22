@@ -37,15 +37,16 @@ namespace FhirTool.Core.Operations
     {
         private readonly GenerateDocumentReferenceOptions _arguments;
         private readonly ILogger<GenerateDocumentReferenceOperation> _logger;
-        private readonly ILoggerFactory _loggerFactory;
 
         private readonly DocumentReferenceGenerator _documentReferenceGenerator;
 
         public GenerateDocumentReferenceOperation(GenerateDocumentReferenceOptions arguments, ILoggerFactory loggerFactory)
         {
-            _loggerFactory = loggerFactory ?? throw new ArgumentOutOfRangeException(nameof(loggerFactory));
-            _logger = _loggerFactory.CreateLogger<GenerateDocumentReferenceOperation>();
-            _arguments = arguments;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
+
+            _logger = loggerFactory.CreateLogger<GenerateDocumentReferenceOperation>();
 
             _documentReferenceGenerator = new DocumentReferenceGenerator(loggerFactory);
         }

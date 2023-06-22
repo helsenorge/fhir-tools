@@ -45,13 +45,13 @@ namespace FhirTool.Core.Operations
     public class TransferDataOperation : Operation
     {
         private TransferDataOperationOptions _arguments;
-        private ILoggerFactory _loggerFactory;
         private ILogger<TransferDataOperation> _logger;
 
         public TransferDataOperation(TransferDataOperationOptions arguments, ILoggerFactory loggerFactory)
         {
-            _arguments = arguments;
-            _loggerFactory = loggerFactory;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
 
             _logger = loggerFactory.CreateLogger<TransferDataOperation>();
 

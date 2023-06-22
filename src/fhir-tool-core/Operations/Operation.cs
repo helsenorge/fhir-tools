@@ -6,9 +6,11 @@
  * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
  */
 
+using FhirTool.Core.ArgumentHelpers;
 using IdentityModel.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FhirTool.Core.Operations

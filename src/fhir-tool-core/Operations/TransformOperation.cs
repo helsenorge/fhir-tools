@@ -19,6 +19,7 @@ using Task = System.Threading.Tasks.Task;
 using Tasks = System.Threading.Tasks;
 using FhirTool.Core.Utils;
 using System.Xml;
+using System;
 
 namespace FhirTool.Core.Operations
 {
@@ -46,7 +47,6 @@ namespace FhirTool.Core.Operations
     public class TransformOperation : Operation
     {
         private readonly TransformOperationOptions _arguments;
-        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<TransformOperation> _logger;
 
         private readonly JustTransform _justTransformer;
@@ -54,8 +54,9 @@ namespace FhirTool.Core.Operations
 
         public TransformOperation(TransformOperationOptions arguments, ILoggerFactory loggerFactory)
         {
-            _arguments = arguments;
-            _loggerFactory = loggerFactory;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
 
             _logger = loggerFactory.CreateLogger<TransformOperation>();
 
