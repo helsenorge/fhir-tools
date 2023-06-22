@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) 2023, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ *
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/fhir-tools/master/LICENSE
+ */
+
 extern alias R4;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommandLine;
