@@ -20,6 +20,7 @@ using FhirTool.Core.ArgumentHelpers;
 using Hl7.Fhir.Model;
 using System.Net.Http.Headers;
 using Hl7.Fhir.Rest;
+using System;
 
 namespace FhirTool.Core.Operations
 {
@@ -42,13 +43,13 @@ namespace FhirTool.Core.Operations
     public class UploadDefinitionsOperation : Operation
     {
         private readonly UploadDefinitionOperationOptions _arguments;
-        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<UploadDefinitionsOperation> _logger;
 
         public UploadDefinitionsOperation(UploadDefinitionOperationOptions arguments, ILoggerFactory loggerFactory)
         {
-            _arguments = arguments;
-            _loggerFactory = loggerFactory;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
 
             _logger = loggerFactory.CreateLogger<UploadDefinitionsOperation>();
 

@@ -10,6 +10,7 @@ using CommandLine;
 using FhirTool.Core.ArgumentHelpers;
 using FhirTool.Core.FhirWrappers;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,14 +44,15 @@ namespace FhirTool.Core.Operations
     public class ConvertOperation : Operation
     {
         private readonly ConvertOperationOptions _arguments;
-        private readonly ILoggerFactory _loggerFactory;
         private readonly FhirConverterWrapper _converter;
         private readonly ILogger<ConvertOperation> _logger;
 
         public ConvertOperation(ConvertOperationOptions arguments, ILoggerFactory loggerFactory)
         {
-            _arguments = arguments;
-            _loggerFactory = loggerFactory;
+            _arguments = arguments ?? throw new ArgumentNullException(nameof(loggerFactory));
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
+
             _converter = new FhirConverterWrapper(arguments.ToFhirVersion, arguments.FromFhirVersion);
 
             _logger = loggerFactory.CreateLogger<ConvertOperation>();
