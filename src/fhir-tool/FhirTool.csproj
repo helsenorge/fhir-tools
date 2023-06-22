@@ -31,7 +31,7 @@
     <None Update="upload-questionnaire.sh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="upload.bat">
+    <None Update="upload-questionnaire.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="verify-validation.bat">
