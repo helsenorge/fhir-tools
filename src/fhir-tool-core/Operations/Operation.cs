@@ -47,5 +47,21 @@ namespace FhirTool.Core.Operations
 
             return await authToken.GetToken(clientId, secret);
         }
+
+        protected void ValidateResourceType(string resourceType)
+        {
+            var validResourceTypes = new List<string>
+            {
+                "Endpoint",
+                "Questionnaire",
+                "DocumentReference",
+                "Binary",
+            };
+            if (!validResourceTypes.Contains(resourceType))
+            {
+                var known = string.Join(", ", validResourceTypes.AsEnumerable());
+                throw new SemanticArgumentException($"Resource Type {resourceType} is not a known Resource Type. Known Resource Types are {known}", "ResourceType");
+            }
+        }
     }
 }
