@@ -1,5 +1,10 @@
 version: 2
 updates:
+- package-ecosystem: "github-actions"
+  directory: "/.github/workflows"
+  schedule:
+    interval: "daily"
+  open-pull-requests-limit: 10
 - package-ecosystem: nuget
   directory: "/"
   schedule:
