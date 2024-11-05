@@ -5,10 +5,10 @@ updates:
   schedule:
     interval: "daily"
   open-pull-requests-limit: 10
-- package-ecosystem: nuget
+- package-ecosystem: "nuget"
   directory: "/"
   schedule:
-    interval: daily
+    interval: "daily"
   open-pull-requests-limit: 10
   ignore:
   - dependency-name: Hl7.Fhir.Serialization
