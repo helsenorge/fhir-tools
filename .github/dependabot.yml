@@ -11,6 +11,8 @@ updates:
     interval: "daily"
   open-pull-requests-limit: 10
   ignore:
+  - dependency-name: "*"
+    update-types: [ "version-update:semver-major" ]
   - dependency-name: Hl7.Fhir.Serialization
     versions:
     - ">= 3.a, < 4"
